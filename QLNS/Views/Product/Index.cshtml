@@ -1,0 +1,130 @@
+﻿@using QLNS.DTO
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	ViewData["Title"] = "Product View";
+	// Layout = "~/Views/shared/_layout.cshtml";
+	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@section Header {
+	@Html.Partial("Header", headerData)
+}
+@section Footer {
+	@Html.Partial("Footer")
+}
+@model QLNS.ViewModels.Product.ProductViewModel
+<!-- catg header banner section -->
+<section id="aa-catg-head-banner">
+    <img src="~/images/banner-product.png" alt="banner sản phẩm">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Sản phẩm</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li style="color:#fff">Danh sách sản phẩm</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / catg header banner section -->
+<!-- product category -->
+<section id="aa-product-category">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-9 col-md-9 col-sm-8 col-md-push-3">
+                <div class="aa-product-catg-content">
+
+                    <div class="aa-product-catg-body">
+                        <ul class="aa-product-catg">
+                            <!-- start single product item -->
+                            @if (Model.Products.Count==0)
+                            {
+                                <p style="margin-left: 30px">Chưa có sản phẩm!</p>
+                            }
+                            else
+                            {
+                                @foreach (ProductDTO item in Model.Products)
+                                {
+                                    <li>
+                                        <figure>
+                                            <a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
+                                            <a class="aa-add-card-btn" href="#"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
+                                            <figcaption>
+                                                <h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+                                                @if (item.Discount == 0)
+                                                {
+                                                    <span class="aa-product-price">@item.Price VNĐ</span>
+                                                    <span class="aa-product-price"></span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="aa-product-price">@string.Format("{0:N0}", item.Price - (item.Price / 100 * item.Discount)) VNĐ</span>
+                                                    <span class="aa-product-price"><del>@item.Price VNĐ</del></span>
+                                                }
+                                            </figcaption>
+                                        </figure>
+                                        @if (item.Discount != 0)
+                                        {
+                                            <!-- product badge -->
+                                            <span class="aa-badge aa-sale">- @item.Discount%</span>
+                                        }
+                                    </li>
+                                }
+                            }
+                        </ul>
+
+                        <!-- / quick view modal -->
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3 col-sm-4 col-md-pull-9">
+                <aside class="aa-sidebar">
+                    <!-- single sidebar -->
+                    <div class="aa-sidebar-widget">
+                        <h3>Danh mục</h3>
+                        <ul class="aa-catg-nav">
+                            @foreach(CatalogDTO item in Model.Catalogs)
+                            {
+                                <li><a href="/Product?id=@item.Id">@item.Name</a></li>
+                            }
+                        </ul>
+                    </div>
+                    <!-- single sidebar -->
+                    <!-- single sidebar -->
+                    <div class="aa-sidebar-widget">
+                        <h3>Sản phẩm gần đây</h3>
+                        <div class="aa-recently-views">
+                            <ul>
+                                @foreach(ProductDTO item in Model.RecentProducts)
+                                {
+                                    <li>
+                                        <a href="/Product/ProductDetail?id=@item.Id" class="aa-cartbox-img"><img alt="img" src="~/images/products/img-test/@item.ImageLink"></a>
+                                        <div class="aa-cartbox-info">
+                                            <h4><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+                                            @if (item.Discount == 0)
+                                            {
+                                                <p>@item.Price VNĐ</p>
+                                            }
+                                            else
+                                            {
+                                                <p>@string.Format("{0:N0}", item.Price - (item.Price / 100 * item.Discount)) VNĐ VNĐ</p>
+                                            }
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- single sidebar -->
+
+                </aside>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- / product category -->

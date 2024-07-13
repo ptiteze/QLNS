@@ -1,0 +1,198 @@
+﻿@using QLNS.DTO
+
+@{
+    ViewData["Title"] = "Product Detail";
+    // Layout = "~/Views/shared/_layout.cshtml";
+    QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@section Header {
+    @Html.Partial("Header", headerData)
+}
+@section Footer {
+    @Html.Partial("Footer")
+}
+@model QLNS.ViewModels.Product.ProductDetailViewModel
+<!-- catg header banner section -->
+<section id="aa-catg-head-banner">
+    <img src="~/images/banner-product.png" alt="banner sản phẩm">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Chi tiết sản phẩm</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/Product">Sản phẩm</a></li>
+                    <li style="color:#fff">@Model.Product.Name</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / catg header banner section -->
+<!-- product category -->
+<section id="aa-product-details">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-product-details-area">
+                    <div class="aa-product-details-content">
+                        <div class="row">
+                            <!-- Modal view slider -->
+
+                            <div class="col-md-5 col-sm-5 col-xs-12">
+                                <div class="aa-product-view-slider">
+                                    <div id="demo-1" class="simpleLens-gallery-container">
+                                        <div class="simpleLens-container">
+                                            <div class="simpleLens-container">
+                                                <div class="simpleLens-big-image-container"><a data-lens-image="@Url.Content("~/images/products/img-test/" + Model.Product.ImageLink)" class="simpleLens-lens-image"><img src="~/images/products/img-test/@Model.Product.ImageLink" class="simpleLens-big-image"></a></div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modal view content -->
+
+                            <div class="col-md-7 col-sm-7 col-xs-12">
+                                <div class="aa-product-view-content">
+                                    <h3>@Model.Product.Name </h3>
+                                    <div class="aa-price-block">
+                                        @if (@Model.Product.Discount == 0)
+                                        {
+                                            <span class="aa-product-price">@Model.Product.Price VNĐ</span>
+                                            <span class="aa-product-price"></span>
+                                        }
+                                        else
+                                        {
+                                            <span class="aa-product-price">@string.Format("{0:N0}", @Model.Product.Price - (@Model.Product.Price / 100 * @Model.Product.Discount)) VNĐ</span>
+                                            <span class="aa-product-price"><del>@Model.Product.Price VNĐ</del></span>
+                                        }
+                                        <p class="aa-product-avilability">
+                                            Tình trạng: <span>
+                                                <c:choose>
+                                                    @if (@Model.Product.Quantity != 0)
+                                                    {
+                                                        <c:out value="Còn hàng" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <c:out value="Hết hàng" />
+                                                    }
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <p>@Model.Product.Description</p>
+                                    <div class="aa-prod-quantity">
+
+                                        <p class="aa-prod-category">
+                                                <strong>Danh mục:</strong> <a href="#">@Model.NameCatalog</a>
+                                        </p>
+                                    </div>
+                                    <div class="aa-prod-view-bottom">
+                                        <a class="aa-add-to-cart-btn" href="#">Thêm vào giỏ hàng</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="aa-product-details-bottom">
+                        <ul class="nav nav-tabs aa-products-tab" id="myTab2">
+                            <li class="active"><a href="#description" data-toggle="tab" class="">Mô tả</a></li>
+                            <li><a href="#review" data-toggle="tab">Đánh giá</a></li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div class="tab-pane fade in active" id="description">
+                                <p>@Model.Product.Content</p>
+                            </div>
+                            <div class="tab-pane fade " id="review">
+                                <div class="aa-product-review-area">
+                                    <ul class="aa-review-nav">
+                                        @if (Model.Reviews.Count != 0)
+                                        {
+                                            @foreach(Review review in Model.Reviews)
+                                            {
+                                                <li>
+                                                    <div class="media">
+                                                        <div class="media-body">
+                                                            <h4 class="media-heading"><strong>@review.Name</strong> - <span>@review.Created</span></h4>
+                                                            <div class="aa-product-rating">
+                                                                <span class="fa fa-star"></span>
+                                                                <span class="fa fa-star"></span>
+                                                                <span class="fa fa-star"></span>
+                                                                <span class="fa fa-star"></span>
+                                                                <span class="fa fa-star"></span>
+                                                            </div>
+                                                            <p>@review.ContentReview</p>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            }
+                                        }
+                                        </ul>
+                                    <h4>Thêm đánh giá</h4>
+
+                                    <!-- review form -->
+                                    <form action="#" method="post" class="aa-review-form">
+                                        <div class="form-group">
+                                            <label for="name">Tên</label>
+                                            <input type="text" class="form-control" id="name" placeholder="Name" name="name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" id="email" placeholder="example@gmail.com" name="email">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="message">Đánh giá của bạn</label>
+                                            <textarea class="form-control" rows="3" id="content" name="content"></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-default aa-review-submit">Gửi</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Related product -->
+                    <div class="aa-product-related-item">
+                        <h3>SẢN PHẨM LIÊN QUAN</h3>
+                        <ul class="aa-product-catg aa-related-item-slider">
+                            <!-- start single product item -->
+                            @foreach(ProductDTO item in Model.RelatedProducts)
+                            {
+                                <li>
+                                    <figure>
+                                        <a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt=""></a>
+                                        <a class="aa-add-card-btn" href="#"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
+                                        <figcaption>
+                                            <h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+                                            @if (item.Discount == 0)
+                                            {
+                                                <span class="aa-product-price">@item.Price VNĐ</span>
+                                                <span class="aa-product-price"></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="aa-product-price">@string.Format("{0:N0}",item.Price - (item.Price / 100 * item.Discount)) VNĐ</span>
+                                                <span class="aa-product-price"><del>@item.Price VNĐ</del></span>
+                                            }
+                                        </figcaption>
+                                    </figure>
+                                    @if (item.Discount != 0)
+                                    {
+                                        <!-- product badge -->
+                                        <span class="aa-badge aa-sale">- @item.Discount%</span>
+                                    }
+                                </li>
+                            }
+                            <!-- start single product item -->
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / product category -->

@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Error";
+    // Layout = "~/Views/shared/_layout.cshtml";
+    QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@section Header {
+    @Html.Partial("Header", headerData)
+}
+@section Footer {
+    @Html.Partial("Footer")
+}
+<!--  content -->
+<!-- 404 error section -->
+<section id="aa-error">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-error-area">
+                    <h2>404</h2>
+                    <span>Xin lỗi! Không tìm thấy trang</span>
+
+                    <a href="/"> Trở về trang chủ</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / 404 error section -->
+<!--  end content-->

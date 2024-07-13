@@ -1,0 +1,37 @@
+﻿
+@{
+
+}
+@using static QLNS.Models.Slide
+@model QLNS.ViewModels.SlideView.SlideViewModel
+
+<section id="aa-slider">
+    <div class="aa-slider-area">
+        <div id="sequence" class="seq">
+            <div class="seq-screen">
+                <ul class="seq-canvas">
+                    @foreach (Slide item in Model.Slides)
+                    {
+                        <!-- single slide item -->
+                        <li>
+                            <div class="seq-model">
+                                <img data-seq src="~/images/@item.ImageLink" alt="Men slide img" />
+                            </div>
+                            <div class="seq-title">
+                                <span data-seq>@item.DiscountContent</span>
+                                <h2 data-seq>@item.Title</h2>
+                                <p data-seq>@item.ContentSlide</p>
+                                <a data-seq href="${pageContext.request.contextPath}/view/client/product" class="aa-shop-now-btn aa-secondary-btn">Xem Sản Phẩm</a>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <!-- slider navigation btn -->
+            <fieldset class="seq-nav" aria-controls="sequence" aria-label="Slider buttons">
+                <a type="button" class="seq-prev" aria-label="Previous"><span class="fa fa-angle-left"></span></a>
+                <a type="button" class="seq-next" aria-label="Next"><span class="fa fa-angle-right"></span></a>
+            </fieldset>
+        </div>
+    </div>
+</section>

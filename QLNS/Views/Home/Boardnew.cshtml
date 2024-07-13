@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Boardnew";
+    QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@model QLNS.ViewModels.Home.BoardnewViewModel
+@section Header {
+	@Html.Partial("Header", headerData)
+}
+@section Footer {
+	@Html.Partial("Footer")
+}
+<!-- catg header banner section -->
+<section id="aa-catg-head-banner">
+    <img src="~/images/archive-banner.png" alt="banner blog">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Tin tức</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li style="color:#fff">Tin tức</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / catg header banner section -->
+<!-- Blog Archive -->
+<section id="aa-blog-archive">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-blog-archive-area">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <!-- Blog details -->
+                            <div class="aa-blog-content aa-blog-details">
+                                <article class="aa-blog-content-single">
+                                    <h2><a href="#">@Model.ThisBoardnew.Title</a></h2>
+                                    <div class="aa-article-bottom">
+                                        <div class="aa-post-author">
+                                            Đăng bởi <a href="#">@Model.ThisBoardnew.Author</a>
+                                        </div>
+                                        <div class="aa-post-date">@Model.ThisBoardnew.Created</div>
+                                    </div>
+                                    <figure class="aa-blog-img">
+                                        <a href="#"><img src="~/images/news/@Model.ThisBoardnew.ImageLink" alt="fashion img"></a>
+                                    </figure>
+                                    <p>@Model.ThisBoardnew.Content</p>
+
+                                </article>
+                            </div>
+                        </div>
+                        <!-- blog sidebar -->
+                        <div class="col-md-3">
+                            <aside class="aa-blog-sidebar">
+
+                                <div class="aa-sidebar-widget">
+                                    <h3>Bài đăng gần đây</h3>
+                                    <div class="aa-recently-views">
+                                        <ul>
+                                            @foreach (Boardnew item in Model.Boardnews)
+                                            {
+                                                <li>
+                                                    <a class="aa-cartbox-img" href="/Home/Boardnew?id=@item.Id"><img src="~/images/news/@item.ImageLink" alt="img bài viết"></a>
+                                                    <div class="aa-cartbox-info">
+                                                        <h4><a href="/Home/Boardnew?id=@item.Id"><b>@item.Title</b></a></h4>
+                                                        <p>@item.Created</p>
+                                                    </div>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / Blog Archive -->

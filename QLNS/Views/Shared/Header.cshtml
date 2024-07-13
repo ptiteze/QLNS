@@ -1,0 +1,214 @@
+﻿@using QLNS.DTO
+
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    string username = HttpContextAccessor.HttpContext.Session.GetString("username");
+    string length_order = HttpContextAccessor.HttpContext.Session.GetString("length_order");
+    string sumprice = HttpContextAccessor.HttpContext.Session.GetString("sumprice");
+}
+@model QLNS.ViewModels.Header.HeaderViewModel
+<header id="aa-header">
+<div class="aa-header-top">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-header-top-area">
+                    <!-- start header top left -->
+                    <div class="aa-header-top-left">
+                        <div class="cellphone hidden-xs">
+                            <p><span class="fas fa-home"></span>Website bán hàng nông sản</p>
+                        </div>
+                        <!-- start language -->
+                        <div class="aa-language">
+                            <div class="dropdown">
+                                <a class="btn dropdown-toggle" href="#" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <img src="~/img/flag/vietnam.png" alt="english flag">Việt Nam
+                                </a>
+
+                            </div>
+                        </div>
+                        <!-- / language -->
+                        <!-- start cellphone -->
+                        <!--                <div class="cellphone hidden-xs">
+                                          <p><span class="fa fa-phone"></span>00-62-658-658</p>
+                                        </div>-->
+                        <!-- / cellphone -->
+                    </div>
+                    <!-- / header top left -->
+                    <div class="aa-header-top-right">
+                        <ul class="aa-head-top-nav-right">
+
+                                @if (username != null)
+                                {
+                                    <li>
+                                        <a><strong>Chào</strong>@username</a>
+                                    </li>
+                                    <li class="hidden-xs"><a href="">Đăng xuất</a></li>
+                                }
+                                else
+                                {
+                                    <li class="hidden-xs"><a href="">Đăng ký</a></li>
+                                    <li><a href="/Home/Login">Đăng nhập</a></li>
+                                }
+                            <!--  data-toggle="modal" data-target="#login-modal" -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / header top  -->
+
+<div class="aa-header-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-header-bottom-area">
+                    <!-- logo  -->
+                    <div class="aa-logo">
+                        <!-- Text based logo -->
+                        <!--                <a href="index.jsp">
+                                          <span class="fa fa-shopping-cart"></span>
+                                          <p>daily<strong>Shop</strong> <span>Your Shopping Partner</span></p>
+                                        </a>-->
+                        <!-- img based logo -->
+                        <a href="/"><img src="~/images/logo.png" alt="logo img" width="100%"></a>
+                    </div>
+                    <!-- / logo  -->
+                    <!-- Shipping service -->
+                    <div class="aa-shipping-box">
+                        <a class="aa-shipping-boxsmall">
+                            <span class="aa-shipping-boxsmall-icon fas fa-shipping-fast"></span>
+                            <span class="aa-shipping-box-text">
+                                <div class="aa-shipping-title">Miễn phí vận chuyển</div>
+                                <div class="">Khu vực TP HCM</div>
+                            </span>
+
+                        </a>
+                        <a class="aa-shipping-boxsmall">
+                            <span class="aa-shipping-boxsmall-icon fas fa-phone"></span>
+                            <span class="aa-shipping-box-text">
+                                <div class="aa-shipping-title">Hỗ trợ: 0972.968.127</div>
+                                <div class="">Tư vấn 24/7 miễn phí</div>
+                            </span>
+
+                        </a>
+                        <a class="aa-shipping-boxsmall">
+                            <span class="aa-shipping-boxsmall-icon fas fa-shipping-fast"></span>
+                            <span class="aa-shipping-box-text">
+                                <div class="aa-shipping-title">Giao hàng toàn quốc</div>
+                                <div class="">Đảm bảo uy tín, chất lượng</div>
+                            </span>
+
+                        </a>
+                    </div>
+
+
+
+
+                    <!-- cart box -->
+                    <div class="aa-cartbox">
+                        <a class="aa-cart-link" href="">
+                            <span class="fas fa-cart-arrow-down"></span>
+                            <span class="aa-cart-title">GIỎ HÀNG</span>
+                                @if (length_order!=null)
+                                {
+                                    <span class="aa-cart-notify">@length_order</span>
+                                }
+                        </a>
+                        <div class="aa-cartbox-summary">
+                            <ul class="scroll-product">
+                                    @if(Model != null)
+                                    {
+                                        @foreach (ProductDTO item in Model.CartLocal.Keys)
+                                        {
+                                            <li>
+                                                <a class="aa-cartbox-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="img"></a>
+                                                <div class="aa-cartbox-info">
+                                                    <h4><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+                                                    <p>@Model.CartLocal[item] x @string.Format("{0:N0}", item.Price * (1 - (item.Discount / 100))) VNĐ</p>
+                                                </div>
+                                            </li>
+                                        }
+                                    } 
+                            </ul>
+                            <div class="total-detailproduct">
+                                <span class="aa-cartbox-total-title">
+                                    <b>Tổng:</b>
+                                </span>
+                                <span class="aa-cartbox-total-price">
+                                    @sumprice VNĐ
+                                </span>
+                            </div>
+                            <a class="aa-cartbox-checkout aa-primary-btn" href="">Chi tiết</a>
+                            <a class="aa-cartbox-checkout aa-primary-btn" href="">Thanh toán</a>
+                        </div>
+                    </div>
+                    <!-- / cart box -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / menu -->
+<section id="menu">
+    <div class="container">
+        <div class="menu-area">
+            <!-- Navbar -->
+            <div class="navbar navbar-default" role="navigation">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <!-- Left nav -->
+                    <ul class="nav navbar-nav">
+                        <li><a href="/">TRANG CHỦ</a></li>
+                        <li><a href="/Home/Introduce">GIỚI THIỆU</a></li>
+                        <li>
+                            <a href="/Product">SẢN PHẨM</span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="">RAU CỦ QUẢ</a></li>
+                                <li><a href="">CÁC LOẠI HẠT</a></li>
+                                <li><a href="">TINH DẦU</a></li>
+                                <li><a href="">MẬT ONG</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="">TIN TỨC</a></li>
+                        <li><a href="/Home/Policy">CHÍNH SÁCH</a></li>
+                        <li><a href="/Home/Contact">LIÊN HỆ</a></li>
+                        <li class="aa-search">
+                            <!-- search box -->
+                            <a class="aa-search-box">
+                                <form action="${pageContext.request.contextPath}/view/client/product/search" method="GET">
+                                    <input type="text" name="s" id="" placeholder="Tìm kiếm sản phẩm..">
+                                    <button class="serach-box"><span class="fa fa-search"></span></button>
+                                </form>
+                            </a>
+                            <!-- / search box -->
+                        </li>
+                    </ul>
+                </div><!--/.nav-collapse -->
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / menu -->
+<!-- wpf loader Two -->
+<div id="wpf-loader-two">
+    <div class="wpf-loader-two-inner">
+        <span>Loading...</span>
+    </div>
+</div>
+<!-- / wpf loader Two -->
+<!-- SCROLL TOP BUTTON -->
+<a class="scrollToTop" href="#"><i class="fa fa-chevron-up"></i></a>
+<!-- END SCROLL TOP BUTTON -->
+</header>
