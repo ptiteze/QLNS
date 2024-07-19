@@ -51,7 +51,7 @@
                                     <li>
                                         <figure>
                                             <a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
-                                            <a class="aa-add-card-btn" href="#"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
+                                            <a class="aa-add-card-btn" data-productid=@item.Id data-quantity=1 style="cursor: pointer;"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
                                             <figcaption>
                                                 <h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
                                                 @if (item.Discount == 0)
@@ -111,7 +111,7 @@
                                             }
                                             else
                                             {
-                                                <p>@string.Format("{0:N0}", item.Price - (item.Price / 100 * item.Discount)) VNĐ VNĐ</p>
+                                                <p>@string.Format("{0:N0}", item.Price - (item.Price / 100 * item.Discount)) VNĐ</p>
                                             }
                                         </div>
                                     </li>

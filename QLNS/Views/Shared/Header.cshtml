@@ -2,8 +2,9 @@
 
 @inject IHttpContextAccessor HttpContextAccessor
 @{
-    string username = HttpContextAccessor.HttpContext.Session.GetString("username");
-    string length_order = HttpContextAccessor.HttpContext.Session.GetString("length_order");
+    string username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+    string fullname = HttpContextAccessor.HttpContext.Session.GetString("Fullname");
+    string length_order = HttpContextAccessor.HttpContext.Session.GetString("length_order") ?? "0";
     string sumprice = HttpContextAccessor.HttpContext.Session.GetString("sumprice");
 }
 @model QLNS.ViewModels.Header.HeaderViewModel
@@ -41,7 +42,7 @@
                                 @if (username != null)
                                 {
                                     <li>
-                                        <a><strong>Chào</strong>@username</a>
+                                        <a><strong>Chào </strong>@fullname</a>
                                     </li>
                                     <li class="hidden-xs"><a href="">Đăng xuất</a></li>
                                 }
@@ -109,12 +110,12 @@
 
                     <!-- cart box -->
                     <div class="aa-cartbox">
-                        <a class="aa-cart-link" href="">
+                        <a class="aa-cart-link" href="/Cart/Index">
                             <span class="fas fa-cart-arrow-down"></span>
                             <span class="aa-cart-title">GIỎ HÀNG</span>
                                 @if (length_order!=null)
                                 {
-                                    <span class="aa-cart-notify">@length_order</span>
+                                    <span class="aa-cart-notify" id="length_order">@length_order</span>
                                 }
                         </a>
                         <div class="aa-cartbox-summary">
@@ -137,7 +138,7 @@
                                 <span class="aa-cartbox-total-title">
                                     <b>Tổng:</b>
                                 </span>
-                                <span class="aa-cartbox-total-price">
+                                <span class="aa-cartbox-total-price" id="Price_sum">
                                     @sumprice VNĐ
                                 </span>
                             </div>

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using QLNS.Data;
 using QLNS.Helper;
 using QLNS.Interfaces;
@@ -25,11 +25,12 @@ builder.Services.AddSession(options =>
 });
 // List Sesstion
 
-//username
-//length_order
-//sumprice
-//cart_local
-//errorMsg
+//Username ---- Tên đăng nhập
+//length_order ----- số sản phẩm được thêm vào giỏ hàng
+//Fullname ---- Tên người dùng
+//sumprice ---- Tổng giá
+//cart_local ----- list sản phẩm-số lượng trong giỏ hàng
+//errorMsg ---- thông báo lỗi
 
 // End list Sesstion
 // Add services to the container.

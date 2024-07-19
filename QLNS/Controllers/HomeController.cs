@@ -41,6 +41,7 @@ namespace QLNS.Controllers
             };
             ViewBag.SlideData = slideViewModel;
             sumprice = SetHeaderData(products, sumprice);
+
             HomeViewModel Models = new HomeViewModel()
             {
                 Catalogs = catalogs,
@@ -83,6 +84,13 @@ namespace QLNS.Controllers
 			sumprice = SetHeaderData(products, sumprice);
 			return View();
 		}
+        public IActionResult Guide()
+        {
+            List<ProductDTO> products = _product.GetAllProducts();
+            int sumprice = 0;
+            sumprice = SetHeaderData(products, sumprice);
+            return View();
+        }
         public IActionResult Contact()
         {
             List<ProductDTO> products = _product.GetAllProducts();
@@ -104,9 +112,10 @@ namespace QLNS.Controllers
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
             // Header ViewModel
             string cart_local = HttpContext.Session.GetString("cart_local");
+            
             if (!string.IsNullOrEmpty(cart_local))
             {
-
+                Console.WriteLine(cart_local);
                 List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
                 HttpContext.Session.SetString("length_order", list_cartLocal.Count.ToString());
                 foreach (string cart in list_cartLocal)
@@ -115,7 +124,8 @@ namespace QLNS.Controllers
                     int ProductId = int.Parse(parts[0]);
                     int Quantity = int.Parse(parts[1]);
                     ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault();
-                    sumprice += (productInCart.Price * Quantity);
+                    sumprice += ((productInCart.Price - productInCart.Price / 100 * (productInCart.Discount ?? 0)) * Quantity);
+
                     cartLocal.Add(productInCart, Quantity);
                 }
                 var headerViewModel = new HeaderViewModel()
@@ -130,7 +140,6 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("sumprice", sumprice.ToString());
                 ViewBag.CartLocal = null;
             }
-
             return sumprice;
         }
     }
