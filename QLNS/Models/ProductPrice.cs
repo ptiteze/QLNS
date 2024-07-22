@@ -11,7 +11,7 @@ public partial class ProductPrice
 
     public int Price { get; set; }
 
-    public string AdminId { get; set; } = null!;
+    public int AdminId { get; set; } = 0;
 
     public virtual Admin Admin { get; set; } = null!;
 

@@ -6,10 +6,16 @@ namespace QLNS.Repositories
 {
     public class AdminRepository : IAdmin
     {
+        public List<AdminDTO> GetAdmins()
+        {
+           return SingletonAutoMapper.GetInstance().Map<List<AdminDTO>>(
+                SingletonDataBridge.GetInstance().Admins.ToList());
+        }
+
         public InfoLogin Login(string username, string password)
         {
             AdminDTO thislogin = SingletonAutoMapper.GetInstance().Map<AdminDTO>(
-                SingletonDataBridge.GetInstance().Users.Where(u => u.Username == username && u.Password == password).SingleOrDefault());
+                SingletonDataBridge.GetInstance().Admins.Where(u => u.Username == username && u.Password == password).SingleOrDefault());
             if (thislogin != null)
             {
                 var info = new InfoLogin()
@@ -18,6 +24,7 @@ namespace QLNS.Repositories
                     Name = thislogin.Name,
                     Phone = thislogin.Phone,
                     Username = thislogin.Username,
+                    role = "ADMIN",
                 };
                 return info;
             }

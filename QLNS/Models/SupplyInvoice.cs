@@ -9,7 +9,7 @@ public partial class SupplyInvoice
 
     public DateOnly SupplyTime { get; set; }
 
-    public string AdId { get; set; } = null!;
+    public int AdId { get; set; } = 0;
 
     public int ProducerId { get; set; }
 

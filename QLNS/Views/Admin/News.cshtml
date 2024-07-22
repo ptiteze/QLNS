@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+	Layout = "_AdminLayout";
+	ViewData["Title"] = "News View";
+}
+@model QLNS.ViewModels.Admin.NewsViewModel
+@section AdminHeader {
+	@Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+	@Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <!--End Row-->
+
+
+        <div class="row">
+            <div class="col-lg-12">
+                <button class="add-catalog"><a href="${pageContext.request.contextPath}/admin/new/add">Thêm tin tức</a></button>
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách tin tức</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tiêu đề</th>
+                                        <th scope="col">Hình ảnh</th>
+                                        <th scope="col">Người đăng</th>
+                                        <th scope="col">Ngày đăng</th>
+                                        <th scope="col">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (Boardnew item in Model.Boardnews)
+                                    {
+                                        <tr>
+                                            <td scope="row">@item.Id</td>
+                                            <td>@item.Title</td>
+                                            <td><img style="width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/news/@item.ImageLink"></td>
+                                            <td>@item.Author</td>
+                                            <td>@item.Created</td>
+                                            <td>
+                                                <button class="btn btn-danger"><a href="${pageContext.request.contextPath}/admin/new/delete?id=${boardnew.id}">Xóa</a></button>
+
+                                                <button class="btn btn-success"><a href="${pageContext.request.contextPath}/admin/new/edit?id=${boardnew.id}">Sửa</a></button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

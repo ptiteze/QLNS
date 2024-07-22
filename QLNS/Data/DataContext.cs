@@ -60,7 +60,6 @@ public partial class DataContext : DbContext
             entity.HasIndex(e => e.Username, "UQ__admin__F3DBC5728070400F").IsUnique();
 
             entity.Property(e => e.Id)
-                .HasMaxLength(50)
                 .HasColumnName("id");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
@@ -188,7 +187,7 @@ public partial class DataContext : DbContext
                 .HasColumnName("userName");
 
             entity.HasOne(d => d.UserNameNavigation).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.UserName)
+                .HasForeignKey(d => d.AdminId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_order_admin");
 
@@ -294,7 +293,6 @@ public partial class DataContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.AppliedDate).HasColumnName("applied__date");
             entity.Property(e => e.AdminId)
-                .HasMaxLength(50)
                 .HasColumnName("admin_id");
             entity.Property(e => e.Price).HasColumnName("price");
 
@@ -353,7 +351,6 @@ public partial class DataContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.AdId)
-                .HasMaxLength(50)
                 .HasColumnName("ad_id");
             entity.Property(e => e.ProducerId).HasColumnName("producer_id");
             entity.Property(e => e.SupplyTime).HasColumnName("supply_time");

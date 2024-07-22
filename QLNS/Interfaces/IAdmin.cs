@@ -5,6 +5,6 @@ namespace QLNS.Interfaces
     public interface IAdmin
     {
         InfoLogin Login(string username, string password);
-
+        List<AdminDTO> GetAdmins();
     }
 }

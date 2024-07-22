@@ -24,6 +24,7 @@ namespace QLNS.Repositories
                     Name = thislogin.Nameuser,
                     Phone = thislogin.Phone,
                     Username = thislogin.Username,
+                    role = "KHACH HANG",
                 };
                 return info;
             }

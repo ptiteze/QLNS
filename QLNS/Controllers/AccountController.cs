@@ -41,9 +41,10 @@ namespace QLNS.Controllers
                 {
                     HttpContext.Session.SetString("Username", infoLogin.Username);
                     HttpContext.Session.SetString("Fullname", infoLogin.Name);
-                    
-                    //HttpContext.Session.SetString("Cartcount", CartCount.ToString());
-                }
+                    HttpContext.Session.SetString("Role", infoLogin.role);
+                    return RedirectToAction("Index", "Admin");
+					//HttpContext.Session.SetString("Cartcount", CartCount.ToString());
+				}
             }
             else
             {

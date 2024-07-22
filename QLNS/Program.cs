@@ -31,6 +31,7 @@ builder.Services.AddSession(options =>
 //sumprice ---- Tổng giá
 //cart_local ----- list sản phẩm-số lượng trong giỏ hàng
 //errorMsg ---- thông báo lỗi
+//Role
 
 // End list Sesstion
 // Add services to the container.

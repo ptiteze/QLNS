@@ -2,7 +2,7 @@
 {
     public class AdminDTO
     {
-        public string Id { get; set; } = null!;
+        public int Id { get; set; } = 0;
 
         public string Username { get; set; } = null!;
 
