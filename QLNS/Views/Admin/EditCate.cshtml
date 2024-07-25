@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Edit Catalog View";
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Admin.EditCatalogViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+	<div class="container-fluid">
+
+		<div class="row mt-3">
+			<div class="col-lg-8">
+				<div class="card">
+					<div class="card-body">
+						<div class="card-title">Sửa chuyên mục</div>
+						<p style="color:red; display:block">
+							@errorMsg
+						</p>
+						<hr>
+
+						<form asp-action="EditCateResult" asp-controller="Admin" method="post">
+							<div class="form-group">
+								<label for="input-1">ID</label>
+								<input type="text" class="form-control" readonly id="input-1" placeholder="ID" name="id" value="@Model.Catalog.Id">
+							</div>
+							<div class="form-group">
+								<label for="input-1">Tên chuyên mục</label>
+								<input type="text" class="form-control" id="input-1" placeholder="Tên chuyên mục" name="name" value="@Model.Catalog.Name">
+							</div>
+							@* <div class="form-group">
+								<label for="input-2">Chuyên mục cha</label>
+								<div>
+									<select class="form-control valid" id="input-6" name="parent-id" required aria-invalid="false">
+										<option value="0">NULL</option>
+										<option value="1">Sản phẩm mới</option>
+									</select>
+								</div>
+							</div> *@
+							<div class="form-footer">
+								<button class="btn btn-danger"><a href="/Admin/EditCate?id=@Model.Catalog.Id">Hủy</a></button>
+
+								<button type="submit" class="btn btn-success">Cập nhật</button>
+							</div>
+
+						</form>
+
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="overlay toggle-menu"></div>
+	</div>
+</div>

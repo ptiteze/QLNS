@@ -39,6 +39,12 @@ namespace QLNS.Controllers
                 }
                 else
                 {
+                    if (infoLogin.Status==0)
+                    {
+                        HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
+                        return RedirectToAction("Login", "Home");
+                    }
+                    HttpContext.Session.Remove("errorMsg");
                     HttpContext.Session.SetString("Username", infoLogin.Username);
                     HttpContext.Session.SetString("Fullname", infoLogin.Name);
                     HttpContext.Session.SetString("Role", infoLogin.role);
@@ -48,6 +54,12 @@ namespace QLNS.Controllers
             }
             else
             {
+                if (infoLogin.Status == 0)
+                {
+                    HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
+                    return RedirectToAction("Login", "Home");
+                }
+                HttpContext.Session.Remove("errorMsg");
                 HttpContext.Session.SetString("Username", infoLogin.Username);
                 HttpContext.Session.SetString("Fullname", infoLogin.Name);
                 string cart_local = HttpContext.Session.GetString("cart_local");

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using QLNS.DTO;
 using QLNS.Models;
+using QLNS.ModelsParameter;
 
 namespace QLNS.Helper
 {
@@ -9,6 +10,8 @@ namespace QLNS.Helper
         public MappingProfiles() {
             // Admin
             CreateMap<Admin, AdminDTO>();
+            CreateMap<AddAdmin, Admin>();
+            CreateMap<UpdateAdmin, Admin>();
             // Cart
             CreateMap<Cart, CartDTO>();
             // Catalog

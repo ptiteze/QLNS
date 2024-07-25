@@ -10,6 +10,7 @@ public partial class User
     public string Password { get; set; } = null!;
 
     public string Nameuser { get; set; } = null!;
+    public int? Status { get; set; }
 
     public string Phone { get; set; } = null!;
 

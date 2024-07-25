@@ -5,13 +5,15 @@ namespace QLNS.Models;
 
 public partial class Admin
 {
-    public int Id { get; set; } = 0;
+    public int? Id { get; set; }
 
     public string Username { get; set; } = null!;
 
     public string Password { get; set; } = null!;
 
     public string Name { get; set; } = null!;
+
+    public int ? Status { get; set; }
 
     public string Phone { get; set; } = null!;
 

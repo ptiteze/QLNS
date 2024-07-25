@@ -1,5 +1,6 @@
 ﻿using QLNS.DTO;
 using QLNS.Interfaces;
+using QLNS.Models;
 using QLNS.Singleton;
 
 namespace QLNS.Repositories
@@ -10,6 +11,23 @@ namespace QLNS.Repositories
         {
             return SingletonAutoMapper.GetInstance().Map<List<UserDTO>>(
                 SingletonDataBridge.GetInstance().Users.ToList());
+        }
+
+        public bool LockUser(string username)
+        {
+            try
+            {
+                User user = SingletonDataBridge.GetInstance().Users.Find(username);
+                user.Status = 0;
+                SingletonDataBridge.GetInstance().Users.Update(user);
+                SingletonDataBridge.GetInstance().SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
 
         public InfoLogin Login(string username, string password)
@@ -29,6 +47,22 @@ namespace QLNS.Repositories
                 return info;
             }
             return null;
+        }
+
+        public bool UnLockUser(string username)
+        {
+            try
+            {
+                User user = SingletonDataBridge.GetInstance().Users.Find(username);
+                user.Status = 1;
+                SingletonDataBridge.GetInstance().Users.Update(user);
+                SingletonDataBridge.GetInstance().SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

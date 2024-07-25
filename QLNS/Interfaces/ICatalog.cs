@@ -6,5 +6,8 @@ namespace QLNS.Interfaces
     {
         CatalogDTO GetCatalogById(int id);
         List<CatalogDTO> GetAllCatalog();
+        bool AddCatalog(string name);
+        bool UpdateCatalog(int id, string name);
+        bool DeleteCatalog(int id);
     }
 }

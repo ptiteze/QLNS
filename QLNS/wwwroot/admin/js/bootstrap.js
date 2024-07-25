@@ -3,6 +3,23 @@
   * Copyright 2011-2019 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
+
+function confirmDelete(id) {
+    Swal.fire({
+        title: 'B?n có ch?c ch?n mu?n xóa?',
+        text: "Hành ??ng này không th? hoàn tác!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xác nh?n',
+        cancelButtonText: 'H?y'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = '/Admin/DeleteAdmin?id=' + id;
+        }
+    });
+}
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('jquery'), require('popper.js')) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :

@@ -7,5 +7,7 @@ namespace QLNS.Interfaces
         InfoLogin Login(string username, string password);
 
         List<UserDTO> GetUsers();
+        bool LockUser(string username);
+        bool UnLockUser(string username);
     }
 }

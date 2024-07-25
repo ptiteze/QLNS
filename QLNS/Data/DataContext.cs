@@ -67,6 +67,8 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(50)
                 .HasColumnName("password");
+            entity.Property(e => e.Status)
+                .HasColumnName("status");
             entity.Property(e => e.Username)
                 .HasMaxLength(50)
                 .HasColumnName("username");
@@ -418,6 +420,8 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .HasColumnName("email");
+            entity.Property(e => e.Status)
+                .HasColumnName("status");
             entity.Property(e => e.Nameuser)
                 .HasMaxLength(50)
                 .HasColumnName("nameuser");
