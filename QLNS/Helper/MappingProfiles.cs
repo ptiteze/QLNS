@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using QLNS.DTO;
 using QLNS.Models;
-using QLNS.ModelsParameter;
+using QLNS.ModelsParameter.Admin;
 
 namespace QLNS.Helper
 {

@@ -2,21 +2,22 @@
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
+using QLNS.ModelsParameter.Cart;
 using QLNS.Singleton;
 
 namespace QLNS.Repositories
 {
     public class CartRepository : ICart
     {
-        public bool AddProduct(string username, int productId, int quantity)
+        public bool AddProduct(RequestAddCart request)
         {
             try {
-                Product product = SingletonDataBridge.GetInstance().Products.Find(productId);
+                Product product = SingletonDataBridge.GetInstance().Products.Find(request.productId);
                 Cart cart = new Cart()
                 {
-                    ProductId = productId,
-                    Quantity = quantity,
-                    UserName = username,
+                    ProductId = request.productId,
+                    Quantity = request.quantity,
+                    UserName = request.username,
                     Product = product
                 };
                 SingletonDataBridge.GetInstance().Carts.Add(cart);
@@ -30,9 +31,9 @@ namespace QLNS.Repositories
             }
         }
 
-        public bool CheckExistCart(string username, int productId)
+        public bool CheckExistCart(RequestCheckCart request)
         {
-            var cartCheck = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserName == username && c.ProductId == productId).FirstOrDefault();
+            var cartCheck = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserName == request.username && c.ProductId == request.productId).FirstOrDefault();
             if (cartCheck != null) return true;
             return false;
         }

@@ -1,13 +1,13 @@
 ﻿using QLNS.DTO;
-using QLNS.ModelsParameter;
+using QLNS.ModelsParameter.Admin;
 
 namespace QLNS.Interfaces
 {
     public interface IAdmin
     {
-        InfoLogin Login(string username, string password);
+        InfoLogin Login(RequestLogin request);
         List<AdminDTO> GetAdmins();
-        bool CheckExits(string username, string email, string phone);
+        bool CheckExits(RequestCheckAdmin request);
         bool CreateAdmin(AddAdmin request);
         bool UpdateAdmin(UpdateAdmin request);
         bool DeleteAdmin(int id);

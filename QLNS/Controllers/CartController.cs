@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QLNS.DTO;
 using QLNS.Interfaces;
-using QLNS.ModelsParameter;
+using QLNS.ModelsParameter.Cart;
 using QLNS.ViewModels.Cart;
 using QLNS.ViewModels.Header;
 using System;
@@ -80,7 +80,12 @@ namespace QLNS.Controllers
             {
 				try
 				{
-					if (_cart.CheckExistCart(UserName, productid))
+                    RequestCheckCart requestCheck = new RequestCheckCart()
+                    {
+                        username = UserName,
+                        productId = productid,
+                    };
+					if (_cart.CheckExistCart(requestCheck))
 					{
 						length_order = CountOccurrences(cart_local, "|");
                         return Json(new
@@ -91,7 +96,13 @@ namespace QLNS.Controllers
                     }
 					else
 					{
-						_cart.AddProduct(UserName, productid, quantity);
+                        RequestAddCart requestAdd = new RequestAddCart()
+                        {
+                            username = UserName,
+                            productId = productid,
+                            quantity = quantity,
+                        };
+						_cart.AddProduct(requestAdd);
 						if (cart_local == null)
 						{
 							cart_local = productid.ToString() + ":" + quantity.ToString();

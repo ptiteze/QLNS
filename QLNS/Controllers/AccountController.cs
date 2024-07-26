@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using QLNS.DTO;
 using QLNS.Interfaces;
+using QLNS.ModelsParameter.Admin;
+using QLNS.ModelsParameter.Cart;
 
 namespace QLNS.Controllers
 {
@@ -23,15 +25,20 @@ namespace QLNS.Controllers
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
+            RequestLogin request = new RequestLogin()
+            {
+                username = username,
+                password = password,
+            };
             if (username == null || password == null)
             {
                 HttpContext.Session.SetString("errorMsg", "Sai cú pháp");
                 return RedirectToAction("Login", "Home");
             }
-            var infoLogin = _user.Login(username, password);
+            var infoLogin = _user.Login(request);
             if (infoLogin == null)
             {
-                infoLogin = _admin.Login(username, password);   
+                infoLogin = _admin.Login(request);   
                 if(infoLogin == null)
                 {
                     HttpContext.Session.SetString("errorMsg", "Tài khoản hoặc mật khẩu của bạn không đúng");
@@ -62,6 +69,7 @@ namespace QLNS.Controllers
                 HttpContext.Session.Remove("errorMsg");
                 HttpContext.Session.SetString("Username", infoLogin.Username);
                 HttpContext.Session.SetString("Fullname", infoLogin.Name);
+                
                 string cart_local = HttpContext.Session.GetString("cart_local");
                 if (cart_local != null)
                 {
@@ -71,8 +79,19 @@ namespace QLNS.Controllers
                         string[] parts = cart.Split(':');
                         int ProductId = int.Parse(parts[0]);
                         int Quantity = int.Parse(parts[1]);
-                        if (!_cart.CheckExistCart(infoLogin.Username, ProductId))
-                            _cart.AddProduct(infoLogin.Username, ProductId, Quantity);
+                        RequestCheckCart requestCheck = new RequestCheckCart() {
+                            username = infoLogin.Username,  
+                            productId = ProductId,
+                        };
+
+						RequestAddCart requestAddCart = new RequestAddCart()
+				        {
+				        	productId = ProductId,
+                            username = infoLogin.Username,
+                            quantity = Quantity,
+						};
+						if (!_cart.CheckExistCart(requestCheck))
+                            _cart.AddProduct(requestAddCart);
                     }
                 }
                 List<CartDTO> listCart = _cart.GetCartsByUsername(username);

@@ -1,6 +1,7 @@
 ﻿using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
+using QLNS.ModelsParameter.Admin;
 using QLNS.Singleton;
 
 namespace QLNS.Repositories
@@ -30,10 +31,10 @@ namespace QLNS.Repositories
             
         }
 
-        public InfoLogin Login(string username, string password)
+        public InfoLogin Login(RequestLogin request)
         {
             UserDTO thislogin = SingletonAutoMapper.GetInstance().Map<UserDTO>(
-                SingletonDataBridge.GetInstance().Users.Where(u => u.Username== username && u.Password== password).SingleOrDefault());
+                SingletonDataBridge.GetInstance().Users.Where(u => u.Username== request.username && u.Password== request.password).SingleOrDefault());
             if(thislogin != null)
             {
                 var info = new InfoLogin()

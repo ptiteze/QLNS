@@ -1,16 +1,16 @@
 ﻿using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
-using QLNS.ModelsParameter;
+using QLNS.ModelsParameter.Admin;
 using QLNS.Singleton;
 
 namespace QLNS.Repositories
 {
     public class AdminRepository : IAdmin
     {
-        public bool CheckExits(string username, string email, string phone)
+        public bool CheckExits(RequestCheckAdmin request)
         {
-            Admin admin = SingletonDataBridge.GetInstance().Admins.Where(a=>a.Username== username||a.Email==email||a.Phone==phone).FirstOrDefault();
+            Admin admin = SingletonDataBridge.GetInstance().Admins.Where(a=>a.Username== request.username || a.Email== request.email || a.Phone== request.phone).FirstOrDefault();
             if (admin != null) return true;
             return false;
         }
@@ -70,10 +70,10 @@ namespace QLNS.Repositories
                 SingletonDataBridge.GetInstance().Admins.ToList());
         }
 
-        public InfoLogin Login(string username, string password)
+        public InfoLogin Login(RequestLogin request)
         {
             AdminDTO thislogin = SingletonAutoMapper.GetInstance().Map<AdminDTO>(
-                SingletonDataBridge.GetInstance().Admins.Where(u => u.Username == username && u.Password == password).SingleOrDefault());
+                SingletonDataBridge.GetInstance().Admins.Where(u => u.Username == request.username && u.Password == request.password).SingleOrDefault());
             if (thislogin != null)
             {
                 var info = new InfoLogin()

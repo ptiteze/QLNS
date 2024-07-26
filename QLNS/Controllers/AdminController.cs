@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
-using QLNS.ModelsParameter;
+using QLNS.ModelsParameter.Admin;
 using QLNS.ViewModels.Admin;
 using System.Text.RegularExpressions;
 
@@ -98,6 +98,12 @@ namespace QLNS.Controllers
 		public IActionResult AddAdminResult(string? admin_username, string? admin_password, string? admin_name,
 			string? admin_email, string? admin_phone)
 		{
+			RequestCheckAdmin requestCheck = new RequestCheckAdmin() 
+			{
+				username = admin_username,
+				email = admin_email,
+				phone = admin_phone,
+			};
 			if(admin_username.IsNullOrEmpty()|| admin_password.IsNullOrEmpty()|| admin_name.IsNullOrEmpty())
 			{
                 HttpContext.Session.SetString("errorMsg", "Không đươc bỏ trống ô");
@@ -113,7 +119,7 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Email sai cú pháp");
                 return RedirectToAction("AddAdmin", "Admin");
             }
-			if(_admin.CheckExits(admin_username, admin_email, admin_phone))
+			if(_admin.CheckExits(requestCheck))
 			{
                 HttpContext.Session.SetString("errorMsg", "Các thông tin về username hoặc email, số điện thoại bị trùng");
                 return RedirectToAction("AddAdmin", "Admin");
