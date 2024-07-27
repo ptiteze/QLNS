@@ -21,16 +21,16 @@ namespace QLNS.Controllers
         }
         [Route("Product/")]
         [Route("Product/Index")]
-        public IActionResult Index(int? id)
+        public async Task<IActionResult> Index(int? id)
         {
-            List<CatalogDTO> catalogs = _catalog.GetAllCatalog();
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+            List<ProductDTO> products = await _product.GetAllProducts();
             var resentProducts = products.OrderByDescending(p => p.Created).Take(4).ToList();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             if (id.HasValue)
             {
-                List<ProductDTO> productsByCatalog = _product.GetProductsByCatalogId(id.Value);
+                List<ProductDTO> productsByCatalog = await _product.GetProductsByCatalogId(id.Value);
                 if (productsByCatalog.IsNullOrEmpty())
                 {
                     return Redirect("/Home/Error");
@@ -56,11 +56,11 @@ namespace QLNS.Controllers
             }
             
         }
-        public IActionResult ProductDetail(int id)
+        public async Task<IActionResult> ProductDetail(int id)
         {
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
-            List<Review> reviews = _review.GetReviewsByProductId(id);
+            List<Review> reviews = await _review.GetReviewsByProductId(id);
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             ProductDTO product = products.Find(p => p.Id == id);
@@ -69,7 +69,8 @@ namespace QLNS.Controllers
                 return Redirect("/Home/Error");
             }
             var relatedProducts = products.Where(p => p.CatalogId == product.CatalogId).ToList();
-            string nameCatalog = _catalog.GetCatalogById(product.CatalogId).Name;
+            CatalogDTO cata = await _catalog.GetCatalogById(product.CatalogId);
+			string nameCatalog = cata.Name;
 
             ProductDetailViewModel Model = new ProductDetailViewModel()
             {

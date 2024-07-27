@@ -6,6 +6,7 @@ using QLNS.Models;
 using QLNS.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7156") });
 builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<IBoardnew, BoardnewRepository>()
 				.AddTransient<IReview, ReviewRepository>()

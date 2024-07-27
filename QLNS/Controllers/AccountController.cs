@@ -18,12 +18,12 @@ namespace QLNS.Controllers
             _user = user;
             _cart = cart;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             return View();
         }
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
             RequestLogin request = new RequestLogin()
             {
@@ -35,10 +35,10 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Sai cú pháp");
                 return RedirectToAction("Login", "Home");
             }
-            var infoLogin = _user.Login(request);
+            var infoLogin = await _user.Login(request);
             if (infoLogin == null)
             {
-                infoLogin = _admin.Login(request);   
+                infoLogin = await _admin.Login(request);   
                 if(infoLogin == null)
                 {
                     HttpContext.Session.SetString("errorMsg", "Tài khoản hoặc mật khẩu của bạn không đúng");
@@ -90,11 +90,11 @@ namespace QLNS.Controllers
                             username = infoLogin.Username,
                             quantity = Quantity,
 						};
-						if (!_cart.CheckExistCart(requestCheck))
+						if (!await _cart.CheckExistCart(requestCheck))
                             _cart.AddProduct(requestAddCart);
                     }
                 }
-                List<CartDTO> listCart = _cart.GetCartsByUsername(username);
+                List<CartDTO> listCart = await _cart.GetCartsByUsername(username);
                 string temp_cart = "";
                 foreach(CartDTO cart in listCart)
                 {

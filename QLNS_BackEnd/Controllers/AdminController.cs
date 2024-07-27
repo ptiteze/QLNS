@@ -64,7 +64,7 @@ namespace QLNS_BackEnd.Controllers
 			var res = _admin.DeleteAdmin(id);
 			return Ok(res);
 		}
-		[HttpPost("get/{id}")]
+		[HttpGet("get/{id}")]
 		public IActionResult GetAdmin(int  id)
 		{
 			var res = _admin.GetAdmin(id);

@@ -4,8 +4,8 @@ namespace QLNS.Interfaces
 {
     public interface IProduct
     {
-        ProductDTO GetProductById(int id);
-        List<ProductDTO> GetAllProducts();
-        List<ProductDTO> GetProductsByCatalogId(int id);
+        Task<ProductDTO> GetProductById(int id);
+		Task<List<ProductDTO>> GetAllProducts();
+        Task<List<ProductDTO>> GetProductsByCatalogId(int id);
     }
 }

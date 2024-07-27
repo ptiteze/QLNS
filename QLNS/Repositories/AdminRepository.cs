@@ -1,128 +1,136 @@
-﻿using QLNS.DTO;
+﻿using Azure.Core;
+using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
-using QLNS.Singleton;
+using System.Net.Http.Json;
 
 namespace QLNS.Repositories
 {
-    public class AdminRepository : IAdmin
-    {
-        public bool CheckExits(RequestCheckAdmin request)
-        {
-            Admin admin = SingletonDataBridge.GetInstance().Admins.Where(a=>a.Username== request.username || a.Email== request.email || a.Phone== request.phone).FirstOrDefault();
-            if (admin != null) return true;
-            return false;
-        }
+	public class AdminRepository : IAdmin
+	{
+		private readonly HttpClient _httpClient;
 
-        public bool CreateAdmin(AddAdmin request)
-        {
-            try
-            {
-                Admin admin = SingletonAutoMapper.GetInstance().Map<Admin>(request);
-                SingletonDataBridge.GetInstance().Admins.Add(admin);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            
-        }
+		private const string BaseUrl = "/api/Admin";
+		public AdminRepository(HttpClient httpClient)
+		{
+			_httpClient = httpClient;
+		}
+		public async Task<bool> CheckExits(RequestCheckAdmin request)
+		{
+			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + "/check", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        public bool DeleteAdmin(int id)
-        {
-            try
-            {
-                Admin admin = SingletonDataBridge.GetInstance().Admins.Find(id);
-                Order order = SingletonDataBridge.GetInstance().Orders.Where(e => e.AdminId == id).FirstOrDefault();
-                ProductPrice pp = SingletonDataBridge.GetInstance().ProductPrices.Where(e => e.AdminId == id).FirstOrDefault();
-                SupplyInvoice si = SingletonDataBridge.GetInstance().SupplyInvoices.Where(e => e.AdId == id).FirstOrDefault();
-                if (order == null && pp == null && si == null)
-                {
-                    SingletonDataBridge.GetInstance().Admins.Remove(admin);
-                    SingletonDataBridge.GetInstance().SaveChanges();
-                    return true;
-                }
-                else
-                {
-                    admin.Status = 0;
-                    SingletonDataBridge.GetInstance().Admins.Update(admin);
-                    SingletonDataBridge.GetInstance().SaveChanges();
-                    return true;
-                }
-            }
-            catch {
-                return false;
-            }
-            
-        }
+		public async Task<bool> CreateAdmin(AddAdmin request)
+		{
+			HttpResponseMessage response = await _httpClient.PutAsJsonAsync(BaseUrl + "/create", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
 
-        public AdminDTO GetAdmin(int id)
-        {
-            return SingletonAutoMapper.GetInstance().Map<AdminDTO>(SingletonDataBridge.GetInstance().Admins.Find(id));
-        }
+		}
 
-        public List<AdminDTO> GetAdmins()
-        {
-           return SingletonAutoMapper.GetInstance().Map<List<AdminDTO>>(
-                SingletonDataBridge.GetInstance().Admins.ToList());
-        }
+		public async Task<bool> DeleteAdmin(int id)
+		{
 
-        public InfoLogin Login(RequestLogin request)
-        {
-            AdminDTO thislogin = SingletonAutoMapper.GetInstance().Map<AdminDTO>(
-                SingletonDataBridge.GetInstance().Admins.Where(u => u.Username == request.username && u.Password == request.password).SingleOrDefault());
-            if (thislogin != null)
-            {
-                var info = new InfoLogin()
-                {
-                    Email = thislogin.Email,
-                    Name = thislogin.Name,
-                    Status = thislogin.Status,
-                    Phone = thislogin.Phone,
-                    Username = thislogin.Username,
-                    role = "ADMIN",
-                };
-                return info;
-            }
-            return null;
-        }
+			HttpResponseMessage response = await _httpClient.DeleteAsync(BaseUrl + $"/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
-        public bool UnLockAdmin(int id)
-        {
-            try
-            {
-                Admin admin = SingletonDataBridge.GetInstance().Admins.Find(id);
-                admin.Status = 1;
-                SingletonDataBridge.GetInstance().Admins.Update(admin);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+		public async Task<AdminDTO> GetAdmin(int id)
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/get/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<AdminDTO>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        public bool UpdateAdmin(UpdateAdmin request)
-        {
-            try
-            {
-                Admin admin = SingletonDataBridge.GetInstance().Admins.Find(request.Id);
-                admin.Name = request.Name;
-                admin.Password = request.Password;
-                admin.Phone = request.Phone;
-                admin.Email = request.Email;
-                SingletonDataBridge.GetInstance().Admins.Update(admin);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-    }
+		public async Task<List<AdminDTO>?> GetAdmins()
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<AdminDTO>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+		public async Task<InfoLogin> Login(RequestLogin request)
+		{
+
+			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + "/login", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<InfoLogin>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+
+		}
+
+		public async Task<bool> UnLockAdmin(int id)
+		{
+
+			HttpResponseMessage response = await _httpClient.PutAsync(BaseUrl + $"/unlock/{id}", null);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public async Task<bool> UpdateAdmin(UpdateAdmin request)
+		{
+			HttpResponseMessage response = await _httpClient.PutAsJsonAsync(BaseUrl + "/update", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }

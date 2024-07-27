@@ -1,15 +1,29 @@
 ﻿using QLNS.Interfaces;
 using QLNS.Models;
-using QLNS.Singleton;
 
 namespace QLNS.Repositories
 {
     public class SlideRepository : ISlide
     {
-        public List<Slide> GetAllSlides()
+		private readonly HttpClient _httpClient;
+
+		private const string BaseUrl = "/api/Slide";
+        public SlideRepository(HttpClient httpClient)
         {
-            return SingletonAutoMapper.GetInstance().Map<List<Slide>>(
-                SingletonDataBridge.GetInstance().Slides.ToList());
+            _httpClient = httpClient;
         }
+		public async Task<List<Slide>?> GetAllSlides()
+        {
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<Slide>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
     }
 }

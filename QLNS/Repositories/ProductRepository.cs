@@ -1,28 +1,59 @@
 ﻿using QLNS.Data;
 using QLNS.DTO;
 using QLNS.Interfaces;
-using QLNS.Singleton;
+
 
 namespace QLNS.Repositories
 {
     public class ProductRepository : IProduct
     {
-        public List<ProductDTO> GetAllProducts()
-        {
-            return SingletonAutoMapper.GetInstance().Map<List<ProductDTO>>(
-                SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1).ToList());
-        }
+		private readonly HttpClient _httpClient;
 
-        public ProductDTO GetProductById(int id)
+		private const string BaseUrl = "/api/Product";
+        public ProductRepository(HttpClient httpClient)
         {
-            return SingletonAutoMapper.GetInstance().Map<ProductDTO>(
-                SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.Id == id).FirstOrDefault());
+            _httpClient = httpClient;
         }
+		public async Task<List<ProductDTO>?> GetAllProducts()
+        {
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<ProductDTO>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        public List<ProductDTO> GetProductsByCatalogId(int id)
+        public async Task<ProductDTO?> GetProductById(int id)
         {
-            return SingletonAutoMapper.GetInstance().Map<List<ProductDTO>>(
-                SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.CatalogId == id).ToList());
-        }
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<ProductDTO>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+        public async Task<List<ProductDTO>?> GetProductsByCatalogId(int id)
+        {
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/catalog/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<ProductDTO>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
     }
 }

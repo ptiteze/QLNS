@@ -27,12 +27,12 @@ namespace QLNS.Controllers
 			_boardnew = boardnew;
 		}
 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
         {
-            List<CatalogDTO> catalogs = _icatalog.GetAllCatalog();
-            List<ProductDTO> products = _product.GetAllProducts();
-            List<Boardnew> boardnews = _boardnew.GetBoardnews();
-            List<Slide> slides = _slide.GetAllSlides();
+            List<CatalogDTO> catalogs = await _icatalog.GetAllCatalog();
+            List<ProductDTO> products = await _product.GetAllProducts();
+            List<Boardnew> boardnews = await _boardnew.GetBoardnews();
+            List<Slide> slides = await _slide.GetAllSlides();
             int sumprice = 0;
             // slide ViewModel
             var slideViewModel = new SlideViewModel()
@@ -50,58 +50,58 @@ namespace QLNS.Controllers
             };
             return View(Models);
         }
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             return View();
         }
-        public IActionResult Boardnew(int id)
+        public async Task<IActionResult> Boardnew(int id)
 		{
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
-            List<Boardnew> boardnews = _boardnew.GetBoardnews();
-            Boardnew boardnew = _boardnew.GetBoardnewById(id);
+            List<Boardnew> boardnews = await _boardnew.GetBoardnews();
+            Boardnew boardnew = await _boardnew.GetBoardnewById(id);
             BoardnewViewModel Model = new BoardnewViewModel(){
                 ThisBoardnew = boardnew,
                 Boardnews = boardnews
             };
 			return View(Model);
 		}
-        public IActionResult Introduce()
+        public async Task<IActionResult> Introduce()
         {
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             return View();
         }
-        public IActionResult Policy()
+        public async Task<IActionResult> Policy()
         {
-			List<ProductDTO> products = _product.GetAllProducts();
+			List<ProductDTO> products = await _product.GetAllProducts();
 			int sumprice = 0;
 			sumprice = SetHeaderData(products, sumprice);
 			return View();
 		}
-        public IActionResult Guide()
+        public async Task<IActionResult> Guide()
         {
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             return View();
         }
-        public IActionResult Contact()
+        public async Task<IActionResult> Contact()
         {
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             return View();
         }
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error()
+		public async Task<IActionResult> Error()
 		{
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

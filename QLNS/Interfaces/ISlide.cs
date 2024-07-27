@@ -4,6 +4,6 @@ namespace QLNS.Interfaces
 {
     public interface ISlide
     {
-        List<Slide> GetAllSlides();
+        Task<List<Slide>> GetAllSlides();
     }
 }

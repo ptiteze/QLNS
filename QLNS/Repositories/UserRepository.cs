@@ -2,68 +2,73 @@
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
-using QLNS.Singleton;
 
 namespace QLNS.Repositories
 {
     public class UserRepository : IUser
     {
-        public List<UserDTO> GetUsers()
-        {
-            return SingletonAutoMapper.GetInstance().Map<List<UserDTO>>(
-                SingletonDataBridge.GetInstance().Users.ToList());
+		private readonly HttpClient _httpClient;
+
+		private const string BaseUrl = "/api/User";
+        public UserRepository(HttpClient httpClient) {  
+            _httpClient = httpClient;
         }
 
-        public bool LockUser(string username)
+		public async Task<List<UserDTO>?> GetUsers()
         {
-            try
-            {
-                User user = SingletonDataBridge.GetInstance().Users.Find(username);
-                user.Status = 0;
-                SingletonDataBridge.GetInstance().Users.Update(user);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            
-        }
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<UserDTO>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
 
-        public InfoLogin Login(RequestLogin request)
+        public async Task<bool> LockUser(string username)
         {
-            UserDTO thislogin = SingletonAutoMapper.GetInstance().Map<UserDTO>(
-                SingletonDataBridge.GetInstance().Users.Where(u => u.Username== request.username && u.Password== request.password).SingleOrDefault());
-            if(thislogin != null)
-            {
-                var info = new InfoLogin()
-                {
-                    Email = thislogin.Email,
-                    Name = thislogin.Nameuser,
-                    Phone = thislogin.Phone,
-                    Username = thislogin.Username,
-                    role = "KHACH HANG",
-                };
-                return info;
-            }
-            return null;
-        }
+			HttpResponseMessage response = await _httpClient.PostAsync(BaseUrl + $"/lock/{username}", null);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
 
-        public bool UnLockUser(string username)
+		}
+
+        public async Task<InfoLogin> Login(RequestLogin request)
         {
-            try
-            {
-                User user = SingletonDataBridge.GetInstance().Users.Find(username);
-                user.Status = 1;
-                SingletonDataBridge.GetInstance().Users.Update(user);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<InfoLogin>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
+
+        public async Task<bool> UnLockUser(string username)
+        {
+			HttpResponseMessage response = await _httpClient.PostAsync(BaseUrl + $"/unlock/{username}", null);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
     }
 }

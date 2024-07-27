@@ -5,10 +5,9 @@ namespace QLNS.Interfaces
 {
     public interface IUser
     {
-        InfoLogin Login(RequestLogin request);
-
-        List<UserDTO> GetUsers();
-        bool LockUser(string username);
-        bool UnLockUser(string username);
+        Task<InfoLogin> Login(RequestLogin request);
+		Task<List<UserDTO>> GetUsers();
+        Task<bool> LockUser(string username);
+        Task<bool> UnLockUser(string username);
     }
 }

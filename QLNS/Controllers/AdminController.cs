@@ -4,6 +4,7 @@ using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
+using QLNS.ModelsParameter.Catalog;
 using QLNS.ViewModels.Admin;
 using System.Text.RegularExpressions;
 
@@ -41,61 +42,61 @@ namespace QLNS.Controllers
 			if(!CheckRole()) return RedirectToAction("Error", "Home");
             return View();
         }
-		public IActionResult Admin() 
+		public async Task<IActionResult> Admin() 
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            List<AdminDTO> admins = _admin.GetAdmins();
+            List<AdminDTO> admins = await _admin.GetAdmins();
 			AdminViewModel Model = new AdminViewModel(){
 			  Admins = admins,
 			};
 			return View(Model);
 		}
-		public IActionResult User() 
+		public async Task<IActionResult> User() 
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            List<UserDTO> users = _user.GetUsers();
+            List<UserDTO> users = await _user.GetUsers();
 			UserViewModel Model = new UserViewModel() {
 				Users = users,
 			};
 			return View(Model);
 		}
-		public IActionResult Cate()
+		public async Task<IActionResult> Cate()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<CatalogDTO> catalogs = _catalog.GetAllCatalog();
+			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			CatalogViewModel Model = new CatalogViewModel() 
 			{
 				Catalogs = catalogs,
 			};
 			return View(Model);
         }
-		public IActionResult Product()
+		public async Task<IActionResult> Product()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            List<CatalogDTO> catalogs = _catalog.GetAllCatalog();
-			List<ProductDTO> products = _product.GetAllProducts();
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+			List<ProductDTO> products = await _product.GetAllProducts();
 			ProductViewModel Model = new ProductViewModel() { 
 				Catalogs = catalogs,
 				Products = products,
 			};
 			return View(Model);
         }
-		public IActionResult News()
+		public async Task<IActionResult> News()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<Boardnew> boardnews = _boardnew.GetBoardnews();
+			List<Boardnew> boardnews = await _boardnew.GetBoardnews();
 			NewsViewModel Model = new NewsViewModel() {
 				Boardnews = boardnews,
 			};
 			return View(Model) ;
         }
 		// Admin 
-		public IActionResult AddAdmin()
+		public async Task<IActionResult> AddAdmin()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             return View();
 		}
-		public IActionResult AddAdminResult(string? admin_username, string? admin_password, string? admin_name,
+		public async Task<IActionResult> AddAdminResult(string? admin_username, string? admin_password, string? admin_name,
 			string? admin_email, string? admin_phone)
 		{
 			RequestCheckAdmin requestCheck = new RequestCheckAdmin() 
@@ -119,7 +120,7 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Email sai cú pháp");
                 return RedirectToAction("AddAdmin", "Admin");
             }
-			if(_admin.CheckExits(requestCheck))
+			if(await _admin.CheckExits(requestCheck))
 			{
                 HttpContext.Session.SetString("errorMsg", "Các thông tin về username hoặc email, số điện thoại bị trùng");
                 return RedirectToAction("AddAdmin", "Admin");
@@ -132,7 +133,7 @@ namespace QLNS.Controllers
 				Password = admin_password,	
 				Phone = admin_phone,
 			};
-			bool check = _admin.CreateAdmin(request);
+			bool check = await _admin.CreateAdmin(request);
 			if(check)
 			{
 				HttpContext.Session.Remove("errorMsg");
@@ -144,10 +145,10 @@ namespace QLNS.Controllers
                 return RedirectToAction("AddAdmin", "Admin");
             }
 		}
-		public IActionResult DeleteAdmin(int id)
+		public async Task<IActionResult> DeleteAdmin(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            bool check = _admin.DeleteAdmin(id);
+            bool check = await _admin.DeleteAdmin(id);
 			if(check)
 			{
                 HttpContext.Session.Remove("errorMsg");
@@ -159,16 +160,16 @@ namespace QLNS.Controllers
                 return RedirectToAction("Admin", "Admin");
             }
 		}
-		public IActionResult EditAdmin(int id)
+		public async Task<IActionResult> EditAdmin(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            AdminDTO admin = _admin.GetAdmin(id);
+            AdminDTO admin =  await _admin.GetAdmin(id);
 			EditAdminViewModel Model = new EditAdminViewModel() { 
 			Admin = admin,
 			};
 			return View(Model);
 		}
-		public IActionResult EditAdminResult(int id, string? password, string? name, string? phone, string? email)
+		public async Task<IActionResult> EditAdminResult(int id, string? password, string? name, string? phone, string? email)
 		{
             if (password.IsNullOrEmpty() || name.IsNullOrEmpty())
             {
@@ -193,7 +194,7 @@ namespace QLNS.Controllers
 				Phone = phone,
 				Email = email,
 			};
-			bool check = _admin.UpdateAdmin(request);
+			bool check = await _admin.UpdateAdmin(request);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -205,10 +206,10 @@ namespace QLNS.Controllers
                 return RedirectToAction("EditAdmin", "Admin", new { id = id });
             }
         }
-		public IActionResult UnLockAdmin(int id)
+		public async Task<IActionResult> UnLockAdmin(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            bool check = _admin.UnLockAdmin(id);
+            bool check = await _admin.UnLockAdmin(id);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -221,10 +222,10 @@ namespace QLNS.Controllers
             }
         }
 		//User
-		public IActionResult LockUser(string username)
+		public async Task<IActionResult> LockUser(string username)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            bool check = _user.LockUser(username);
+            bool check = await _user.LockUser(username);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -236,10 +237,10 @@ namespace QLNS.Controllers
                 return RedirectToAction("User", "Admin");
             }
         }
-        public IActionResult UnLockUser(string username)
+        public async Task<IActionResult> UnLockUser(string username)
         {
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-            bool check = _user.UnLockUser(username);
+            bool check = await _user.UnLockUser(username);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -252,15 +253,15 @@ namespace QLNS.Controllers
             }
         }
 		// Catalog
-		public IActionResult AddCate()
+		public async Task<IActionResult> AddCate()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
 			return View();
         }
-		public IActionResult AddCateResult(string? name)
+		public async Task<IActionResult> AddCateResult(string? name)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<CatalogDTO> catalogs = _catalog.GetAllCatalog();
+			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			if(name == null)
 			{
                 HttpContext.Session.SetString("errorMsg", "Không được bỏ trống thông tin");
@@ -274,7 +275,7 @@ namespace QLNS.Controllers
                     return RedirectToAction("AddCate", "Admin");
                 }
 			}
-			bool check = _catalog.AddCatalog(name);
+			bool check = await _catalog.AddCatalog(name);
 			if (check)
 			{
                 HttpContext.Session.Remove("errorMsg");
@@ -286,16 +287,16 @@ namespace QLNS.Controllers
                 return RedirectToAction("AddCate", "Admin");
             }
         }
-		public IActionResult RemoveCate(int id)
+		public async Task<IActionResult> RemoveCate(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<ProductDTO> list = _product.GetProductsByCatalogId(id);
+			List<ProductDTO> list = await _product.GetProductsByCatalogId(id);
 			if (list.Count != 0)
 			{
                 HttpContext.Session.SetString("errorMsg", "Không thể xóa");
                 return RedirectToAction("Cate", "Admin");
             }
-			bool check = _catalog.DeleteCatalog(id);
+			bool check = await _catalog.DeleteCatalog(id);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -308,20 +309,20 @@ namespace QLNS.Controllers
             }
 
         }
-		public IActionResult EditCate(int id)	
+		public async Task<IActionResult> EditCate(int id)	
 		{
 			if (!CheckRole()) return RedirectToAction("Error", "Home");
-			CatalogDTO catalog = _catalog.GetCatalogById(id);
+			CatalogDTO catalog = await _catalog.GetCatalogById(id);
 			EditCatalogViewModel model = new EditCatalogViewModel() 
 			{
 				Catalog = catalog,
 			};
 			return View(model);
 		}
-		public IActionResult EditCateResult(int id, string name)
+		public async Task<IActionResult> EditCateResult(int id, string name)
 		{
 			if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<CatalogDTO> catalogs = _catalog.GetAllCatalog();
+			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			catalogs.RemoveAll(c => c.Id == id);
 			if (name == null)
 			{
@@ -336,7 +337,12 @@ namespace QLNS.Controllers
 					return RedirectToAction("AddCate", "Admin");
 				}
 			}
-			bool check = _catalog.UpdateCatalog(id, name);
+			UpdateCatalogRequest request = new UpdateCatalogRequest()
+			{
+				id = id,
+				name = name,
+			};
+			bool check = await _catalog.UpdateCatalog(request);
 			if (check)
 			{
 				HttpContext.Session.Remove("errorMsg");

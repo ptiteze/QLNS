@@ -17,18 +17,18 @@ namespace QLNS.Controllers
             _cart = cart;
             _product = product;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             string UserName = HttpContext.Session.GetString("Username");
-            List<ProductDTO> products = _product.GetAllProducts();
+            List<ProductDTO> products = await _product.GetAllProducts();
             List<ProductDTO> productsInCart = new List<ProductDTO>();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
-            List<CartDTO> carts = _cart.GetCartsByUsername(UserName);
+            List<CartDTO> carts = await _cart.GetCartsByUsername(UserName);
             if(carts==null) return RedirectToAction("Index", "Home");
             foreach(CartDTO cart in carts)
             {
-                ProductDTO pr = _product.GetProductById(cart.ProductId);
+                ProductDTO pr = await _product.GetProductById(cart.ProductId);
                 productsInCart.Add(pr);
             }
             CartViewModel Models = new CartViewModel() 
@@ -38,7 +38,7 @@ namespace QLNS.Controllers
             };
             return View(Models);
         }
-        public IActionResult AddToCart([FromBody] CartItem cartItem)
+        public async Task<IActionResult> AddToCart([FromBody] CartItem cartItem)
         {
 			int productid = cartItem.productid;
 			int quantity = cartItem.quantity;
@@ -85,7 +85,7 @@ namespace QLNS.Controllers
                         username = UserName,
                         productId = productid,
                     };
-					if (_cart.CheckExistCart(requestCheck))
+					if (await _cart.CheckExistCart(requestCheck))
 					{
 						length_order = CountOccurrences(cart_local, "|");
                         return Json(new
