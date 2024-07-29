@@ -1,6 +1,6 @@
-﻿namespace QLNS.DTO
+﻿namespace QLNS_BackEnd.DTO
 {
-    public class SubpplyInvoiceDTO
+    public class SupplyInvoiceDTO
     {
         public int Id { get; set; }
 

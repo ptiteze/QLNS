@@ -2,6 +2,10 @@
 using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Admin;
+using QLNS_BackEnd.ModelsParameter.Producer;
+using QLNS_BackEnd.ModelsParameter.Product;
+using QLNS_BackEnd.ModelsParameter.SupplyInvoice;
+using QLNS_BackEnd.ModelsParameter.SupplyList;
 
 namespace QLNS_BackEnd.Helper
 {
@@ -24,16 +28,25 @@ namespace QLNS_BackEnd.Helper
             CreateMap<Ordered, OrderedDTO>();
             //Producer
             CreateMap<Producer, ProducerDTO>();
-            //Product
-            CreateMap<Product, ProductDTO>();
+            CreateMap<ProducerDTO, Producer>();
+            CreateMap<CreateProducerRequest, Producer>();
+			//Product
+			CreateMap<Product, ProductDTO>();
+            CreateMap<InputProductRequest, Product>();
+            CreateMap<UpdateProductRequest, Product>();
             //ProductPrice
             CreateMap<ProductPrice, ProductPriceDTO>();
             //SubppyInvoice
-            CreateMap<SupplyInvoice, SubpplyInvoiceDTO>();
+            CreateMap<SupplyInvoice, SupplyInvoiceDTO>();
+            CreateMap<CreateSupplyInvoiceRequest, SupplyInvoice>();
+            //SupplyList
+            CreateMap<SupplyList, SupplyListDTO>();
+            CreateMap<CreateSupplyListRequest, SupplyList>();
             //Transaction
             CreateMap<Transaction, TransactionDTO>();
             //User
             CreateMap<User, UserDTO>();
+
         }
     }
 }

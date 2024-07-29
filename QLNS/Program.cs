@@ -14,7 +14,10 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<ICart, CartRepository>()
                 .AddTransient<IUser, UserRepository>()
                 .AddTransient<IAdmin, AdminRepository>()
-				.AddTransient<ISlide, SlideRepository>();
+                .AddTransient<IProducer, ProducerRepository>()
+                .AddTransient<ISupplyList, SupplyListRepository>()
+                .AddTransient<ISupplyInvoice, SupplyInvoiceRepository>()
+                .AddTransient<ISlide, SlideRepository>();
 				
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>

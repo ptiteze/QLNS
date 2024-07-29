@@ -11,7 +11,7 @@ public partial class ImportDetail
 
     public int ImportPrice { get; set; }
 
-    public int QuantityImport { get; set; }
+    public int? QuantityImport { get; set; } = 0;
 
     public int? Stock { get; set; }
 

@@ -1,10 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
 using QLNS.ModelsParameter.Catalog;
+using QLNS.ModelsParameter.Producer;
+using QLNS.ModelsParameter.Product;
+using QLNS.ModelsParameter.SupplyInvoice;
+using QLNS.ModelsParameter.SupplyList;
 using QLNS.ViewModels.Admin;
 using System.Text.RegularExpressions;
 
@@ -16,18 +21,28 @@ namespace QLNS.Controllers
 		private readonly IUser _user;
 		private readonly ICatalog _catalog;
 		private readonly IProduct _product;
+		private readonly IProducer _producer;
+		private readonly ISupplyList _supplyList;
+		private readonly ISupplyInvoice _supplyInvoice;
 		//private readonly IOrder _order;
 		//private readonly IOrdered _ordered;
 		private readonly IBoardnew _boardnew;
-		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, /*IOrder order, IOrdered ordered,*/ IBoardnew boardnew)
+		private readonly IWebHostEnvironment _webHostEnvironment;
+		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, /*IOrder order, IOrdered ordered,*/
+			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
+			ISupplyInvoice supplyInvoice)
 		{
 			_admin = admin;
 			_user = user;
 			_catalog = catalog;
 			_product = product;
+			_producer = producer;
 			//_order = order;
 			//_ordered = ordered;
 			_boardnew = boardnew;
+			_supplyList = supplyList;
+			_supplyInvoice = supplyInvoice;
+			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
 		{
@@ -75,11 +90,40 @@ namespace QLNS.Controllers
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			List<ProductDTO> products = await _product.GetAllProducts();
+			List<SupplyListDTO> supplyLists = await _supplyList.GetAllSupplyList();
 			ProductViewModel Model = new ProductViewModel() { 
 				Catalogs = catalogs,
 				Products = products,
+				SupplyList = supplyLists,
 			};
 			return View(Model);
+        }
+		public async Task<IActionResult> Producer()
+		{
+			if (!CheckRole()) return RedirectToAction("Error", "Home");
+			List<ProducerDTO> producers = await _producer.GetAllProducer();
+			ProducerViewModel model = new ProducerViewModel() { Producers = producers };
+			return View(model);
+		}
+		public async Task<IActionResult> SupplyInvoice()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			List<ProductDTO> products = new List<ProductDTO>();
+			List<SupplyListDTO> supplyLists = await _supplyList.GetAllSupplyList();
+			List<ProducerDTO> producers = await _producer.GetAllProducer();
+			foreach(var sp in supplyLists)
+			{
+				ProductDTO pr = await _product.GetProductById(sp.ProductId);
+				if(pr!=null)
+                products.Add(pr);
+            }
+			SupplyInvoiceViewModel model = new SupplyInvoiceViewModel()
+			{
+				Products = products,
+				Producers = producers,
+				SupplyList = supplyLists,
+			};
+			return View(model);
         }
 		public async Task<IActionResult> News()
 		{
@@ -90,6 +134,7 @@ namespace QLNS.Controllers
 			};
 			return View(Model) ;
         }
+		
 		// Admin 
 		public async Task<IActionResult> AddAdmin()
 		{
@@ -334,7 +379,7 @@ namespace QLNS.Controllers
 				if (item.Name.ToLower() == name.ToLower())
 				{
 					HttpContext.Session.SetString("errorMsg", "Thông tin bị trùng");
-					return RedirectToAction("AddCate", "Admin");
+					return RedirectToAction("EditCate", "Admin", new { id = id });
 				}
 			}
 			UpdateCatalogRequest request = new UpdateCatalogRequest()
@@ -351,8 +396,421 @@ namespace QLNS.Controllers
 			else
 			{
 				HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
-				return RedirectToAction("EditCate", "Admin");
+				return RedirectToAction("EditCate", "Admin", new { id = id });
 			}
 		}
+		// Product
+		public async Task<IActionResult> AddProduct()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+			AddProductViewModel model = new AddProductViewModel() { Catalogs = catalogs };
+			return View(model);
+        }
+		[HttpPost]
+		public async Task<IActionResult> AddProductResult([FromForm] InputProduct input)
+		{
+			if (!CheckRole()) return RedirectToAction("Error", "Home");
+			if (input.product_name.IsNullOrEmpty() || input.product_desc.IsNullOrEmpty() || input.product_content.IsNullOrEmpty()
+				|| input.product_unit.IsNullOrEmpty())
+			{
+				HttpContext.Session.SetString("errorMsg", "Không đươc bỏ trống ô");
+				return RedirectToAction("AddProduct", "Admin");
+			}
+			try
+			{
+				if (input.imageFile != null && input.imageFile.Length > 0)
+				{
+					string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "images/products/img-test");
+					string fileName = Path.GetFileName(input.imageFile.FileName);
+					string filePath = Path.Combine(uploadDir, fileName);
+					
+					InputProductRequest request = new InputProductRequest()
+					{
+						CatalogId = input.product_cate,
+						Content = input.product_content,
+						Created = input.product_day,
+						Description = input.product_desc,
+						Discount = input.product_discount,
+						ExpiryDate = input.product_expixy,
+						Name = input.product_name,
+						ImageLink = fileName,
+						Price = input.product_price,
+						Quantity = 0,
+						Status = input.product_status,
+						Unit = input.product_unit,
+					};
+					bool check = await _product.CreateProduct(request);
+					if (check)
+					{
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await input.imageFile.CopyToAsync(fileStream);
+                        }
+                        HttpContext.Session.Remove("errorMsg");
+						return RedirectToAction("Product", "Admin");
+						
+					}
+					else
+					{
+						HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+						return RedirectToAction("AddProduct", "Admin");
+						
+					}
+					
+				}
+				else
+				{
+					HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra với nhập ảnh");
+					return RedirectToAction("AddProduct", "Admin");
+				}
+			}
+			catch
+			{
+				HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+				return RedirectToAction("AddProduct", "Admin");
+			}
+		}
+		public async Task<IActionResult> EditProduct(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			ProductDTO product = await _product.GetProductById(id);
+			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+			EditProductViewModel model = new EditProductViewModel()
+			{
+				Catalogs = catalogs,
+				Product = product,
+			};
+			return View(model);
+        }
+		[HttpPost]
+		public async Task<IActionResult> EditProductResult([FromForm] UpdateProduct input)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (input.Name.IsNullOrEmpty() || input.Description.IsNullOrEmpty() || input.Content.IsNullOrEmpty()
+                || input.Unit.IsNullOrEmpty())
+            {
+                HttpContext.Session.SetString("errorMsg", "Không đươc bỏ trống ô");
+                return RedirectToAction("EditProduct", "Admin", new { id = input.Id });
+            }
+			try
+			{
+                ProductDTO product = await _product.GetProductById(input.Id);
+                UpdateProductRequest request = new UpdateProductRequest()
+                {
+                    Id = input.Id,
+                    CatalogId = input.CatalogId,
+                    Content = input.Content,
+                    Description = input.Description,
+                    Discount = input.Discount,
+                    ExpiryDate = input.ExpiryDate,
+                    Name = input.Name,
+                    Price = input.Price,
+                    Status = input.Status,
+                    Unit = input.Unit,
+                };
+                if (input.imageFile == null && input.imageFile.Length == 0)
+				{
+					request.ImageLink = product.ImageLink;
+                    bool check = await _product.UpdateProduct(request);
+                    if (check)
+                    {
+                        HttpContext.Session.Remove("errorMsg");
+                        return RedirectToAction("Product", "Admin");
+
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                        return RedirectToAction("EditProduct", "Admin", new { id = input.Id });
+
+                    }
+				}
+				else
+				{
+                    string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "images/products/img-test");
+					string fileNameDelete = Path.GetFileName(product.ImageLink);
+					string filePathDelete = Path.Combine(uploadDir, fileNameDelete);
+                    string fileName = Path.GetFileName(input.imageFile.FileName);
+                    string filePath = Path.Combine(uploadDir, fileName);
+                    request.ImageLink = fileName;
+                    bool check = await _product.UpdateProduct(request);
+                    if (check)
+                    {
+                        HttpContext.Session.Remove("errorMsg");
+                        if (System.IO.File.Exists(filePathDelete))
+                        {
+                            // Xóa tệp
+                            System.IO.File.Delete(filePathDelete);
+                        }
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await input.imageFile.CopyToAsync(fileStream);
+                        }
+                        return RedirectToAction("Product", "Admin");
+                        
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                        return RedirectToAction("EditProduct", "Admin", new { id = input.Id });
+
+                    }
+                }
+
+            }
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                return RedirectToAction("EditProduct", "Admin", new { id = input.Id });
+            }
+        }
+		public async Task<IActionResult> DeleteProduct(int id)
+		{
+            ProductDTO product = await _product.GetProductById(id);
+			string ImageName = product.ImageLink;
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			bool check = await _product.DeleteProduct(id);
+			if ( check)
+			{
+				
+                string uploadDir = Path.Combine(_webHostEnvironment.WebRootPath, "images/products/img-test");
+                string fileNameDelete = Path.GetFileName(ImageName);
+                string filePathDelete = Path.Combine(uploadDir, fileNameDelete);
+                if (System.IO.File.Exists(filePathDelete))
+                {
+                    // Xóa tệp
+                    System.IO.File.Delete(filePathDelete);
+                }
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Product", "Admin");
+			}
+			else
+			{
+                HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                return RedirectToAction("Product", "Admin");
+            }
+        }
+		// Produucer
+		public IActionResult AddProducer()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			return View();
+        }
+		public async Task<IActionResult> AddProducerResult([FromForm] CreateProducerRequest request)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			if(request.Name.IsNullOrEmpty()||request.Numphone.IsNullOrEmpty()||request.Address.IsNullOrEmpty()
+				|| request.Email.IsNullOrEmpty())
+			{
+                HttpContext.Session.SetString("errorMsg", "Không được bỏ trống");
+                return RedirectToAction("AddProducer", "Admin");
+            }
+			try
+			{
+				bool check = await _producer.CreateProducer(request);
+				if (check)
+				{
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("Producer", "Admin");
+                }
+				else
+				{
+                    HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                    return RedirectToAction("AddProducer", "Admin");
+                }
+			}
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                return RedirectToAction("AddProducer", "Admin");
+            }
+        }
+		public async Task<IActionResult> DeleteProducer(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            try
+			{ 
+				bool check = await _producer.DeleteProducer(id);
+				if (check)
+				{
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("Producer", "Admin");
+                }
+				else
+				{
+                    HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                    return RedirectToAction("Producer", "Admin");
+                }
+			}
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                return RedirectToAction("Producer", "Admin");
+            }
+		}
+		public async Task<IActionResult> EditProducer(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			ProducerDTO producer = await _producer.GetProducerById(id);
+			EditProducerViewModel model = new EditProducerViewModel() { Producer = producer };
+			return View(model);
+        }
+		public async Task<IActionResult> EditProducerResult([FromForm] ProducerDTO request)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			try
+			{
+                if (request.Name.IsNullOrEmpty() || request.Numphone.IsNullOrEmpty() || request.Address.IsNullOrEmpty()
+                || request.Email.IsNullOrEmpty())
+                {
+                    HttpContext.Session.SetString("errorMsg", "Không được bỏ trống");
+                    return RedirectToAction("AddProducer", "Admin");
+                }
+                bool check = await _producer.UpdateProducer(request);
+				if (check)
+				{
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("Producer", "Admin");
+                }
+				else
+				{
+                    HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                    return RedirectToAction("EditProducer", "Admin");
+                }
+			}
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                return RedirectToAction("EditProducer", "Admin");
+            }
+        }
+		// Supply List
+		public async Task<IActionResult> AddSupplyList(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			try
+			{
+				CreateSupplyListRequest request = new CreateSupplyListRequest()
+				{
+					ProductId = id,
+					Quantity = 100,
+				};
+				bool check = await _supplyList.CreateSupplyList(request);
+				if (check)
+				{
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("Product", "Admin");
+				}
+				else
+				{
+                    HttpContext.Session.SetString("errorMsg", "Chọn Nhập không thành công");
+                    return RedirectToAction("Product", "Admin");
+                }
+			}
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Chọn Nhập không thành công");
+                return RedirectToAction("Product", "Admin");
+            }
+        }
+		public async Task<IActionResult> DeleteSupplyList(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            try
+            {
+                bool check = await _supplyList.DeleteSupplyList(id);
+                if (check)
+                {
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("Product", "Admin");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("errorMsg", "Hủy Nhập không thành công");
+                    return RedirectToAction("Product", "Admin");
+                }
+            }
+            catch
+            {
+                HttpContext.Session.SetString("errorMsg", "Hủy Nhập không thành công");
+                return RedirectToAction("Product", "Admin");
+            }
+        }
+		public async Task<IActionResult> EditSupplyList(int id, int quantity)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			try
+			{
+				CreateSupplyListRequest request = new CreateSupplyListRequest()
+				{
+					ProductId = id,
+					Quantity = quantity,
+				};
+				bool check = await _supplyList.UpdateSupplyList(request);
+				if (check)
+				{
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("SupplyInvoice", "Admin");
+                }
+				else
+				{
+                    HttpContext.Session.SetString("errorMsg", "Sửa Nhập không thành công");
+                    return RedirectToAction("SupplyInvoice", "Admin");
+                }
+			}
+			catch
+			{
+                HttpContext.Session.SetString("errorMsg", "Sửa Nhập không thành công");
+                return RedirectToAction("SupplyInvoice", "Admin");
+            }
+        }
+		public async Task<IActionResult> Supply([FromForm]int producer, [FromForm] DateOnly create)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            try
+            {
+				string Username = HttpContext.Session.GetString("Username");
+				List<AdminDTO> admins = await _admin.GetAdmins();
+				AdminDTO admin = admins.Where(a => a.Username == Username).FirstOrDefault();
+				CreateSupplyInvoiceRequest request = new CreateSupplyInvoiceRequest()
+				{
+					AdId = admin.Id,
+					ProducerId = producer,
+					SupplyTime = create,
+                };
+				bool check = await _supplyInvoice.CreateSupplyInvoice(request);
+                if (check)
+                {
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction("SupplyInvoice", "Admin");
+                }
+                else
+                {
+                    HttpContext.Session.SetString("errorMsg", "Nhập không thành công");
+                    return RedirectToAction("SupplyInvoice", "Admin");
+                }
+            }
+            catch
+            {
+                HttpContext.Session.SetString("errorMsg", "Nhập không thành công");
+                return RedirectToAction("SupplyInvoice", "Admin");
+            }
+        }
+		public async Task<IActionResult> ShowSupply()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			List<SupplyInvoiceDTO> supplyInvoices = await _supplyInvoice.GetAllSupplyInvoice();
+            supplyInvoices = supplyInvoices.OrderByDescending(s => s.SupplyTime).ToList();
+            List<AdminDTO> admins = await _admin.GetAdmins();
+			List<ProducerDTO> producers = await _producer.GetAllProducer();
+			ShowSupplyViewModel model = new ShowSupplyViewModel()
+			{
+				adminList = admins,
+				invoiceList = supplyInvoices,
+				producerList = producers,
+			};
+			return View(model);
+        }
     }
 }

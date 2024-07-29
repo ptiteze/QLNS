@@ -42,4 +42,5 @@ public partial class Product
     public virtual ICollection<Ordered> Ordereds { get; set; } = new List<Ordered>();
 
     public virtual ICollection<ProductPrice> ProductPrices { get; set; } = new List<ProductPrice>();
+    public virtual ICollection<SupplyList> SupplyLists { get; set; } = new List<SupplyList>();
 }

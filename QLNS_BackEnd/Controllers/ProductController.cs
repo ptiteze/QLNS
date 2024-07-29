@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLNS_BackEnd.Interfaces;
+using QLNS_BackEnd.ModelsParameter.Product;
 
 namespace QLNS_BackEnd.Controllers
 {
@@ -54,6 +55,24 @@ namespace QLNS_BackEnd.Controllers
 				};
 				return BadRequest(errorResponse);
 			}
+			return Ok(res);
+		}
+		[HttpDelete("{id}")]
+		public IActionResult DeleteProduct(int id)
+		{
+			var res = _product.DeleteProduct(id);
+			return Ok(res);
+		}
+		[HttpPut("create")]
+		public IActionResult CreateProduct(InputProductRequest request)
+		{
+			var res = _product.AddProduct(request);
+			return Ok(res);
+		}
+		[HttpPost("update")]
+		public IActionResult UpdateProduct(UpdateProductRequest request)
+		{
+			var res = _product.UpdateProduct(request);
 			return Ok(res);
 		}
 	}

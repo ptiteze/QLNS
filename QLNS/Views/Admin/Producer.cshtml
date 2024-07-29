@@ -1,0 +1,69 @@
+﻿@using QLNS.DTO
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	Layout = "_AdminLayout";
+	ViewData["Title"] = "Producer View";
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Admin.ProducerViewModel
+@section AdminHeader {
+	@Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+	@Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <button class="add-catalog"><a href="/Admin/AddProducer">Thêm sản phẩm</a></button>
+                <p style="color:red; display:block">
+                    @errorMsg
+                </p>
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách Nhà Cung cấp</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tên nhà cung cấp</th>
+                                        <th scope="col">Địa chỉ</th>
+                                        <th scope="col">Số điện thoại</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ProducerDTO item in @Model.Producers)
+                                    {
+                                        <tr>
+                                            <th scope="row">@item.Id</th>
+                                            <td>@item.Name</td>
+                                            <td>@item.Address</td>
+                                            <td>@item.Numphone</td>
+                                            <td>@item.Email</td>
+                                            <td>
+                                                <button class="btn btn-danger"><a href="/Admin/DeleteProducer?id=@item.Id">Xóa</a></button>
+
+                                                <button class="btn btn-success"><a href="/Admin/EditProducer?id=@item.Id">Sửa</a></button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>

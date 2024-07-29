@@ -42,6 +42,8 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<SupplyInvoice> SupplyInvoices { get; set; }
 
+    public virtual DbSet<SupplyList> SupplyLists { get; set; }
+
     public virtual DbSet<Transaction> Transactions { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
@@ -228,7 +230,8 @@ public partial class DataContext : DbContext
             entity.ToTable("producer");
 
             entity.Property(e => e.Id)
-                .ValueGeneratedNever()
+                //.ValueGeneratedNever()
+				.ValueGeneratedOnAdd()
                 .HasColumnName("id");
             entity.Property(e => e.Address)
                 .HasMaxLength(50)
@@ -366,6 +369,22 @@ public partial class DataContext : DbContext
                 .HasForeignKey(d => d.ProducerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_supply_Invoice_producer");
+        });
+
+        modelBuilder.Entity<SupplyList>(entity =>
+        {
+            entity.ToTable("supply_list");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Quantity)
+                .HasDefaultValue(100)
+                .HasColumnName("quantity");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.SupplyLists)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_supply_list_product");
         });
 
         modelBuilder.Entity<Transaction>(entity =>

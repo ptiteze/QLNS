@@ -1,0 +1,57 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	Layout = "_AdminLayout";
+	ViewData["Title"] = "Add Producer View";
+	string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@section AdminHeader {
+	@Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+	@Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">Thêm sản phẩm</div>
+                        <p style="color:red; display:block">
+                            @errorMsg
+                        </p>
+                        <hr>
+                        <form method="post" asp-action="AddProducerResult" asp-controller="Admin">
+
+
+                            <div class="form-group">
+                                <label for="input-1">Tên Nhà cung cấp</label>
+                                <input type="text" class="form-control" id="input-1" placeholder="Tên Nhà cung cấp" name="Name">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-1">Địa chỉ</label>
+                                <input type="text" class="form-control" id="input-1" placeholder="Địa chỉ" name="Address">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-1">Số điện thoại</label>
+                                <input type="tel" class="form-control" id="input-1" placeholder="Số điện thoại" name="Numphone">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-1">Email</label>
+                                <input type="email" class="form-control" id="input-1" placeholder="Email" name="Email">
+                            </div>
+                            <div class="form-footer">
+                                <button class="btn btn-danger"><i class="fa fa-times"></i><a href="/Admin/Producer">Hủy</a></button>
+                                <button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> Thêm</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>

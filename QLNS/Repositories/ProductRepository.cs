@@ -1,6 +1,8 @@
-﻿using QLNS.Data;
+﻿using Azure.Core;
+using QLNS.Data;
 using QLNS.DTO;
 using QLNS.Interfaces;
+using QLNS.ModelsParameter.Product;
 
 
 namespace QLNS.Repositories
@@ -55,5 +57,47 @@ namespace QLNS.Repositories
 				return null;
 			}
 		}
-    }
+
+		public async Task<bool> CreateProduct(InputProductRequest request)
+		{
+			HttpResponseMessage response = await _httpClient.PutAsJsonAsync(BaseUrl + $"/create", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public async Task<bool> UpdateProduct(UpdateProductRequest request)
+		{
+			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + $"/update", request);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
+
+		public async Task<bool> DeleteProduct(int id)
+		{
+			HttpResponseMessage response = await _httpClient.DeleteAsync(BaseUrl + $"/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }

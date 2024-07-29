@@ -4,6 +4,7 @@ namespace QLNS.ViewModels.Admin
     public class ProductViewModel
     {
         public List<ProductDTO> Products { get; set; }
-        public List<CatalogDTO> Catalogs { get; set; }
+        public List<CatalogDTO> Catalogs { get; set; } = null;
+        public List<SupplyListDTO> SupplyList { get; set; }
     }
 }
