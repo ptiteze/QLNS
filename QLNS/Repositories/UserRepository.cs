@@ -70,5 +70,33 @@ namespace QLNS.Repositories
 				return false;
 			}
 		}
+
+        public async Task<bool> CreateUser(UserDTO request)
+        {
+            HttpResponseMessage response = await _httpClient.PutAsJsonAsync(BaseUrl, request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateUser(UserDTO request)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + $"/update", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

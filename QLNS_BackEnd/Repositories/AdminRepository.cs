@@ -2,7 +2,6 @@
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Admin;
-using QLNS_BackEnd.Response;
 using QLNS_BackEnd.Singleton;
 
 namespace QLNS_BackEnd.Repositories

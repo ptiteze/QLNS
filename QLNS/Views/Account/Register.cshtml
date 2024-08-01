@@ -1,0 +1,90 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	ViewData["Title"] = "Register Page";
+	// Layout = "~/Views/shared/_layout.cshtml";
+	string sumprice = HttpContextAccessor.HttpContext.Session.GetString("sumprice");
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@section Header {
+	@Html.Partial("Header", headerData)
+}
+@section Footer {
+	@Html.Partial("Footer")
+}
+<section id="aa-catg-head-banner">
+    <img src="~/images/archive-banner.png" alt="banner blog">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Đăng ký</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li style="color:#fff">Đăng ký tài khoản</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<section id="aa-myaccount">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="aa-myaccount-area">
+                    <div class="row">
+
+                        <div class="col-md-8 col-md-push-2">
+                            <div class="aa-myaccount-register">
+                                <h4>Đăng ký</h4>
+                                <form name="formRegister" class="aa-login-form" method="post" asp-action="RegisterResult" asp-controller="Account" >
+                                    <label for="">Họ tên<span>*</span></label>
+                                    <input type="text" placeholder="Name" name="Nameuser" required>
+                                    <label for="">Email <span>*</span></label>
+                                    <input type="email" placeholder="useremail@gmail.com" name="Email" required>
+                                    <label for="">Số điện thoại<span>*</span></label>
+                                    <input type="text" placeholder="Số điện thoại" name="Phone" required>
+                                    <label for="">Username<span>*</span></label>
+                                    <input type="text" placeholder="Username" name="Username" required>
+                                    <label for="">Mật khẩu<span>*</span></label>
+                                    <input type="password" placeholder="Password" name="Password" required>
+                                    <input type="date" style="display: none" placeholder="Create" name="Created" id="the-date">
+
+                                    <p style="color:red; display: block;">
+                                        @* <%=(request.getAttribute("errMessage") == null) ? ""
+                                        : request.getAttribute("errMessage")%> *@
+                                        @errorMsg
+                                    </p>
+                                   @*  <p style="color:red; display: block;">
+                                        <%=(request.getAttribute("Message") == null) ? ""
+                                        : request.getAttribute("Message")%>
+                                    </p> *@
+                                    <button type="reset" class="aa-browse-btn" value="Reset">Đặt lại</button>
+                                    <button type="submit" class="aa-browse-btn">Đăng ký</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!--  end content-->
+<script>
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+
+
+    document.getElementById('the-date').value = today;
+</script>

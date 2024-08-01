@@ -17,6 +17,10 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
                 .AddTransient<IProducer, ProducerRepository>()
                 .AddTransient<ISupplyList, SupplyListRepository>()
                 .AddTransient<ISupplyInvoice, SupplyInvoiceRepository>()
+				.AddTransient<IImportDetail, ImportDetailRepository>()
+                .AddTransient<IOrder, OrderRepository>()
+                .AddTransient<ITransaction, TransactionRepository>()
+                .AddTransient<IOrdered, OrderedRepository>()
                 .AddTransient<ISlide, SlideRepository>();
 				
 builder.Services.AddHttpContextAccessor();

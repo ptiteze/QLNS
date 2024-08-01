@@ -7,7 +7,7 @@
         public string Password { get; set; } = null!;
 
         public string Nameuser { get; set; } = null!;
-        public int? Status { get; set; }
+        public int? Status { get; set; } = 1;
 
         public string Phone { get; set; } = null!;
 

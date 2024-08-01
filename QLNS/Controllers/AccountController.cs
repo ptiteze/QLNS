@@ -41,7 +41,7 @@ namespace QLNS.Controllers
                 infoLogin = await _admin.Login(request);   
                 if(infoLogin == null)
                 {
-                    HttpContext.Session.SetString("errorMsg", "Tài khoản hoặc mật khẩu của bạn không đúng");
+                    HttpContext.Session.SetString("errorMsg", "Tài khoản/mật khẩu của bạn không đúng");
                     return RedirectToAction("Login", "Home");
                 }
                 else
@@ -96,8 +96,10 @@ namespace QLNS.Controllers
                 }
                 List<CartDTO> listCart = await _cart.GetCartsByUsername(username);
                 string temp_cart = "";
+
                 foreach(CartDTO cart in listCart)
                 {
+                    if(cart!=null && cart.ProductId!=0)
                     temp_cart += cart.ProductId.ToString() + ":" + cart.Quantity.ToString() + "|";
                 }
                 if(temp_cart!="") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
@@ -106,6 +108,33 @@ namespace QLNS.Controllers
             }
             return RedirectToAction("Index","Home");
         }
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
 
+            return RedirectToAction("Index", "Home");
+        }
+        public IActionResult Register()
+        {
+            return View();
+        }
+        public async Task<IActionResult> RegisterResult([FromForm] UserDTO request)
+        {
+            bool check = await _user.CreateUser(request);
+            if(check)
+            {
+                return Json(new
+                {
+                    check
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    error = "Có lỗi xảy ra, thông tin bị trùng"
+                });
+            }
+        }
     }
 }

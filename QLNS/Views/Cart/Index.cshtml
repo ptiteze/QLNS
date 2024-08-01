@@ -1,7 +1,7 @@
 ﻿@using QLNS.DTO
 @inject IHttpContextAccessor HttpContextAccessor
 @{
-	ViewData["Title"] = "Home Page";
+	ViewData["Title"] = "Cart Page";
 	// Layout = "~/Views/shared/_layout.cshtml";
     string sumprice = HttpContextAccessor.HttpContext.Session.GetString("sumprice");
 	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
@@ -36,7 +36,7 @@
             <div class="col-md-12">
                 <div class="cart-view-area">
                     <div class="cart-view-table">
-                        <form action="" method="post">
+                        <form asp-action="UpdateCart" asp-controller="Cart" method="post">
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
@@ -51,14 +51,17 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (CartDTO cart in Model.Carts)
+                                        @for (int i = 0; i < Model.Carts.Count; i++)
                                         {
+                                            var cart = Model.Carts[i];
                                             <tr>
-                                                <td><a class="remove" href="/"><fa class="fa fa-close"></fa></a></td>
+                                                <td><a class="remove" href="/Cart/Remove?id=@cart.ProductId"><fa class="fa fa-close"></fa></a></td>
                                                 <td><a href="/Product/ProductDetail?id=@cart.ProductId"><img src="~/images/products/img-test/@Model.Products.Where(p=>p.Id==cart.ProductId).First().ImageLink" alt="img @cart.ProductId"></a></td>
                                                 <td><a class="aa-cart-title" href="/Product/ProductDetail?id=@cart.ProductId">@Model.Products.Where(p => p.Id == cart.ProductId).First().Name</a></td>
                                                 <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Price VNĐ</td>
-                                                <td><input class="aa-cart-quantity" type="number" name="@cart.ProductId" value="@cart.Quantity" min=1></td>
+                                                <td><input class="aa-cart-quantity" type="number" name="Items[@i].Quantity" value="@cart.Quantity" min=1>
+                                                    <input type="hidden" name="Items[@i].ProductId" value="@cart.ProductId">
+                                                </td>
                                                 <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Discount %</td>
                                                 <td>@string.Format("{0:N0}", @cart.Quantity*(@Model.Products.Where(p => p.Id == cart.ProductId).First().Price - (@Model.Products.Where(p => p.Id == cart.ProductId).First().Price / 100 * @Model.Products.Where(p => p.Id == cart.ProductId).First().Discount))) VNĐ</td>
                                             </tr> 
@@ -96,7 +99,7 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <a href="/" class="aa-cart-view-btn">Thanh toán</a>
+                            <a href="/Order/Checkout" class="aa-cart-view-btn">Thanh toán</a>
                         </div>
                     </div>
                 </div>

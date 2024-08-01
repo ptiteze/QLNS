@@ -9,5 +9,7 @@ namespace QLNS.Interfaces
 		Task<List<UserDTO>> GetUsers();
         Task<bool> LockUser(string username);
         Task<bool> UnLockUser(string username);
+        Task<bool> CreateUser(UserDTO request);
+        Task<bool> UpdateUser(UserDTO request);
     }
 }

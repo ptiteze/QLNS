@@ -10,5 +10,8 @@ namespace QLNS_BackEnd.Interfaces
         List<UserDTO> GetUsers();
         bool LockUser(string username);
         bool UnLockUser(string username);
+        bool CreateUser(UserDTO request);
+        bool UpdateUser(UserDTO request);
+
     }
 }

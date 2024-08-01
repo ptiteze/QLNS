@@ -5,7 +5,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @{
     Layout = "_AdminLayout";
-    ViewData["Title"] = "Proudct View";
+    ViewData["Title"] = "Supply View";
     string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
 }
 @model QLNS.ViewModels.Admin.ShowSupplyViewModel

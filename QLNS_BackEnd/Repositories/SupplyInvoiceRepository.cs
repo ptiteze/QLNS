@@ -24,7 +24,7 @@ namespace QLNS_BackEnd.Repositories
                     {
                         InvoiceId = si.Id,
                         ProductId = supply.ProductId,
-                        ImportPrice = pr.Price,
+                        ImportPrice = pr.Price/2,
                         QuantityImport = supply.Quantity,
                         Stock = supply.Quantity,
                         Status = true,

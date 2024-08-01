@@ -8,5 +8,6 @@ namespace QLNS_BackEnd.Interfaces
         List<CartDTO> GetCartsByUsername(string username);
         Boolean AddProduct(RequestAddCart request);
         Boolean CheckExistCart(RequestCheckCart request);
+        bool RemoveCart(RequestRemoveCart request);
     }
 }

@@ -24,13 +24,14 @@ namespace QLNS.Controllers
 		private readonly IProducer _producer;
 		private readonly ISupplyList _supplyList;
 		private readonly ISupplyInvoice _supplyInvoice;
+		private readonly IImportDetail _importDetail;
 		//private readonly IOrder _order;
 		//private readonly IOrdered _ordered;
 		private readonly IBoardnew _boardnew;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, /*IOrder order, IOrdered ordered,*/
 			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
-			ISupplyInvoice supplyInvoice)
+			ISupplyInvoice supplyInvoice, IImportDetail importDetail)
 		{
 			_admin = admin;
 			_user = user;
@@ -42,6 +43,7 @@ namespace QLNS.Controllers
 			_boardnew = boardnew;
 			_supplyList = supplyList;
 			_supplyInvoice = supplyInvoice;
+			_importDetail = importDetail;
 			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
@@ -809,6 +811,24 @@ namespace QLNS.Controllers
 				adminList = admins,
 				invoiceList = supplyInvoices,
 				producerList = producers,
+			};
+			return View(model);
+        }
+		public async Task<IActionResult> ShowImportDetail(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			SupplyInvoiceDTO si = await _supplyInvoice.GetSupplyInvoiceById(id);
+			AdminDTO ad = await _admin.GetAdmin(si.AdId);
+			ProducerDTO producer = await _producer.GetProducerById(si.ProducerId);
+			List<ImportDetailDTO> imports = await _importDetail.GetImportDetailsBySupplyId(id);
+			List<ProductDTO> products = await _product.GetAllProducts();
+			ImportDetailViewModel model = new ImportDetailViewModel()
+			{
+				Admin = ad,
+				Imports = imports,
+				Producer = producer,
+				Products = products,
+				SupplyInvoice = si,
 			};
 			return View(model);
         }

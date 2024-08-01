@@ -68,18 +68,18 @@
                                             <span class="aa-product-price"><del>@Model.Product.Price VNĐ</del></span>
                                         }
                                         <p class="aa-product-avilability">
-                                            Tình trạng: <span>
-                                                <c:choose>
+                                            Tình trạng:
                                                     @if (@Model.Product.Quantity != 0)
                                                     {
-                                                        <c:out value="Còn hàng" />
+                                                        <span> Còn hàng - @Model.Product.Quantity </span>
                                                     }
                                                     else
                                                     {
-                                                        <c:out value="Hết hàng" />
+                                                    <span> Hết hàng</span>
                                                     }
-                                            </span>
+                                            
                                         </p>
+                                        <p class="aa-product-avilability">Đơn vị:  @Model.Product.Unit</p>
                                     </div>
                                     <p>@Model.Product.Description</p>
                                     <div class="aa-prod-quantity">

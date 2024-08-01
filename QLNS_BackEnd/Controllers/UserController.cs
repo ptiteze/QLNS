@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.ModelsParameter.Admin;
 
@@ -57,5 +58,17 @@ namespace QLNS_BackEnd.Controllers
 			var res = _user.UnLockUser(username);
 			return Ok(res);
 		}
-	}
+		[HttpPut]
+		public IActionResult CreateUser(UserDTO request)
+		{
+            var res = _user.CreateUser(request);
+            return Ok(res);
+        }
+		[HttpPost("update")]
+        public IActionResult UpdateUser(UserDTO request)
+        {
+            var res = _user.UpdateUser(request);
+            return Ok(res);
+        }
+    }
 }

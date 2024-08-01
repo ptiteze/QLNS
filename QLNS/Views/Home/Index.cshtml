@@ -111,7 +111,7 @@
 												<figure>
 													@* asp-action="AddToCart" asp-controller="Cart" *@
 													<a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
-													<a class="aa-add-card-btn" href="#" data-productid=@item.Id data-quantity=1><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng @item.Id</a>
+													<a class="aa-add-card-btn" href="#" data-productid=@item.Id data-quantity=1><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
 													<figcaption>
 														<h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
 														@if (item.Discount == 0)

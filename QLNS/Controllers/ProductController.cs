@@ -98,7 +98,7 @@ namespace QLNS.Controllers
                     int ProductId = int.Parse(parts[0]);
                     int Quantity = int.Parse(parts[1]);
                     ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault();
-                    sumprice += ((productInCart.Price - productInCart.Price * productInCart.Discount ?? 0 / 100) * Quantity);
+                    sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount ?? 0)) / 100) * Quantity;
                     cartLocal.Add(productInCart, Quantity);
                 }
                 var headerViewModel = new HeaderViewModel()

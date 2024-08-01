@@ -44,9 +44,9 @@ namespace QLNS.Repositories
 			}
 		}
 
-        public async Task<List<CartDTO>> GetCartsByUsername(string username)
+        public async Task<List<CartDTO>?> GetCartsByUsername(string username)
         {
-			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{username}");
 			if (response.IsSuccessStatusCode)
 			{
 				var result = await response.Content.ReadFromJsonAsync<List<CartDTO>>();
@@ -57,5 +57,19 @@ namespace QLNS.Repositories
 				return null;
 			}
 		}
+
+        public async Task<bool> RemoveCart(RequestRemoveCart request)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl+"/remove", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

@@ -1,0 +1,187 @@
+﻿@using QLNS.ViewModels.Order
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	ViewData["Title"] = "Checkout Page";
+	// Layout = "~/Views/shared/_layout.cshtml";
+    string username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+    string sumprice = HttpContextAccessor.HttpContext.Session.GetString("sumprice");
+	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@model QLNS.ViewModels.Order.CheckoutViewModel
+@section Header {
+	@Html.Partial("Header", headerData)
+}
+@section Footer {
+	@Html.Partial("Footer")
+}
+<!-- catg header banner section -->
+<section id="aa-catg-head-banner">
+    <img src="~/images/checkout-banner.png" alt="banner thanh toán">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Thanh toán</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li style="color:#fff">Thông tin thanh toán</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- / catg header banner section -->
+<section id="checkout">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="checkout-area">
+                    <form id="buyForm" asp-action="Buy" asp-controller="Order" method="post">
+                        
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="checkout-left">
+                                    <div class="panel-group">
+                                        @if (username==null){
+                                            <p> Bạn cần đăng nhập để thanh toán! Đăng nhập <a href="${pageContext.request.contextPath}/view/client/login" style="color: #754110">tại đây!</a></p>
+                                        }
+                                            <!-- Shipping Address -->
+                                            <div class="panel panel-default aa-checkout-billaddress">
+                                                <div class="panel-heading">
+                                                    <h4 class="panel-title" style="color:#754110">
+                                                        Địa chỉ giao hàng
+                                                    </h4>
+                                                </div>
+                                                <div id="collapseFour">
+                                                    <div class="panel-body">
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <input type="text" placeholder="Họ Tên*" required="required" name="UserName" value="@(Model.Transaction.UserName ?? "")">
+                                                                </div>
+                                                            </div>
+
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <input type="email" placeholder="Email*" required="required" name="UserMail" value="@(Model.Transaction.UserMail ?? "") ">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <input type="tel" placeholder="Số điện thoại*" required="required" name="UserPhone" value="@(Model.Transaction.UserPhone ?? "")">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <textarea cols="8" rows="3" required="required" placeholder="Địa chỉ*" name="Address">@(Model.Transaction.UserPhone ?? "")</textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <textarea cols="8" rows="3" placeholder="Ghi chú" name="Message"></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+                                                                <div class="aa-checkout-single-bill">
+                                                                <input type="date" placeholder="Password" name="Created" id="the-date" style="display: none">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row" style="display: none">
+                                                            <div class="col-md-12">
+                                                                <div class="aa-checkout-single-bill">
+                                                                    @* <input type="text" placeholder="userid_session" name="transaction_usersession" value="${username }"> *@
+
+                                                                    <input type="text" placeholder="totalmoney_session" name="Amount" value="@sumprice.ToString()">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>     
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="checkout-right">
+                                    <h4>Thông tin đơn hàng</h4>
+                                    <div class="aa-order-summary-area">
+                                        <table class="table table-responsive">
+                                            <thead>
+                                                <tr>
+                                                    <th>Sản phẩm</th>
+                                                    <th>Số tiền</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (ShowDetail item in Model.Show)
+                                                {
+                                                    <tr>
+                                                        <td>@item.Name <strong> x  @item.qty (@item.unit)</strong></td>
+                                                        <td>@string.Format("{0:N0}", item.price * item.qty) VNĐ</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Tạm tính</th>
+                                                    <td>@sumprice VNĐ</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Thuế</th>
+                                                    <td>0 VNĐ</td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Tổng cộng</th>
+                                                    <td><strong>@sumprice VNĐ</strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <h4>Hình thức thanh toán</h4>
+                                    <div class="aa-payment-method">
+                                        <label for="cashdelivery"><input type="radio" id="cashdelivery" name="Payment" checked value="0"> Thanh toán khi nhận hàng (COD) </label>
+                                        @* <label for="paypal"><input type="radio" id="paypal" name="transaction_payment" value="1"> Thanh toán bằng thể ngân hàng (ATM) </label>
+                                        <img src="~/img/paypal.jpg" border="0" alt="PayPal Acceptance Mark"> *@
+                                        <input type="submit" value="Đặt hàng" class="aa-browse-btn">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+
+
+    document.getElementById('the-date').value = today;
+    // $(document).ready(function () {
+        
+    // });
+</script>

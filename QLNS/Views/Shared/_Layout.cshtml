@@ -61,6 +61,8 @@
     </footer>
     @RenderSection("styles", required: false)
     <!--Start of Tawk.to Script-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript">
         var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
         (function () {
@@ -71,10 +73,89 @@
             s1.setAttribute('crossorigin', '*');
             s0.parentNode.insertBefore(s1, s0);
         })();
+        $(document).ready(function () {
+            $("#buyForm").submit(function (event) {
+                event.preventDefault(); // Ngăn hành động submit mặc định
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("Buy", "Order")',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "error",
+                                title: response.error,
+                                showConfirmButton: true
+                            });
+                        } else if (response.orderId) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Mua hàng thành công",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            setTimeout(function () {
+                                window.location.href = '/';
+                            }, 1500);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Có lỗi xảy ra",
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            });
+            $("form[name='formRegister']").submit(function (event) {
+                event.preventDefault(); // Ngăn hành động submit mặc định
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("RegisterResult", "Account")',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "error",
+                                title: response.error,
+                                showConfirmButton: true
+                            });
+                        } else if (response.check) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Tạo tài khoản thành công",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            setTimeout(function () {
+                                window.location.href = '/Home/Login';
+                            }, 1500);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Có lỗi xảy ra",
+                            showConfirmButton: true
+                        });
+                    }
+                });
+            });
+        });
     </script>
     <!--End of Tawk.to Script-->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="~/js/bootstrap.js"></script>
     <!-- SmartMenus jQuery plugin -->

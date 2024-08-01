@@ -21,8 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Dependency\Extentions\" />
-    <Folder Include="Views\Account\" />
-    <Folder Include="wwwroot\admin\" />
   </ItemGroup>
 
 </Project>

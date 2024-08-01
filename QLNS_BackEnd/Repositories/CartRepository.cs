@@ -14,21 +14,34 @@ namespace QLNS_BackEnd.Repositories
 			try
 			{
 				Product product = SingletonDataBridge.GetInstance().Products.Find(request.productId);
-				Cart cart = new Cart()
+				
+				RequestCheckCart check = new RequestCheckCart()
 				{
-					ProductId = request.productId,
-					Quantity = request.quantity,
-					UserName = request.username,
-					Product = product
+					productId = request.productId,
+					username = request.username,
 				};
-				SingletonDataBridge.GetInstance().Carts.Add(cart);
-				SingletonDataBridge.GetInstance().SaveChanges();
-				Console.WriteLine(cart.UserName + cart.ProductId + cart.Quantity);
-				return true;
+				if (CheckExistCart(check))
+				{
+					Cart cart = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserName == request.username && c.ProductId == request.productId).FirstOrDefault();
+					cart.Quantity=request.quantity;
+                    SingletonDataBridge.GetInstance().Carts.Update(cart);
+
+                }
+				else
+				{
+                    Cart cart = new Cart()
+                    {
+                        ProductId = request.productId,
+                        Quantity = request.quantity,
+                        UserName = request.username,
+                    };
+                    SingletonDataBridge.GetInstance().Carts.Add(cart);
+                }
+                SingletonDataBridge.GetInstance().SaveChanges();
+                return true;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine("djasdjaskdj");
 				return false;
 			}
 		}
@@ -44,6 +57,21 @@ namespace QLNS_BackEnd.Repositories
         {
             return SingletonAutoMapper.GetInstance().Map<List<CartDTO>>(
                 SingletonDataBridge.GetInstance().Carts.Where(c => c.UserName == username));
+        }
+
+        public bool RemoveCart(RequestRemoveCart request)
+        {
+			try
+			{
+				Cart cart = SingletonDataBridge.GetInstance().Carts.Where(c=>c.ProductId==request.ProductId && c.UserName==request.UserName).FirstOrDefault();	
+				SingletonDataBridge.GetInstance().Carts.Remove(cart);
+				SingletonDataBridge.GetInstance().SaveChanges();
+                return true;
+			}
+			catch
+			{
+				return false;
+			}
         }
     }
 }

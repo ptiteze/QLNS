@@ -41,5 +41,11 @@ namespace QLNS_BackEnd.Controllers
 			var res = _cart.CheckExistCart(request);
 			return Ok(res);
 		}
-	}
+		[HttpPost("remove")]
+		public IActionResult RemoveCart(RequestRemoveCart request)
+		{
+            var res = _cart.RemoveCart(request);
+            return Ok(res);
+        }
+    }
 }

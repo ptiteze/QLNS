@@ -1,6 +1,5 @@
 ﻿using QLNS_BackEnd.ModelsParameter.Admin;
 using QLNS_BackEnd.DTO;
-using QLNS_BackEnd.Response;
 
 namespace QLNS_BackEnd.Interfaces
 {
