@@ -8,5 +8,6 @@ namespace QLNS_BackEnd.Interfaces
         bool CreateTransaction(CreateTransactionRequest request);
         TransactionDTO GetTransactionByOrderId(int id);
         TransactionDTO GetTransactionByUserName(string userName);
+        List<TransactionDTO> GetTransactions();
     }
 }

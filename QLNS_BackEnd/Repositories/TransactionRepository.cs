@@ -1,8 +1,8 @@
 ﻿using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
+using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Order;
 using QLNS_BackEnd.Singleton;
-using System.Transactions;
 
 namespace QLNS_BackEnd.Repositories
 {
@@ -34,6 +34,12 @@ namespace QLNS_BackEnd.Repositories
         {
             return SingletonAutoMapper.GetInstance().Map<TransactionDTO>(
                  SingletonDataBridge.GetInstance().Transactions.Where(t => t.UserName == userName).OrderByDescending(t=>t.Created).FirstOrDefault());
+        }
+
+        public List<TransactionDTO> GetTransactions()
+        {
+            return SingletonAutoMapper.GetInstance().Map<List<TransactionDTO>>(
+                SingletonDataBridge.GetInstance().Transactions.ToList());
         }
     }
 }

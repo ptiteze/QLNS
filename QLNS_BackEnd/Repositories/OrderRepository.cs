@@ -1,4 +1,5 @@
-﻿using QLNS_BackEnd.DTO;
+﻿using Azure.Core;
+using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Order;
@@ -68,10 +69,41 @@ namespace QLNS_BackEnd.Repositories
             }
         }
 
+        public bool DeleteOrder(int id)
+        {
+            try
+            {
+                Order order = SingletonDataBridge.GetInstance().Orders.Find(id);
+                order.Status = 3;
+                SingletonDataBridge.GetInstance().SaveChanges();
+                //List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.Where(o => o.OrderId == id).ToList();
+                //List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
+                //foreach (Ordered o in ordereds)
+                //{
+                //    Product pr = products.Where(p => p.Id == o.ProductId).FirstOrDefault();
+                //    List<ImportDetail> ips = SingletonDataBridge.GetInstance().ImportDetails.Where(
+                //        i => i.ProductId == pr.Id).ToList();
+                //    ips = ips.OrderByDescending(i => (i.QuantityImport ?? 0) - (i.Stock ?? 0)).ToList();
+                //}
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+        }
+
         public OrderDTO GetOrderById(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<OrderDTO>(
                 SingletonDataBridge.GetInstance().Orders.Find(id));
+        }
+
+        public List<OrderDTO> GetOrders()
+        {
+            return SingletonAutoMapper.GetInstance().Map<List<OrderDTO>>(
+                SingletonDataBridge.GetInstance().Orders.ToList());
         }
 
         public List<OrderDTO> GetOrdersByUsername(string username)
@@ -83,8 +115,10 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
-                Order order = SingletonAutoMapper.GetInstance().Map<Order>(request);
-                SingletonDataBridge.GetInstance().Orders.Add(order);
+                Order order = SingletonDataBridge.GetInstance().Orders.Find(request.Id);
+                order.Status = request.Status;
+                Console.WriteLine(request.Id.ToString() +"-"+request.UserName);
+                SingletonDataBridge.GetInstance().Orders.Update(order);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return true;
             }

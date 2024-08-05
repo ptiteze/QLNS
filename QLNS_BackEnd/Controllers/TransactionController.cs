@@ -14,7 +14,7 @@ namespace QLNS_BackEnd.Controllers
         {
             _transaction = transaction;
         }
-        [HttpGet("{username}")]
+        [HttpGet("user/{username}")]
         public IActionResult GetTransactionByUserName(string username)
         {
             var res = _transaction.GetTransactionByUserName(username);
@@ -29,10 +29,25 @@ namespace QLNS_BackEnd.Controllers
             }
             return Ok(res);
         }
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public IActionResult GetTransactionByOrderId(int id)
         {
             var res = _transaction.GetTransactionByOrderId(id);
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
+            return Ok(res);
+        }
+        [HttpGet]
+        public IActionResult GetTransactions()
+        {
+            var res = _transaction.GetTransactions();
             if (res == null)
             {
                 var errorResponse = new

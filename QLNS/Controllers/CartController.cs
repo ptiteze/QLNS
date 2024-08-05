@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Cart;
@@ -212,6 +213,7 @@ namespace QLNS.Controllers
         {
             string UserName = HttpContext.Session.GetString("Username");
             string cart_local = HttpContext.Session.GetString("cart_local");
+            int length_order = int.Parse(HttpContext.Session.GetString("length_order"));
             if (UserName != null)
             {
                 RequestRemoveCart requestRemove = new RequestRemoveCart() { 
@@ -237,7 +239,10 @@ namespace QLNS.Controllers
                 cart_local += e + "|";
             }
             if(cart_local!="") cart_local = cart_local.Remove(cart_local.Length - 1);
+            Console.WriteLine(cart_local);
             HttpContext.Session.SetString("cart_local", cart_local);
+            length_order--;
+            HttpContext.Session.SetString("length_order", length_order.ToString());
             return RedirectToAction("Index", "Cart");
         }
         static int CountOccurrences(string str, string substring)
@@ -301,6 +306,28 @@ namespace QLNS.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+        }
+        public async Task<IActionResult> ShowCart(int id)
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            int sumprice = 0;
+            List<ProductDTO> products = await _product.GetAllProducts();
+            List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(id);
+            if (ordereds == null) ordereds = new List<OrderedDTO>();
+            Console.WriteLine(ordereds.Count.ToString());
+            foreach (OrderedDTO ordered in ordereds)
+            {
+                sumprice += ordered.Price * ordered.Qty;
+            }
+            ShowCartViewModel model = new ShowCartViewModel()
+            {
+                Ordereds = ordereds,
+                Products = products,
+                sumPrice = sumprice,
+                
+            };
+            return View(model);
         }
     }
 }

@@ -1,0 +1,64 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Cart View";
+}
+@model QLNS.ViewModels.Cart.ShowCartViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Chi tiết đơn hàng</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mô tả</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Giảm giá</th>
+                                        <th>Thành Tiền</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Ordereds.Count; i++)
+                                    {
+                                        var cart = Model.Ordereds[i];
+                                        <tr>
+                                            <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@Model.Products.Where(p=>p.Id==cart.ProductId).First().ImageLink" alt="@cart.ProductId"></td>
+                                            <td><a class="aa-cart-title" href="/Product/ProductDetail?id=@cart.ProductId">@Model.Products.Where(p => p.Id == cart.ProductId).First().Name</a></td>
+                                            <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Price VNĐ</td>
+                                            <td>@cart.Qty</td>
+                                            <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Discount %</td>
+                                            <td>@string.Format("{0:N0}", @cart.Qty * (@Model.Products.Where(p => p.Id == cart.ProductId).First().Price - (@Model.Products.Where(p => p.Id == cart.ProductId).First().Price / 100 * @Model.Products.Where(p => p.Id == cart.ProductId).First().Discount))) VNĐ</td>
+                                        </tr>
+                                    }
+                                    <tr>
+                                        <td colspan="6" class=""><strong>TỔNG TIỀN</strong></td>
+                                        <td><strong>@Model.sumPrice VNĐ</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>

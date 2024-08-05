@@ -14,7 +14,8 @@ namespace QLNS.Repositories
         }
         public async Task<List<OrderedDTO>?> GetOrderedsByOrderId(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{id}");
+            Console.WriteLine(response.StatusCode);
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<List<OrderedDTO>>();

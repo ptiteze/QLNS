@@ -28,6 +28,7 @@ namespace QLNS_BackEnd.Helper
             //Order
             CreateMap<Order, OrderDTO>();
             CreateMap<CreateOrderRequest, Order>();
+            CreateMap<OrderDTO, Order>();
             //Ordered
             CreateMap<Ordered, OrderedDTO>();
             //Producer

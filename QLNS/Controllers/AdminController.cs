@@ -11,6 +11,8 @@ using QLNS.ModelsParameter.Product;
 using QLNS.ModelsParameter.SupplyInvoice;
 using QLNS.ModelsParameter.SupplyList;
 using QLNS.ViewModels.Admin;
+using QLNS.ViewModels.Cart;
+using QLNS.ViewModels.Order;
 using System.Text.RegularExpressions;
 
 namespace QLNS.Controllers
@@ -25,25 +27,27 @@ namespace QLNS.Controllers
 		private readonly ISupplyList _supplyList;
 		private readonly ISupplyInvoice _supplyInvoice;
 		private readonly IImportDetail _importDetail;
-		//private readonly IOrder _order;
-		//private readonly IOrdered _ordered;
+		private readonly IOrder _order;
+		private readonly IOrdered _ordered;
 		private readonly IBoardnew _boardnew;
+		private readonly ITransaction _transaction;
 		private readonly IWebHostEnvironment _webHostEnvironment;
-		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, /*IOrder order, IOrdered ordered,*/
+		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, IOrder order, IOrdered ordered,
 			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
-			ISupplyInvoice supplyInvoice, IImportDetail importDetail)
+			ISupplyInvoice supplyInvoice, IImportDetail importDetail, ITransaction transaction)
 		{
 			_admin = admin;
 			_user = user;
 			_catalog = catalog;
 			_product = product;
 			_producer = producer;
-			//_order = order;
-			//_ordered = ordered;
+			_order = order;
+			_ordered = ordered;
 			_boardnew = boardnew;
 			_supplyList = supplyList;
 			_supplyInvoice = supplyInvoice;
 			_importDetail = importDetail;
+			_transaction = transaction;
 			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
@@ -831,6 +835,75 @@ namespace QLNS.Controllers
 				SupplyInvoice = si,
 			};
 			return View(model);
+        }
+		// Order
+		public async Task<IActionResult> Order()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            List<TransactionDTO> transactions = await _transaction.GetTransactions();
+			if(transactions==null) transactions = new List<TransactionDTO>();
+            List<OrderDTO> orders = await _order.GetOrders();
+            if (orders == null) orders = new List<OrderDTO>();
+            Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();
+
+            foreach (OrderDTO o in orders)
+            {
+                int sumprice = 0;
+                List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(o.Id);
+                if (ordereds == null) ordereds = new List<OrderedDTO>();
+                Console.WriteLine(ordereds.Count.ToString());
+                foreach (OrderedDTO ordered in ordereds)
+                {
+                    sumprice += ordered.Price * ordered.Qty;
+                    Console.WriteLine(sumprice.ToString());
+                }
+                order.Add(o, sumprice);
+            }
+            ShowOrderViewModel model = new ShowOrderViewModel()
+            {
+                orders = order,
+                transactions = transactions,
+            };
+            return View(model);
+        }
+		public async Task<IActionResult> ShowCart(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            int sumprice = 0;
+            List<ProductDTO> products = await _product.GetAllProducts();
+            List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(id);
+            if (ordereds == null) ordereds = new List<OrderedDTO>();
+            Console.WriteLine(ordereds.Count.ToString());
+            foreach (OrderedDTO ordered in ordereds)
+            {
+                sumprice += ordered.Price * ordered.Qty;
+            }
+            ShowCartViewModel model = new ShowCartViewModel()
+            {
+                Ordereds = ordereds,
+                Products = products,
+                sumPrice = sumprice,
+
+            };
+            return View(model);
+        }
+		public async Task<IActionResult> Confirm(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+			OrderDTO order = await _order.GetOrderById(id);
+			order.Status = 1;
+			bool check = await _order.UpDateOrder(order);
+			if (check)
+			{
+				HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Order");
+            }
+			else
+			{
+                HttpContext.Session.SetString("errorMsg", "Nhận đơn không thành công");
+				return RedirectToAction("Order");
+
+            }
         }
     }
 }

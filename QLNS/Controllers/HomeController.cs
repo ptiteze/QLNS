@@ -98,6 +98,27 @@ namespace QLNS.Controllers
             sumprice = SetHeaderData(products, sumprice);
             return View();
         }
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery] string s)
+        {
+            if(string.IsNullOrEmpty(s))
+                return RedirectToAction("Index");
+            List<ProductDTO> products = await _product.GetAllProducts();
+            List<CatalogDTO> catalogs = await _icatalog.GetAllCatalog();
+            var resentProducts = products.OrderByDescending(p => p.Created).Take(4).ToList();
+            List<ProductDTO> filteredProducts = products
+       .Where(p => p.Name.Contains(s, StringComparison.OrdinalIgnoreCase))
+       .ToList();
+            if (filteredProducts.Count == 0) filteredProducts = new List<ProductDTO>();
+            SearchViewModel model = new SearchViewModel()
+            {
+                Catalogs = catalogs,
+                Products = filteredProducts,
+                RecentProducts = resentProducts,
+                search_string = s,
+            };
+            return View(model);
+        }
 		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
 		public async Task<IActionResult> Error()
 		{

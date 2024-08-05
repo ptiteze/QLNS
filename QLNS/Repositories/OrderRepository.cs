@@ -30,7 +30,7 @@ namespace QLNS.Repositories
 
         public async Task<OrderDTO?> GetOrderById(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/id/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<OrderDTO>();
@@ -44,7 +44,7 @@ namespace QLNS.Repositories
 
         public async Task<List<OrderDTO>?> GetOrdersByUsername(string username)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/{username}");
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/user/{username}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<List<OrderDTO>>();
@@ -67,6 +67,20 @@ namespace QLNS.Repositories
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<List<OrderDTO>> GetOrders()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<OrderDTO>>();
+                return result;
+            }
+            else
+            {
+                return null;
             }
         }
     }

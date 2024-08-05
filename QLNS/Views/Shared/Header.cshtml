@@ -42,7 +42,7 @@
                                 @if (username != null)
                                 {
                                     <li>
-                                        <a><strong>Chào </strong>@fullname</a>
+                                        <a href="/Account/Info"><strong>Chào </strong>@fullname</a>
                                     </li>
                                     <li class="hidden-xs"><a href="/Account/Logout">Đăng xuất</a></li>
                                 }
@@ -187,7 +187,7 @@
                         <li class="aa-search">
                             <!-- search box -->
                             <a class="aa-search-box">
-                                <form action="${pageContext.request.contextPath}/view/client/product/search" method="GET">
+                                <form asp-action="Search" asp-controller="Home" method="GET">
                                     <input type="text" name="s" id="" placeholder="Tìm kiếm sản phẩm..">
                                     <button class="serach-box"><span class="fa fa-search"></span></button>
                                 </form>

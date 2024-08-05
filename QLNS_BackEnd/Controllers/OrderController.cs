@@ -15,7 +15,7 @@ namespace QLNS_BackEnd.Controllers
         {
             _order = order;
         }
-        [HttpGet("{username}")]
+        [HttpGet("user/{username}")]
         public IActionResult GetOrdersByUsername(string username)
         {
             var res = _order.GetOrdersByUsername(username);
@@ -30,7 +30,7 @@ namespace QLNS_BackEnd.Controllers
             }
             return Ok(res);
         }
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public IActionResult GetOrderById(int id)
         {
             var res = _order.GetOrderById(id);
@@ -55,6 +55,21 @@ namespace QLNS_BackEnd.Controllers
         public IActionResult UpDateOrder(OrderDTO request)
         {
             var res = _order.UpDateOrder(request);
+            return Ok(res);
+        }
+        [HttpGet]
+        public IActionResult GetOrders()
+        {
+            var res = _order.GetOrders();
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
             return Ok(res);
         }
     }

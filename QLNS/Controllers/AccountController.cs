@@ -4,6 +4,7 @@ using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Admin;
 using QLNS.ModelsParameter.Cart;
+using QLNS.ViewModels.Account;
 
 namespace QLNS.Controllers
 {
@@ -18,7 +19,7 @@ namespace QLNS.Controllers
             _user = user;
             _cart = cart;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -122,6 +123,43 @@ namespace QLNS.Controllers
         {
             bool check = await _user.CreateUser(request);
             if(check)
+            {
+                return Json(new
+                {
+                    check
+                });
+            }
+            else
+            {
+                return Json(new
+                {
+                    error = "Có lỗi xảy ra, thông tin bị trùng"
+                });
+            }
+        }
+        public async Task<IActionResult> Info()
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            List<UserDTO> users = await _user.GetUsers();
+            UserDTO info = users.Where(u => u.Username == UserName).FirstOrDefault();
+            InfoAccountViewModel model = new InfoAccountViewModel() { info = info };
+            return View(model);
+        }
+        public async Task<IActionResult> EditInfo()
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            List<UserDTO> users = await _user.GetUsers();
+            UserDTO info = users.Where(u => u.Username == UserName).FirstOrDefault();
+            InfoAccountViewModel model = new InfoAccountViewModel() { info = info };
+            return View(model);
+        }
+        public async Task<IActionResult> UpdateAccount([FromForm] UserDTO request)
+        {
+            //request.Status = 1;
+            bool check = await _user.UpdateUser(request);
+            if (check)
             {
                 return Json(new
                 {

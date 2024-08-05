@@ -13,7 +13,7 @@ namespace QLNS_BackEnd.Controllers
         {
             _ordered = ordered;
         }
-        [HttpGet]
+        [HttpGet("{id}")]
         public IActionResult GetOrderedsByOrderId(int id)
         {
             var res = _ordered.GetOrderedsByOrderId(id);

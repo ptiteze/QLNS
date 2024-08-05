@@ -31,7 +31,7 @@ namespace QLNS.Repositories
 
         public async Task<TransactionDTO?> GetTransactionByOrderId(int id)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"{id}");
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/id/{id}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<TransactionDTO>();
@@ -45,10 +45,24 @@ namespace QLNS.Repositories
 
         public async Task<TransactionDTO?> GetTransactionByUserName(string userName)
         {
-            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"{userName}");
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/user/{userName}");
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<TransactionDTO>();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<TransactionDTO>?> GetTransactions()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<TransactionDTO>>();
                 return result;
             }
             else

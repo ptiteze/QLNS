@@ -3,11 +3,12 @@
 *@
 @inject IHttpContextAccessor HttpContextAccessor
 @{
-	ViewData["Title"] = "Register Page";
+	ViewData["Title"] = " Page";
 	// Layout = "~/Views/shared/_layout.cshtml";
-    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+	string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
 	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
 }
+@model QLNS.ViewModels.Account.InfoAccountViewModel
 @section Header {
 	@Html.Partial("Header", headerData)
 }
@@ -22,7 +23,7 @@
                 <h2>Đăng ký</h2>
                 <ol class="breadcrumb">
                     <li><a href="/">Trang chủ</a></li>
-                    <li style="color:#fff">Đăng ký tài khoản</li>
+                    <li style="color:#fff">Thay đổi thông tin tài khoản</li>
                 </ol>
             </div>
         </div>
@@ -37,19 +38,21 @@
 
                         <div class="col-md-8 col-md-push-2">
                             <div class="aa-myaccount-register">
-                                <h4>Đăng ký</h4>
-                                <form name="formRegister" class="aa-login-form" method="post" asp-action="RegisterResult" asp-controller="Account" >
+                                <h4>Cập nhật tài khoản</h4>
+                                <form name="formEdit" class="aa-login-form" method="post" asp-action="UpdateAccount" asp-controller="Account">
                                     <label for="">Họ tên<span>*</span></label>
-                                    <input type="text" placeholder="Name" name="Nameuser" required>
+                                    <input type="text" placeholder="Name" name="Nameuser" value="@Model.info.Nameuser" required>
                                     <label for="">Email <span>*</span></label>
-                                    <input type="email" placeholder="useremail@gmail.com" name="Email" required>
+                                    <input type="email" placeholder="useremail@gmail.com" name="Email" value="@Model.info.Email" readonly>
+                                    <br />
                                     <label for="">Số điện thoại<span>*</span></label>
-                                    <input type="text" placeholder="Số điện thoại" name="Phone" required>
+                                    <input type="text" placeholder="Số điện thoại" name="Phone" value="@Model.info.Phone" required>
                                     <label for="">Username<span>*</span></label>
-                                    <input type="text" placeholder="Username" name="Username" required>
+                                    <input type="text" placeholder="Username" name="Username" readonly value="@Model.info.Username">
                                     <label for="">Mật khẩu<span>*</span></label>
-                                    <input type="password" placeholder="Password" name="Password" required>
-                                    <input type="date" style="display: none" placeholder="Create" name="Created" id="the-date">
+                                    <input type="password" placeholder="Password" name="Password" value="@Model.info.Password" required>
+                                    <label for="">Ngày tạo<span>*</span></label>
+                                    <input type="date" readonly placeholder="Create" name="Created" id="the-date" value="@Model.info.Created">
 
                                     <p style="color:red; display: block;">
                                         @* <%=(request.getAttribute("errMessage") == null) ? ""
@@ -57,7 +60,7 @@
                                         @errorMsg
                                     </p>
                                     <button type="reset" class="aa-browse-btn" value="Reset">Đặt lại</button>
-                                    <button type="submit" class="aa-browse-btn">Đăng ký</button>
+                                    <button type="submit" class="aa-browse-btn">Chỉnh sửa</button>
                                 </form>
                             </div>
                         </div>
@@ -67,19 +70,3 @@
         </div>
     </div>
 </section>
-<!--  end content-->
-<script>
-    var date = new Date();
-
-    var day = date.getDate();
-    var month = date.getMonth() + 1;
-    var year = date.getFullYear();
-
-    if (month < 10) month = "0" + month;
-    if (day < 10) day = "0" + day;
-
-    var today = year + "-" + month + "-" + day;
-
-
-    document.getElementById('the-date').value = today;
-</script>

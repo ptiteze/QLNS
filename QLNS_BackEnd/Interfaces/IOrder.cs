@@ -9,5 +9,7 @@ namespace QLNS_BackEnd.Interfaces
         OrderDTO GetOrderById(int id);
         int CreateOrder(CreateOrderRequest request);
         bool UpDateOrder(OrderDTO request);
+        List<OrderDTO> GetOrders();
+        bool DeleteOrder(int id);
     }
 }

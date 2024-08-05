@@ -99,5 +99,53 @@ namespace QLNS.Controllers
                 orderId
             });
         }
+        public async Task<IActionResult> ShowOrder()
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            List<OrderDTO> orders = await _order.GetOrdersByUsername(UserName);
+            if(orders==null) orders = new List<OrderDTO>();
+            List<TransactionDTO> transactions = new List<TransactionDTO>();
+            Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();
+
+            foreach (OrderDTO o in orders)
+            {
+                int sumprice = 0;
+                List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(o.Id);
+                if (ordereds == null) ordereds = new List<OrderedDTO>();
+                Console.WriteLine(ordereds.Count.ToString());
+                foreach (OrderedDTO ordered in ordereds)
+                {
+                    sumprice += ordered.Price * ordered.Qty;
+                    Console.WriteLine(sumprice.ToString());
+                }
+                order.Add(o, sumprice);
+            }
+            ShowOrderViewModel model = new ShowOrderViewModel()
+            {
+                orders = order,
+                transactions = transactions,
+            };
+            return View(model);
+        }
+        public async Task<IActionResult> Confirm(int id)
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            OrderDTO order = await _order.GetOrderById(id);
+            order.Status = 2;
+            bool check = await _order.UpDateOrder(order);
+            if (check)
+            {
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("ShowOrder");
+            }
+            else
+            {
+                HttpContext.Session.SetString("errorMsg", "Nhận đơn không thành công");
+                return RedirectToAction("ShowOrder");
+
+            }
+        }
     }
 }

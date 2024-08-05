@@ -1,0 +1,96 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Order View";
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Order.ShowOrderViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <!--End Row-->
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <p style="color:red; display:block">
+                    @errorMsg
+                </p>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách đơn hàng</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tài khoản User</th>
+                                        <th scope="col">Họ Tên</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">SĐT</th>
+                                        <th scope="col">Địa chỉ</th>
+                                        <th scope="col">Ghi chú</th>
+                                        <th scope="col">Tổng tiền</th>
+                                        <th scope="col">Phương thức thanh toán</th>
+                                        <th scope="col">Trạng thái</th>
+                                        <th scope="col">Ngày tạo</th>
+                                        <th scope="col">Hành động</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(var order in Model.orders)
+                                    {
+                                        <tr>
+                                            <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Key.Id">@order.Key.Id</a></td>
+                                            <td>@order.Key.UserName</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().UserName ?? "")</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().UserMail ?? "")</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().UserPhone ?? "")</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().Address ?? "")</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().Message ?? "")</td>
+                                            <td>@order.Value VNĐ</td>
+                                            <td>@(Model.transactions.Where(t => t.OrderId == @order.Key.Id).FirstOrDefault().Payment ?? "")</td>
+                                            @switch (@order.Key.Status)
+                                            {
+                                                case 0:
+                                                    <td>Chờ xác nhận</td>
+                                                    <td>@order.Key.Sentdate</td>
+                                                    <td>
+                                                        <button class="btn btn-success"><a href="/Admin/Confirm?id=@order.Key.Id">Duyệt Đơn</a></button>
+                                                        <button class="btn btn-danger"><a href="/Admin/DeleteOrder?id=@order.Key.Id">Hủy Đơn</a></button>
+                                                     </td>
+                                                    break;
+                                                case 1:
+                                                    <td>Đang giao</td>
+                                                    <td>@order.Key.Sentdate</td>
+                                                    break;
+                                                case 2:
+                                                    <td>Đã nhận</td>
+                                                    <td>@order.Key.Sentdate</td>
+                                                    break;
+                                                case 3:
+                                                    <td>Đã hủy</td>
+                                                    <td>@order.Key.Sentdate</td>
+                                                    break;
+                                            }
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

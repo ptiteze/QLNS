@@ -1,0 +1,97 @@
+﻿@{
+	ViewData["Title"] = "Show Order Page";
+	// Layout = "~/Views/shared/_layout.cshtml";
+	QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+}
+@model QLNS.ViewModels.Order.ShowOrderViewModel
+@section Header {
+	@Html.Partial("Header", headerData)
+}
+@section Footer {
+	@Html.Partial("Footer")
+}
+<!-- order header banner section -->
+<section id="aa-catg-head-banner">
+    <img src="~/images/checkout-banner.png" alt="banner thanh toán">
+    <div class="aa-catg-head-banner-area">
+        <div class="container">
+            <div class="aa-catg-head-banner-content">
+                <h2>Đơn hàng</h2>
+                <ol class="breadcrumb">
+                    <li><a href="/">Trang chủ</a></li>
+                    <li style="color:#fff">Thông tin Các đơn đặt hàng</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- order view section -->
+<section id="cart-view">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="cart-view-area">
+                    <div class="cart-view-table">
+                        <form>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Người đặt</th>
+                                            <th>Ngày đặt</th>
+                                            <th>Địa chỉ</th>
+                                            <th>Trạng thái</th>
+                                            <th>Thành tiền</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in Model.orders)
+                                        {
+                                            <tr>
+                                                <th><a class="remove" href="/Cart/ShowCart?id=@order.Key.Id">@order.Key.Id</a></th>
+                                                <td>@order.Key.UserName</td>
+                                                <td>@order.Key.Sentdate</td>
+                                                <td>@order.Key.Address </td>
+                                                
+                                                    @switch (order.Key.Status)
+                                                    {
+                                                        case 0:
+                                                            <td>Đang chờ xác nhận</td>
+                                                            <td>@order.Value</td>
+                                                             <td>
+                                                            <button class="btn btn-danger"><a href="/Order/RemoveOrder?id=@order.Key.Id">Hủy Đơn</a></button>
+                                                            </td>
+                                                            break;
+                                                        case 1:
+                                                        <td>Đang giao hàng</td>
+                                                            <td>@order.Value</td>
+                                                            <td>
+                                                        <button class="btn btn-success"><a href="/Order/Confirm?id=@order.Key.Id">Nhận Hàng></button>
+                                                            </td>
+                                                            break;
+                                                        case 2:
+                                                        <td>Đã nhận</td>
+                                                         <td>@order.Value</td>
+                                                            break;
+                                                        case 3:
+                                                        <td>Đã hủy</td>
+                                                        <td>@order.Value</td>
+                                                            break;
+                                                    }
+                                                
+                                                
+                                                </tr>
+                                            
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
