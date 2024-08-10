@@ -60,7 +60,7 @@
                                         <th scope="col">#</th>
                                         <th scope="col">Tên sản phẩm</th>
                                         <th scope="col">Hình ảnh</th>
-                                        <th scope="col">Số lương</th>
+                                        <th scope="col">Số lương/Giá</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
@@ -75,8 +75,9 @@
                                             <td>
                                             <form asp-action="EditSupplyList" asp-controller="Admin" method="post" style="display: inline;">
                                                     <input type="hidden" name="id" value="@Model.Products.Where(p=>p.Id==item.ProductId).First().Id" />
-                                                <input class="" type="number" name="quantity" value="@item.Quantity" min="1" />
-                                                <button type="submit" class="btn btn-success">Sửa Số Lượng</button>
+                                                <input class="" type="number" placeholder="số lượng" name="quantity" value="@item.Quantity" min="1" />
+                                                <input class="" type="number" placeholder="giá" name="price" value="@item.ImportPrice" min="100"></input>
+                                                <button type="submit" class="btn btn-success">Sửa Lại</button>
                                             </form>
                                             </td>
                                             <td>

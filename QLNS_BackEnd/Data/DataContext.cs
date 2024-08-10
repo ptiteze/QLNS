@@ -380,7 +380,9 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Quantity)
                 .HasDefaultValue(100)
                 .HasColumnName("quantity");
-
+            entity.Property(e => e.ImportPrice)
+                .HasDefaultValue(0)
+                .HasColumnName("import_price");
             entity.HasOne(d => d.Product).WithMany(p => p.SupplyLists)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

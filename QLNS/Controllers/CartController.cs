@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Cart;
@@ -75,7 +76,7 @@ namespace QLNS.Controllers
             string cart_local = HttpContext.Session.GetString("cart_local");
             if (UserName == null)
             {
-				if (cart_local == null)
+				if (cart_local.IsNullOrEmpty())
 				{
 					cart_local = productid.ToString() + ":" + quantity.ToString();
 					HttpContext.Session.SetString("cart_local", cart_local);
@@ -130,7 +131,7 @@ namespace QLNS.Controllers
                             quantity = quantity,
                         };
 						_cart.AddProduct(requestAdd);
-						if (cart_local == null)
+						if (cart_local.IsNullOrEmpty())
 						{
 							cart_local = productid.ToString() + ":" + quantity.ToString();
                             length_order =1;
@@ -154,6 +155,80 @@ namespace QLNS.Controllers
 					return Json(new { error = true, message = ex.Message });
 				}
 			} 
+        }
+        public async Task<IActionResult> AddCart(int productid,int quantity)
+        {
+            Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
+            int length_order = 0;
+            Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
+            string UserName = HttpContext.Session.GetString("Username");
+            string cart_local = HttpContext.Session.GetString("cart_local");
+            if (UserName == null)
+            {
+                if (cart_local.IsNullOrEmpty())
+                {
+                    cart_local = productid.ToString() + ":" + quantity.ToString();
+                    HttpContext.Session.SetString("cart_local", cart_local);
+                    length_order = 1;
+                }
+                else
+                {
+                    string compase = productid.ToString() + ":" + quantity.ToString();
+                    if (cart_local.Contains(compase))
+                    {
+                        return RedirectToAction("ProductDetail", "Product", new {id = productid });
+                    }
+                    cart_local += "|" + compase;
+                    length_order = CountOccurrences(cart_local, "|") + 1;
+
+                    HttpContext.Session.SetString("cart_local", cart_local);
+                }
+                return RedirectToAction("ProductDetail", "Product", new { id = productid });
+                //return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                try
+                {
+                    RequestCheckCart requestCheck = new RequestCheckCart()
+                    {
+                        username = UserName,
+                        productId = productid,
+                    };
+                    if (await _cart.CheckExistCart(requestCheck))
+                    {
+                        length_order = CountOccurrences(cart_local, "|");
+                        return RedirectToAction("ProductDetail", "Product", new { id = productid });
+                    }
+                    else
+                    {
+                        RequestAddCart requestAdd = new RequestAddCart()
+                        {
+                            username = UserName,
+                            productId = productid,
+                            quantity = quantity,
+                        };
+                        _cart.AddProduct(requestAdd);
+                        if (cart_local.IsNullOrEmpty())
+                        {
+                            cart_local = productid.ToString() + ":" + quantity.ToString();
+                            length_order = 1;
+                            HttpContext.Session.SetString("cart_local", cart_local);
+                        }
+                        else
+                        {
+                            cart_local += "|" + productid.ToString() + ":" + quantity.ToString();
+                            length_order = CountOccurrences(cart_local, "|") + 1;
+                            HttpContext.Session.SetString("cart_local", cart_local);
+                        }
+                        return RedirectToAction("ProductDetail", "Product", new { id = productid });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return RedirectToAction("Error", "Home");
+                }
+            }
         }
         public async Task<IActionResult> UpdateCart([FromForm] UpdateListCartRequest request)
         {
@@ -242,6 +317,7 @@ namespace QLNS.Controllers
             Console.WriteLine(cart_local);
             HttpContext.Session.SetString("cart_local", cart_local);
             length_order--;
+            Console.WriteLine(length_order.ToString());
             HttpContext.Session.SetString("length_order", length_order.ToString());
             return RedirectToAction("Index", "Cart");
         }

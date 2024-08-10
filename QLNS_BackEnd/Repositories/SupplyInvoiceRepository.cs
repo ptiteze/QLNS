@@ -12,7 +12,16 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
-                SupplyInvoice si = SingletonAutoMapper.GetInstance().Map<SupplyInvoice>(request);
+                Admin ad = SingletonDataBridge.GetInstance().Admins.Find(request.AdId);
+                Producer pru = SingletonDataBridge.GetInstance().Producers.Find(request.ProducerId);
+                SupplyInvoice si = new SupplyInvoice
+                { //SingletonAutoMapper.GetInstance().Map<SupplyInvoice>(request);
+                    AdId = request.AdId,
+                    ProducerId = request.ProducerId,
+                    SupplyTime = request.SupplyTime,
+                    Ad = ad,
+                    Producer = pru,
+                };
                 SingletonDataBridge.GetInstance().SupplyInvoices.Add(si);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 List<SupplyList> supplyLists = new List<SupplyList>(SingletonDataBridge.GetInstance().SupplyLists);
@@ -24,7 +33,7 @@ namespace QLNS_BackEnd.Repositories
                     {
                         InvoiceId = si.Id,
                         ProductId = supply.ProductId,
-                        ImportPrice = pr.Price/2,
+                        ImportPrice = supply.ImportPrice,
                         QuantityImport = supply.Quantity,
                         Stock = supply.Quantity,
                         Status = true,

@@ -58,6 +58,7 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> ProductDetail(int id)
         {
+            Console.WriteLine(id.ToString());
             List<ProductDTO> products = await _product.GetAllProducts();
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
             List<Review> reviews = await _review.GetReviewsByProductId(id);

@@ -89,7 +89,7 @@
                                         </p>
                                     </div>
                                     <div class="aa-prod-view-bottom">
-                                        <a class="aa-add-to-cart-btn" data-productid=@Model.Product.Id data-quantity=1 style="cursor: pointer;">Thêm vào giỏ hàng</a>
+                                        <a class="aa-add-to-cart-btn" asp-action="AddCart" asp-controller="Cart" asp-route-productid=@Model.Product.Id asp-route-quantity=1 style="cursor: pointer;">Thêm vào giỏ hàng</a>
                                     </div>
                                 </div>
                             </div>

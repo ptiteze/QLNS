@@ -53,6 +53,7 @@ namespace QLNS_BackEnd.Repositories
             {
                 SupplyList sp = SingletonDataBridge.GetInstance().SupplyLists.Where(s => s.ProductId == request.ProductId).FirstOrDefault();
                 sp.Quantity = request.Quantity;
+                sp.ImportPrice = request.ImportPrice;
                 SingletonDataBridge.GetInstance().SupplyLists.Update(sp);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return true;

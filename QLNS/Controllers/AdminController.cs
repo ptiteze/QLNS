@@ -58,10 +58,55 @@ namespace QLNS.Controllers
 
         }
 		//private readonly 
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
 			if(!CheckRole()) return RedirectToAction("Error", "Home");
-            return View();
+			List<OrderDTO> orders = await _order.GetOrders();
+            DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
+            int num_order = orders.Where(o => o.Sentdate >= sevenDaysAgo).Count();
+            var orderIds = orders.Select(o => o.Id).ToList();
+            List<OrderedDTO> ordereds = new List<OrderedDTO>();
+			foreach(int i in orderIds)
+			{
+				ordereds.AddRange(await _ordered.GetOrderedsByOrderId(i));
+			}
+			int totalPrice = 0;
+			List<UserDTO> users = await _user.GetUsers();
+			int num_user = users.Where(u=>u.Created>= sevenDaysAgo).Count();
+			int sum_pr = 0, sum_1 = 0,sum_2 = 0, sum_3 = 0, sum_4 = 0;
+			foreach(OrderedDTO or in ordereds)
+			{
+				sum_pr += or.Qty;
+				ProductDTO pr = await _product.GetProductById(or.ProductId);
+				totalPrice += or.Price*or.Qty;
+				switch (pr.CatalogId)
+				{
+					case 1:
+						sum_1 += or.Qty*or.Price;
+						break;
+                    case 2:
+                        sum_2 += or.Qty * or.Price;
+                        break;
+                    case 3:
+                        sum_3 += or.Qty * or.Price;
+                        break;
+                    default:
+                        sum_4 += or.Qty * or.Price;
+                        break;
+                };
+			}
+			IndexViewModel model = new IndexViewModel()
+			{
+				order = num_order,
+				product = sum_pr,
+				revenue = totalPrice,
+				user = num_user,
+				revenue1 = sum_1,
+				revenue2 = sum_2,
+				revenue3 = sum_3,
+				revenue4 = sum_4,
+			};
+            return View(model);
         }
 		public async Task<IActionResult> Admin() 
 		{
@@ -697,10 +742,13 @@ namespace QLNS.Controllers
             if (!CheckRole()) return RedirectToAction("Error", "Home");
 			try
 			{
+				ProductDTO pr = await _product.GetProductById(id);
 				CreateSupplyListRequest request = new CreateSupplyListRequest()
 				{
 					ProductId = id,
-					Quantity = 100,
+                    Quantity = 100,
+                    ImportPrice = (pr.Price*100)/2,
+					
 				};
 				bool check = await _supplyList.CreateSupplyList(request);
 				if (check)
@@ -729,28 +777,30 @@ namespace QLNS.Controllers
                 if (check)
                 {
                     HttpContext.Session.Remove("errorMsg");
-                    return RedirectToAction("Product", "Admin");
+                    return RedirectToAction("SupplyInvoice", "Admin");
                 }
                 else
                 {
                     HttpContext.Session.SetString("errorMsg", "Hủy Nhập không thành công");
-                    return RedirectToAction("Product", "Admin");
+                    return RedirectToAction("SupplyInvoice", "Admin");
                 }
             }
             catch
             {
                 HttpContext.Session.SetString("errorMsg", "Hủy Nhập không thành công");
-                return RedirectToAction("Product", "Admin");
+                return RedirectToAction("SupplyInvoice", "Admin");
             }
         }
-		public async Task<IActionResult> EditSupplyList(int id, int quantity)
+		public async Task<IActionResult> EditSupplyList(int id, int quantity, int price)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
 			try
 			{
+				ProductDTO pr = await _product.GetProductById(id);
 				CreateSupplyListRequest request = new CreateSupplyListRequest()
 				{
 					ProductId = id,
+					ImportPrice = price,
 					Quantity = quantity,
 				};
 				bool check = await _supplyList.UpdateSupplyList(request);
