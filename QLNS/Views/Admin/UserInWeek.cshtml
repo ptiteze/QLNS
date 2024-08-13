@@ -1,0 +1,85 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@using QLNS.DTO
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "User View";
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Admin.UserViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <!--<div class="col-lg-12">
+              <button class="add-catalog"><a href="${pageContext.request.contextPath}/admin/user/add">Thêm User</a></button>
+            </div>  -->
+            <div class="col-lg-12">
+                <p style="color:red; display:block">
+                    @errorMsg
+                </p>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Danh sách User tạo mới trong tuần</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Tên</th>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Số điện thoại</th>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Ngày tạo</th>
+                                        <th scope="col">Hành động</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (UserDTO item in Model.Users)
+                                    {
+                                        <tr>
+                                            <td scope="row">#</td>
+                                            <td>@item.Nameuser</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.Phone</td>
+                                            <td>@item.Username</td>
+                                            <td>@item.Created</td>
+                                            @if (item.Status == 1)
+                                            {
+                                                <td>
+                                                    <button class="btn btn-danger"><a href="/Admin/LockUser?username=@item.Username">Khóa</a></button>
+
+                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td>
+                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?username=@item.Username">Mở Khóa</a></button>
+
+                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                </td>
+                                            }
+
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>

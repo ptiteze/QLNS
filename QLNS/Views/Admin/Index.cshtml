@@ -19,7 +19,12 @@
             <div class="row row-group m-0">
               <div class="col-12 col-lg-6 col-xl-3 border-light">
                 <div class="card-body">
-                  <h5 class="text-white mb-0">@Model.order <span class="float-right"><i class="fa fa-shopping-cart"></i></span>
+                            <h5 class="text-white mb-0">
+                                @Model.order <span class="float-right">
+                                    <a href="/Admin/OrderInWeek" class="text-white">
+                                        <i class="fa fa-shopping-cart"></i>
+                                    </a>
+                                </span>
                   </h5>
                   <div class="progress my-3" style="height:3px;">
                     <div class="progress-bar" style="width:55%"></div>
@@ -40,17 +45,17 @@
               </div>
               <div class="col-12 col-lg-6 col-xl-3 border-light">
                 <div class="card-body">
-                  <h5 class="text-white mb-0">@Model.user <span class="float-right"><i class="fa fa-eye"></i></span></h5>
+                            <h5 class="text-white mb-0">@Model.user <span class="float-right"><a href="/Admin/UserInWeek" class="text-white"><i class="fa fa-eye"></i></a></span></h5>
                   <div class="progress my-3" style="height:3px;">
                     <div class="progress-bar" style="width:55%"></div>
                   </div>
-                  <p class="mb-0 text-white small-font">Tài khoản mới (theo tuần)<span class="float-right">+5.2% <i
+                  <p class="mb-0 text-white small-font">Tài khoản mới (theo tuần)<span class="float-right">+0.0% <i
                         class="zmdi zmdi-long-arrow-up"></i></span></p>
                 </div>
               </div>
               <div class="col-12 col-lg-6 col-xl-3 border-light">
                 <div class="card-body">
-                  <h5 class="text-white mb-0">@Model.product <span class="float-right"><i class="fa fa-envira"></i></span></h5>
+                            <h5 class="text-white mb-0">@Model.product <span class="float-right"><a href="/Admin/ProductInWeek" class="text-white"><i class="fa fa-envira"></i></a></span></h5>
                   <div class="progress my-3" style="height:3px;">
                     <div class="progress-bar" style="width:55%"></div>
                   </div>
@@ -67,7 +72,11 @@
               <div class="card-header">Danh mục bán chạy
               </div>
               <div class="card-body">
-                <div class="chart-container-2">
+                <div class="chart-container-2"
+                             data-revenue1="@Model.revenue1"
+                             data-revenue2="@Model.revenue2"
+                             data-revenue3="@Model.revenue3"
+                             data-revenue4="@Model.revenue4">
                   <canvas id="chart2"></canvas>
                 </div>
               </div>
@@ -77,22 +86,22 @@
                     <tr>
                       <td><i class="fa fa-circle text-white mr-2"></i>Rau sạch</td>
                       <td>@Model.revenue1 VNĐ</td>
-                      <td>+55%</td>
+                      <td>+@(Model.revenue1*100/Model.revenue)%</td>
                     </tr>
                     <tr>
                       <td><i class="fa fa-circle text-light-1 mr-2"></i>Củ quả</td>
                       <td>@Model.revenue2 VNĐ</td>
-                      <td>+25%</td>
+                      <td>+@(Model.revenue2*100/Model.revenue)%</td>
                     </tr>
                     <tr>
                       <td><i class="fa fa-circle text-light-2 mr-2"></i>Hạt</td>
                       <td>@Model.revenue3 VNĐ</td>
-                      <td>+15%</td>
+                      <td>+@(Model.revenue3 * 100 / Model.revenue)%</td>
                     </tr>
                     <tr>
-                      <td><i class="fa fa-circle text-light-3 mr-2"></i>Mật ong</td>
+                      <td><i class="fa fa-circle text-light-3 mr-2"></i>Mật</td>
                       <td>@Model.revenue4 VNĐ</td>
-                      <td>+5%</td>
+                      <td>+@(Model.revenue4 * 100 / Model.revenue)%</td>
                     </tr>
                   </tbody>
                 </table>

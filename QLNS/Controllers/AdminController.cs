@@ -63,7 +63,8 @@ namespace QLNS.Controllers
 			if(!CheckRole()) return RedirectToAction("Error", "Home");
 			List<OrderDTO> orders = await _order.GetOrders();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
-            int num_order = orders.Where(o => o.Sentdate >= sevenDaysAgo).Count();
+            orders = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
+            int num_order = orders.Count();
             var orderIds = orders.Select(o => o.Id).ToList();
             List<OrderedDTO> ordereds = new List<OrderedDTO>();
 			foreach(int i in orderIds)
@@ -955,5 +956,138 @@ namespace QLNS.Controllers
 
             }
         }
+		public async Task<IActionResult> DeleteOrder(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            OrderDTO order = await _order.GetOrderById(id);
+			order.Status = 3;
+            bool check = await _order.UpDateOrder(order);
+            if (check)
+            {
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Order");
+            }
+            else
+            {
+                HttpContext.Session.SetString("errorMsg", "Hủy đơn không thành công");
+                return RedirectToAction("Order");
+
+            }
+        }
+        // In Week
+        public async Task<IActionResult> OrderInWeek()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            List<TransactionDTO> transactions = await _transaction.GetTransactions();
+            if (transactions == null) transactions = new List<TransactionDTO>();
+            List<OrderDTO> orders = await _order.GetOrders();
+            DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
+			List<OrderDTO> ordersInWeek = orders.Where(o => o.Sentdate > sevenDaysAgo).ToList();
+            if (ordersInWeek == null) ordersInWeek = new List<OrderDTO>();
+            Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();
+
+            foreach (OrderDTO o in ordersInWeek)
+            {
+                int sumprice = 0;
+                List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(o.Id);
+                if (ordereds == null) ordereds = new List<OrderedDTO>();
+                Console.WriteLine(ordereds.Count.ToString());
+                foreach (OrderedDTO ordered in ordereds)
+                {
+                    sumprice += ordered.Price * ordered.Qty;
+                    Console.WriteLine(sumprice.ToString());
+                }
+                order.Add(o, sumprice);
+            }
+            ShowOrderViewModel model = new ShowOrderViewModel()
+            {
+                orders = order,
+                transactions = transactions,
+            };
+            return View(model);
+        }
+		public async Task<IActionResult> UserInWeek()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            List<UserDTO> users = await _user.GetUsers();
+            DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
+			List<UserDTO> usersInWeek = users.Where(u => u.Created > sevenDaysAgo).ToList();
+			if (usersInWeek.IsNullOrEmpty()) usersInWeek = new List<UserDTO>();
+            UserViewModel Model = new UserViewModel()
+            {
+                Users = usersInWeek,
+            };
+            return View(Model);
+        }
+		public async Task<IActionResult> ProductInWeek()
+		{
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+			HashSet<ProductDTO> products = new HashSet<ProductDTO>();
+			Dictionary<int, int> qt = new Dictionary<int, int>(); // idProduct, quantity
+            List<OrderDTO> orders = await _order.GetOrders();
+            DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
+			orders = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
+            var orderIds = orders.Select(o => o.Id).ToList();
+            List<OrderedDTO> ordereds = new List<OrderedDTO>();
+            foreach (int i in orderIds)
+            {
+                ordereds.AddRange(await _ordered.GetOrderedsByOrderId(i));
+            }
+            foreach (OrderedDTO or in ordereds)
+            {
+                
+                ProductDTO pr = await _product.GetProductById(or.ProductId);
+				products.Add(pr);
+                if (qt.ContainsKey(pr.Id))
+                {
+                    qt[pr.Id] += or.Qty;
+                }
+                else
+                {
+                    qt.Add(pr.Id, or.Qty);
+                }
+
+            }
+			ProductInWeekViewModel model = new ProductInWeekViewModel()
+			{
+				Catalogs = catalogs,
+				Products = products.ToList(),
+				quantity = qt,
+				SupplyList = null,
+            };
+            return View(model);
+        }
+		public async Task<IActionResult> ProductExpiry()
+		{
+			List<SupplyInvoiceDTO> spa = await _supplyInvoice.GetAllSupplyInvoice();
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+            List<ProductDTO> products = await _product.GetAllProducts();
+            List<SupplyInvoiceDTO>  sp = spa.OrderByDescending(s => s.SupplyTime).ToList();
+			Dictionary<ImportDetailDTO, DateOnly> spt = new Dictionary<ImportDetailDTO, DateOnly>();
+			List<ImportDetailDTO> ip = new List<ImportDetailDTO>();
+			foreach(SupplyInvoiceDTO supply in sp)
+			{
+				List<ImportDetailDTO> ipx = await _importDetail.GetImportDetailsBySupplyId(supply.Id);
+				if (ipx.IsNullOrEmpty()) ipx = new List<ImportDetailDTO>();
+				ip = ipx.Where(i=>i.Status==false).ToList();
+				foreach(ImportDetailDTO import in ip)
+				{
+					ProductDTO pr = products.Where(p => p.Id == import.ProductId).FirstOrDefault();
+					DateOnly date = supply.SupplyTime.AddDays(pr.ExpiryDate??0);
+                    spt.Add(import, date);
+
+                }
+
+            }
+			ProductExpiryViewModel model = new ProductExpiryViewModel() 
+			{
+				Catalogs = catalogs,
+				Products = products,
+				SP = sp,
+				SPT = spt,
+			};
+			return View(model);
+		}
     }
 }

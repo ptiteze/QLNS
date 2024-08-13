@@ -150,9 +150,6 @@ public partial class DataContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.ImportPrice).HasColumnName("import_price");
             entity.Property(e => e.QuantityImport).HasColumnName("quantity_import");
-            entity.Property(e => e.S)
-                .HasColumnType("image")
-                .HasColumnName("s");
             entity.Property(e => e.Status)
                 .HasDefaultValue(true)
                 .HasColumnName("status");

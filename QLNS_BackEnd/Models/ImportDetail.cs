@@ -17,8 +17,6 @@ public partial class ImportDetail
 
     public bool? Status { get; set; }
 
-    public byte[]? S { get; set; }
-
     public virtual SupplyInvoice Invoice { get; set; } = null!;
 
     public virtual Product Product { get; set; } = null!;

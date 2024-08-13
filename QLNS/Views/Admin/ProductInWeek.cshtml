@@ -1,42 +1,35 @@
-﻿@using QLNS.DTO
-@*
+﻿@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
+@using QLNS.DTO
 @inject IHttpContextAccessor HttpContextAccessor
 @{
-	Layout = "_AdminLayout";
-	ViewData["Title"] = "Proudct View";
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Proudct In Week View";
     string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
 }
-@model QLNS.ViewModels.Admin.ProductViewModel
+@model QLNS.ViewModels.Admin.ProductInWeekViewModel
 @section AdminHeader {
-	@Html.Partial("AdminHeader")
+    @Html.Partial("AdminHeader")
 }
 @section AdminFooter {
-	@Html.Partial("AdminFooter")
+    @Html.Partial("AdminFooter")
 }
 <div class="content-wrapper">
     <div class="container-fluid">
 
         <div class="row mt-3">
             <div class="col-lg-12">
-                <button class="add-catalog"><a href="/Admin/AddProduct">Thêm sản phẩm</a></button>
-                <br />
-                <button class="add-catalog"><a href="/Admin/ProductExpiry">Các sản phẩm hết hạn</a></button>
-                <p style="color:red; display:block">
-                    @errorMsg
-                </p>
             </div>
             <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Danh sách sản phẩm</h5>
+                        <h5 class="card-title">Danh sách sản phẩm được bán trong tuần</h5>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Hành động</th>
                                         <th scope="col">Tên sản phẩm</th>
                                         <th scope="col">Hình ảnh</th>
                                         <th scope="col">Danh mục</th>
@@ -46,7 +39,7 @@
                                         <th scope="col">Status</th>
                                         <th scope="col">Giảm giá</th>
                                         <th scope="col">Ngày tạo</th>
-                                        
+                                        <th scope="col">Số lượng bán</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -54,22 +47,9 @@
                                     {
                                         <tr>
                                             <th scope="row">@item.Id</th>
-                                            <td>
-                                                <button class="btn btn-danger"><a href="/Admin/DeleteProduct?id=@item.Id">Xóa</a></button>
-
-                                                <button class="btn btn-success"><a href="/Admin/EditProduct?id=@item.Id">Sửa</a></button>
-                                                @if (Model.SupplyList.Any(s => s.ProductId == item.Id))
-                                                {
-                                                    <button class="btn btn-danger"><a href="/Admin/DeleteSupplyList?id=@Model.SupplyList.Where(s=>s.ProductId==item.Id).First().Id">Hủy nhập</a></button>
-                                                }
-                                                else
-                                                {
-                                                    <button class="btn btn-success"><a href="/Admin/AddSupplyList?id=@item.Id">Nhập</a></button>
-                                                }
-                                            </td>
                                             <td>@item.Name</td>
                                             <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@item.ImageLink" alt="@item.ImageLink"></td>
-                                            <td>@Model.Catalogs.Where(c=>c.Id==@item.CatalogId).FirstOrDefault().Name</td>
+                                            <td>@Model.Catalogs.Where(c => c.Id == @item.CatalogId).FirstOrDefault().Name</td>
                                             <td>@item.Quantity</td>
                                             <td>@item.Unit</td>
                                             <td>@item.Price</td>
@@ -83,7 +63,7 @@
                                             }
                                             <td>@item.Discount %</td>
                                             <td>@item.Created</td>
-                                            
+                                            <td>@Model.quantity[item.Id]</td>
                                         </tr>
                                     }
                                 </tbody>

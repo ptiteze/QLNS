@@ -37,7 +37,6 @@ namespace QLNS_BackEnd.Repositories
                         QuantityImport = supply.Quantity,
                         Stock = supply.Quantity,
                         Status = true,
-                        S= null,
                     };
                     SingletonDataBridge.GetInstance().ImportDetails.Add(import);
                     SingletonDataBridge.GetInstance().SaveChanges();

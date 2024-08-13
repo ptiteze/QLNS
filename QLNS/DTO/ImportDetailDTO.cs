@@ -14,6 +14,5 @@
 
         public bool? Status { get; set; }
 
-        public byte[]? S { get; set; }
     }
 }
