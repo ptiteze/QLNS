@@ -72,7 +72,7 @@
                                             <td>@Model.Catalogs.Where(c=>c.Id==@item.CatalogId).FirstOrDefault().Name</td>
                                             <td>@item.Quantity</td>
                                             <td>@item.Unit</td>
-                                            <td>@item.Price</td>
+                                            <td>@string.Format("{0:N0}", item.Price) VND</td>
                                             @if (item.Status == 1)
                                             {
                                                 <td>Đang bán</td>

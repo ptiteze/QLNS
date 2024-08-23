@@ -147,5 +147,22 @@ namespace QLNS.Controllers
 
             }
         }
+        public async Task<IActionResult> RemoveOrder(int id)
+        {
+            string UserName = HttpContext.Session.GetString("Username");
+            if (UserName == null) return RedirectToAction("Index", "Home");
+            OrderDTO order = await _order.GetOrderById(id);
+            order.Status = 3;
+            bool check = await _order.UpDateOrder(order);
+            if (check)
+            {
+                //HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Error", "Home");
+            }
+            else
+            {
+                return RedirectToAction("ShowOrder");
+            }
+        }
     }
 }

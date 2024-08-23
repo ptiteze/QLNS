@@ -76,15 +76,15 @@ namespace QLNS_BackEnd.Repositories
                 Order order = SingletonDataBridge.GetInstance().Orders.Find(id);
                 order.Status = 3;
                 SingletonDataBridge.GetInstance().SaveChanges();
-                //List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.Where(o => o.OrderId == id).ToList();
-                //List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
-                //foreach (Ordered o in ordereds)
-                //{
-                //    Product pr = products.Where(p => p.Id == o.ProductId).FirstOrDefault();
-                //    List<ImportDetail> ips = SingletonDataBridge.GetInstance().ImportDetails.Where(
-                //        i => i.ProductId == pr.Id).ToList();
-                //    ips = ips.OrderByDescending(i => (i.QuantityImport ?? 0) - (i.Stock ?? 0)).ToList();
-                //}
+                List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.Where(o => o.OrderId == id).ToList();
+                List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
+                foreach (Ordered o in ordereds)
+                {
+                    Product pr = products.Where(p => p.Id == o.ProductId).FirstOrDefault();
+                    pr.Quantity += o.Qty;
+                    SingletonDataBridge.GetInstance().Products.Update(pr);
+                    SingletonDataBridge.GetInstance().SaveChanges();
+                }
                 return true;
             }
             catch
