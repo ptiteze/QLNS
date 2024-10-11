@@ -86,22 +86,22 @@
                     <tr>
                       <td><i class="fa fa-circle text-white mr-2"></i>Rau sạch</td>
                       <td>@string.Format("{0:N0}", @Model.revenue1) VNĐ</td>
-                      <td>+@(Model.revenue1*100/Model.revenue)%</td>
+                      <td>+@(Model.revenue == 0 ? 0 : (Model.revenue1 * 100 / Model.revenue)) %</td>
                     </tr>
                     <tr>
                       <td><i class="fa fa-circle text-light-1 mr-2"></i>Củ quả</td>
                       <td>@string.Format("{0:N0}", @Model.revenue2) VNĐ</td>
-                      <td>+@(Model.revenue2*100/Model.revenue)%</td>
+                      <td>+@(Model.revenue == 0 ? 0 : (Model.revenue2 * 100 / Model.revenue)) %</td>
                     </tr>
                     <tr>
                       <td><i class="fa fa-circle text-light-2 mr-2"></i>Hạt</td>
                       <td>@string.Format("{0:N0}", @Model.revenue3) VNĐ</td>
-                      <td>+@(Model.revenue3 * 100 / Model.revenue)%</td>
+                      <td>+@(Model.revenue == 0 ? 0 : (Model.revenue3 * 100 / Model.revenue)) %</td>
                     </tr>
                     <tr>
                       <td><i class="fa fa-circle text-light-3 mr-2"></i>Mật</td>
                       <td>@string.Format("{0:N0}", @Model.revenue4) VNĐ</td>
-                      <td>+@(Model.revenue4 * 100 / Model.revenue)%</td>
+                      <td>+@(Model.revenue == 0 ? 0 : (Model.revenue4 * 100 / Model.revenue))%</td>
                     </tr>
                   </tbody>
                 </table>

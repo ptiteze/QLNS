@@ -8,9 +8,15 @@ namespace QLNS_BackEnd.Repositories
 {
     public class AdminRepository : IAdmin
     {
-		public bool CheckExits(RequestCheckAdmin request)
+        private readonly IAccount Iacc;
+
+        public AdminRepository(IAccount accountRepository)
+        {
+            Iacc = accountRepository;
+        }
+        public bool CheckExits(RequestCheckAdmin request)
 		{
-			Admin admin = SingletonDataBridge.GetInstance().Admins.Where(a => a.Username == request.username || a.Email == request.email || a.Phone == request.phone).FirstOrDefault();
+			Admin admin = SingletonDataBridge.GetInstance().Admins.Where(a => a.Email == request.email || a.Phone == request.phone).FirstOrDefault();
 			if (admin != null) return true;
 			return false;
 		}
@@ -19,7 +25,21 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
-                Admin admin = SingletonAutoMapper.GetInstance().Map<Admin>(request);
+                AccountRepository accountRepository;
+                Admin admin = new Admin()
+                {
+                    Email = request.Email,
+                    Phone = request.Phone,
+                    Name = request.Name,
+                };
+                RequestLogin requestLogin = new RequestLogin()
+                {
+                    username = request.Username,
+                    password = request.Password,
+                };
+                int idAccount = Iacc.CreateLogin(requestLogin, request.Role);
+                if (idAccount == 0) return false;
+                admin.IdAccount = idAccount;
                 SingletonDataBridge.GetInstance().Admins.Add(admin);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return true;
@@ -37,21 +57,20 @@ namespace QLNS_BackEnd.Repositories
             {
                 Admin admin = SingletonDataBridge.GetInstance().Admins.Find(id);
                 Order order = SingletonDataBridge.GetInstance().Orders.Where(e => e.AdminId == id).FirstOrDefault();
-                ProductPrice pp = SingletonDataBridge.GetInstance().ProductPrices.Where(e => e.AdminId == id).FirstOrDefault();
                 SupplyInvoice si = SingletonDataBridge.GetInstance().SupplyInvoices.Where(e => e.AdId == id).FirstOrDefault();
-                if (order == null && pp == null && si == null)
+                if (order == null && si == null)
                 {
+                    if(!Iacc.LockAccount(admin.IdAccount)) return false;
+                    
                     SingletonDataBridge.GetInstance().Admins.Remove(admin);
                     SingletonDataBridge.GetInstance().SaveChanges();
                     return true;
                 }
                 else
                 {
-                    admin.Status = 0;
-                    SingletonDataBridge.GetInstance().Admins.Update(admin);
-                    SingletonDataBridge.GetInstance().SaveChanges();
-                    return true;
+                    return Iacc.LockAccount(admin.IdAccount);
                 }
+                
             }
             catch {
                 return false;
@@ -70,57 +89,15 @@ namespace QLNS_BackEnd.Repositories
                 SingletonDataBridge.GetInstance().Admins.ToList());
         }
 
-		public InfoLogin Login(RequestLogin request)
-		{
-			AdminDTO thislogin = SingletonAutoMapper.GetInstance().Map<AdminDTO>(
-				SingletonDataBridge.GetInstance().Admins.Where(u => u.Username == request.username && u.Password == request.password).SingleOrDefault());
-			if (thislogin != null)
-			{
-				var info = new InfoLogin()
-				{
-					Email = thislogin.Email,
-					Name = thislogin.Name,
-					Status = thislogin.Status,
-					Phone = thislogin.Phone,
-					Username = thislogin.Username,
-					role = "ADMIN",
-				};
-                //return new ApiResponse<InfoLogin>()
-                //{
-                //    Data = info,
-                //    Message = "Đăng nhập thành công",
-                    
-                //};
-				return info;
-			}
-			return null;
-		}
-
-		public bool UnLockAdmin(int id)
-        {
-            try
-            {
-                Admin admin = SingletonDataBridge.GetInstance().Admins.Find(id);
-                admin.Status = 1;
-                SingletonDataBridge.GetInstance().Admins.Update(admin);
-                SingletonDataBridge.GetInstance().SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
         public bool UpdateAdmin(UpdateAdmin request)
         {
             try
             {
                 Admin admin = SingletonDataBridge.GetInstance().Admins.Find(request.Id);
                 admin.Name = request.Name;
-                admin.Password = request.Password;
                 admin.Phone = request.Phone;
                 admin.Email = request.Email;
+                if (!Iacc.ChangePassword(request.Password, admin.IdAccount)) return false;
                 SingletonDataBridge.GetInstance().Admins.Update(admin);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return true;

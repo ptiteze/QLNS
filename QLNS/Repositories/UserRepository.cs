@@ -2,6 +2,7 @@
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
+using QLNS.ModelsParameter.User;
 
 namespace QLNS.Repositories
 {
@@ -28,50 +29,7 @@ namespace QLNS.Repositories
 			}
 		}
 
-        public async Task<bool> LockUser(string username)
-        {
-			HttpResponseMessage response = await _httpClient.PostAsync(BaseUrl + $"/lock/{username}", null);
-			if (response.IsSuccessStatusCode)
-			{
-				var result = await response.Content.ReadFromJsonAsync<bool>();
-				return result;
-			}
-			else
-			{
-				return false;
-			}
-
-		}
-
-        public async Task<InfoLogin> Login(RequestLogin request)
-        {
-			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl, request);
-			if (response.IsSuccessStatusCode)
-			{
-				var result = await response.Content.ReadFromJsonAsync<InfoLogin>();
-				return result;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-        public async Task<bool> UnLockUser(string username)
-        {
-			HttpResponseMessage response = await _httpClient.PostAsync(BaseUrl + $"/unlock/{username}", null);
-			if (response.IsSuccessStatusCode)
-			{
-				var result = await response.Content.ReadFromJsonAsync<bool>();
-				return result;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-        public async Task<bool> CreateUser(UserDTO request)
+        public async Task<bool> CreateUser(AddUser request)
         {
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync(BaseUrl, request);
             if (response.IsSuccessStatusCode)
@@ -96,6 +54,20 @@ namespace QLNS.Repositories
             else
             {
                 return false;
+            }
+        }
+
+        public async Task<UserDTO> GetUserById(int id)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<UserDTO>();
+                return result;
+            }
+            else
+            {
+                return null;
             }
         }
     }

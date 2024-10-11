@@ -16,9 +16,9 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<ISupplyInvoice, SupplyInvoiceRepository>()
 				.AddTransient<IImportDetail, ImportDetailRepository>()
 				.AddTransient<IOrder, OrderRepository>()
-				.AddTransient<ITransaction, TransactionRepository>()
 				.AddTransient<IOrdered,  OrderedRepository>()
-				.AddTransient<ISlide, SlideRepository>();
+				.AddTransient<ISlide, SlideRepository>()
+				.AddTransient<IAccount, AccountRepository>();
 // Add services to the container.
 
 builder.Services.AddControllers();

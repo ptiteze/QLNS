@@ -14,10 +14,10 @@ namespace QLNS_BackEnd.Controllers
 		{
 			_cart = cart;
 		}
-		[HttpGet("{username}")]
-		public ActionResult GetCartsByUsername(string username) 
+		[HttpGet("{id}")]
+		public ActionResult GetCartsByUserid(int id) 
 		{
-			var res = _cart.GetCartsByUsername(username);
+			var res = _cart.GetCartsByUserId(id);
 			if (res == null)
 			{
 				var errorResponse = new

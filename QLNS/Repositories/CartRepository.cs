@@ -44,9 +44,9 @@ namespace QLNS.Repositories
 			}
 		}
 
-        public async Task<List<CartDTO>?> GetCartsByUsername(string username)
+        public async Task<List<CartDTO>?> GetCartsByUserId(int id)
         {
-			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{username}");
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+$"/{id}");
 			if (response.IsSuccessStatusCode)
 			{
 				var result = await response.Content.ReadFromJsonAsync<List<CartDTO>>();

@@ -15,10 +15,10 @@ namespace QLNS_BackEnd.Controllers
         {
             _order = order;
         }
-        [HttpGet("user/{username}")]
-        public IActionResult GetOrdersByUsername(string username)
+        [HttpGet("user/{id}")]
+        public IActionResult GetOrdersByUsername(int id)
         {
-            var res = _order.GetOrdersByUsername(username);
+            var res = _order.GetOrdersByUserId(id);
             if (res == null)
             {
                 var errorResponse = new

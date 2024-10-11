@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Microsoft.EntityFrameworkCore;
 using QLNS_BackEnd.Models;
 
@@ -16,6 +17,8 @@ public partial class DataContext : DbContext
     {
     }
 
+    public virtual DbSet<Account> Accounts { get; set; }
+
     public virtual DbSet<Admin> Admins { get; set; }
 
     public virtual DbSet<Boardnew> Boardnews { get; set; }
@@ -28,15 +31,17 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<Order> Orders { get; set; }
 
+    public virtual DbSet<OrderStatus> OrderStatuses { get; set; }
+
     public virtual DbSet<Ordered> Ordereds { get; set; }
 
     public virtual DbSet<Producer> Producers { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<ProductPrice> ProductPrices { get; set; }
-
     public virtual DbSet<Review> Reviews { get; set; }
+
+    public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Slide> Slides { get; set; }
 
@@ -44,42 +49,63 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<SupplyList> SupplyLists { get; set; }
 
-    public virtual DbSet<Transaction> Transactions { get; set; }
+    public virtual DbSet<Used> Useds { get; set; }
+
+    public virtual DbSet<UsedProduct> UsedProducts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-LL3CDGR;Initial Catalog=QLNS2;User ID=sa;Password=nhitnho;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-LL3CDGR;Initial Catalog=QLNS3;User ID=sa;Password=nhitnho;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Account>(entity =>
+        {
+            entity.ToTable("account");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.IdRole).HasColumnName("id_role");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .HasColumnName("password");
+            entity.Property(e => e.Status)
+                .HasDefaultValue(true)
+                .HasComment("1-Đang hoạt đông; 0-Đã bị khóa")
+                .HasColumnName("status");
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .HasColumnName("username");
+
+            entity.HasOne(d => d.IdRoleNavigation).WithMany(p => p.Accounts)
+                .HasForeignKey(d => d.IdRole)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_account_roles");
+        });
+
         modelBuilder.Entity<Admin>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__admin__3213E83F4640B4FB");
 
             entity.ToTable("admin");
 
-            entity.HasIndex(e => e.Username, "UQ__admin__F3DBC5728070400F").IsUnique();
-
-            entity.Property(e => e.Id)
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Email)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("email");
+            entity.Property(e => e.IdAccount).HasColumnName("id_account");
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
-            entity.Property(e => e.Password)
-                .HasMaxLength(50)
-                .HasColumnName("password");
-            entity.Property(e => e.Status)
-                .HasColumnName("status");
-            entity.Property(e => e.Username)
-                .HasMaxLength(50)
-                .HasColumnName("username");
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .HasColumnName("phone");
-            entity.Property(e => e.Email)
-                .HasMaxLength(50)
-                .HasColumnName("email");
+
+            entity.HasOne(d => d.IdAccountNavigation).WithMany(p => p.Admins)
+                .HasForeignKey(d => d.IdAccount)
+                .HasConstraintName("FK_admin_account");
         });
 
         modelBuilder.Entity<Boardnew>(entity =>
@@ -106,13 +132,11 @@ public partial class DataContext : DbContext
 
         modelBuilder.Entity<Cart>(entity =>
         {
-            entity.HasKey(e => new { e.UserName, e.ProductId });
+            entity.HasKey(e => new { e.UserId, e.ProductId }).HasName("PK_cart_1");
 
             entity.ToTable("cart");
 
-            entity.Property(e => e.UserName)
-                .HasMaxLength(50)
-                .HasColumnName("userName");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.Quantity).HasColumnName("quantity");
 
@@ -121,15 +145,15 @@ public partial class DataContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_cart_product");
 
-            entity.HasOne(d => d.UserNameNavigation).WithMany(p => p.Carts)
-                .HasForeignKey(d => d.UserName)
+            entity.HasOne(d => d.User).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_cart_users");
         });
 
         modelBuilder.Entity<Catalog>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__catalog__3213E83F08BAD522");
+            entity.HasKey(e => e.Id).HasName("PK__catalog__3213E83FF624631C");
 
             entity.ToTable("catalog");
 
@@ -177,25 +201,48 @@ public partial class DataContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("address");
             entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.Amount).HasColumnName("amount");
+            entity.Property(e => e.Message)
+                .HasColumnType("text")
+                .HasColumnName("message");
+            entity.Property(e => e.Payment)
+                .HasMaxLength(30)
+                .HasColumnName("payment");
             entity.Property(e => e.Receiveddate).HasColumnName("receiveddate");
             entity.Property(e => e.Sentdate).HasColumnName("sentdate");
             entity.Property(e => e.Status)
                 .HasDefaultValue(0)
                 .HasComment("0 : chưa hoàn thành, 1 hoàn thành")
                 .HasColumnName("status");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
-                .HasColumnName("userName");
+                .HasColumnName("user_name");
+            entity.Property(e => e.UserMail)
+                .HasMaxLength(30)
+                .HasColumnName("user_mail");
+            entity.Property(e => e.UserPhone)
+                .HasMaxLength(20)
+                .HasColumnName("user_phone");
 
-            entity.HasOne(d => d.UserNameNavigation).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.AdminId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_order_admin");
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK_order_order_status");
 
-            entity.HasOne(d => d.UserName1).WithMany(p => p.Orders)
-                .HasForeignKey(d => d.UserName)
+            entity.HasOne(d => d.User).WithMany(p => p.Orders)
+                .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_order_users");
+        });
+
+        modelBuilder.Entity<OrderStatus>(entity =>
+        {
+            entity.ToTable("order_status");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Ordered>(entity =>
@@ -204,9 +251,7 @@ public partial class DataContext : DbContext
 
             entity.ToTable("ordered");
 
-            entity.Property(e => e.OrderId)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("order_id");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.Qty).HasColumnName("qty");
@@ -226,10 +271,7 @@ public partial class DataContext : DbContext
         {
             entity.ToTable("producer");
 
-            entity.Property(e => e.Id)
-                //.ValueGeneratedNever()
-				.ValueGeneratedOnAdd()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Address)
                 .HasMaxLength(50)
                 .HasColumnName("address");
@@ -270,10 +312,10 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
+            entity.Property(e => e.Price).HasColumnName("price");
             entity.Property(e => e.Quantity)
+                .HasDefaultValue(0)
                 .HasColumnName("quantity");
-            entity.Property(e => e.Price)
-                .HasColumnName("price");
             entity.Property(e => e.Status).HasColumnName("status");
             entity.Property(e => e.Unit)
                 .HasMaxLength(10)
@@ -283,30 +325,7 @@ public partial class DataContext : DbContext
             entity.HasOne(d => d.Catalog).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CatalogId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_product_catalog1");
-        });
-
-        modelBuilder.Entity<ProductPrice>(entity =>
-        {
-            entity.HasKey(e => new { e.ProductId, e.AppliedDate });
-
-            entity.ToTable("product_price");
-
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
-            entity.Property(e => e.AppliedDate).HasColumnName("applied__date");
-            entity.Property(e => e.AdminId)
-                .HasColumnName("admin_id");
-            entity.Property(e => e.Price).HasColumnName("price");
-
-            entity.HasOne(d => d.Admin).WithMany(p => p.ProductPrices)
-                .HasForeignKey(d => d.AdminId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_product_price_admin");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductPrices)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_product_price_product");
+                .HasConstraintName("FK_product_catalog");
         });
 
         modelBuilder.Entity<Review>(entity =>
@@ -326,13 +345,24 @@ public partial class DataContext : DbContext
             entity.Property(e => e.ProductId).HasColumnName("product_id");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("roles");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Description)
+                .HasColumnType("text")
+                .HasColumnName("description");
+            entity.Property(e => e.Name)
+                .HasMaxLength(50)
+                .HasColumnName("name");
+        });
+
         modelBuilder.Entity<Slide>(entity =>
         {
             entity.ToTable("slides");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.ContentSlide)
                 .HasMaxLength(200)
                 .HasColumnName("content_slide");
@@ -352,8 +382,7 @@ public partial class DataContext : DbContext
             entity.ToTable("supply_Invoice");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AdId)
-                .HasColumnName("ad_id");
+            entity.Property(e => e.AdId).HasColumnName("ad_id");
             entity.Property(e => e.ProducerId).HasColumnName("producer_id");
             entity.Property(e => e.SupplyTime).HasColumnName("supply_time");
 
@@ -373,82 +402,74 @@ public partial class DataContext : DbContext
             entity.ToTable("supply_list");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImportPrice)
+                .HasDefaultValue(0)
+                .HasColumnName("import_price");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.Quantity)
                 .HasDefaultValue(100)
                 .HasColumnName("quantity");
-            entity.Property(e => e.ImportPrice)
-                .HasDefaultValue(0)
-                .HasColumnName("import_price");
+
             entity.HasOne(d => d.Product).WithMany(p => p.SupplyLists)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_supply_list_product");
         });
 
-        modelBuilder.Entity<Transaction>(entity =>
+        modelBuilder.Entity<Used>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__transact__3213E83FF4F8EE78");
-
-            entity.ToTable("transactions");
+            entity.ToTable("used");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Address)
-                .HasMaxLength(300)
-                .HasColumnName("address");
-            entity.Property(e => e.Amount)
-                .HasMaxLength(20)
-                .HasColumnName("amount");
-            entity.Property(e => e.Created).HasColumnName("created");
-            entity.Property(e => e.Message)
-                .HasMaxLength(4000)
-                .HasColumnName("message");
-            entity.Property(e => e.OrderId).HasColumnName("order_id");
-            entity.Property(e => e.Payment)
-                .HasMaxLength(30)
-                .HasColumnName("payment");
-            entity.Property(e => e.Status)
-                .HasMaxLength(30)
-                .HasColumnName("status");
-            entity.Property(e => e.UserMail)
+            entity.Property(e => e.Name)
                 .HasMaxLength(50)
-                .HasColumnName("user_mail");
-            entity.Property(e => e.UserName)
-                .HasMaxLength(50)
-                .HasColumnName("user_name");
-            entity.Property(e => e.UserPhone)
-                .HasMaxLength(20)
-                .HasColumnName("user_phone");
+                .HasColumnName("name");
+        });
 
-            entity.HasOne(d => d.Order).WithMany(p => p.Transactions)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK_transactions_order");
+        modelBuilder.Entity<UsedProduct>(entity =>
+        {
+            entity.ToTable("used_product");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.UsedId).HasColumnName("used_id");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.UsedProducts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_used_product_product");
+
+            entity.HasOne(d => d.Used).WithMany(p => p.UsedProducts)
+                .HasForeignKey(d => d.UsedId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_used_product_used");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.Username);
+            entity.HasKey(e => e.Id).HasName("PK_users_1");
 
             entity.ToTable("users");
 
-            entity.Property(e => e.Username)
-                .HasMaxLength(50)
-                .HasColumnName("username");
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Created).HasColumnName("created");
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .HasColumnName("email");
-            entity.Property(e => e.Status)
-                .HasColumnName("status");
+            entity.Property(e => e.IdAccount).HasColumnName("id_account");
             entity.Property(e => e.Nameuser)
                 .HasMaxLength(50)
                 .HasColumnName("nameuser");
-            entity.Property(e => e.Password)
+            entity.Property(e => e.Address)
                 .HasMaxLength(50)
-                .HasColumnName("password");
+                .HasColumnName("address");
             entity.Property(e => e.Phone)
                 .HasMaxLength(20)
                 .HasColumnName("phone");
+
+            entity.HasOne(d => d.IdAccountNavigation).WithMany(p => p.Users)
+                .HasForeignKey(d => d.IdAccount)
+                .HasConstraintName("FK_users_account");
         });
 
         OnModelCreatingPartial(modelBuilder);
@@ -456,3 +477,4 @@ public partial class DataContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
+

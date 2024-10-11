@@ -5,7 +5,7 @@ namespace QLNS.Interfaces
 {
     public interface ICart
     {
-        Task<List<CartDTO>?> GetCartsByUsername(string username);
+        Task<List<CartDTO>?> GetCartsByUserId(int id);
 		Task<bool> AddProduct(RequestAddCart request);
 		Task<Boolean> CheckExistCart(RequestCheckCart request);
         Task<Boolean> RemoveCart(RequestRemoveCart request);

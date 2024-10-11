@@ -5,7 +5,7 @@ namespace QLNS_BackEnd.Interfaces
 {
     public interface IOrder
     {
-        List<OrderDTO> GetOrdersByUsername(string username);
+        List<OrderDTO> GetOrdersByUserId(int id);
         OrderDTO GetOrderById(int id);
         int CreateOrder(CreateOrderRequest request);
         bool UpDateOrder(OrderDTO request);

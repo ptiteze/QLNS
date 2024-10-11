@@ -13,20 +13,32 @@ public partial class Order
 
     public DateOnly? Receiveddate { get; set; }
 
+    public string? UserName { get; set; }
+
+    public string? UserMail { get; set; }
+
+    public string? UserPhone { get; set; }
+
+    public string? Payment { get; set; }
+
+    public string? Message { get; set; }
+
+    public int? Amount { get; set; }
+
     /// <summary>
     /// 0 : chưa hoàn thành, 1 hoàn thành
     /// </summary>
     public int? Status { get; set; }
 
-    public string UserName { get; set; } = null!;
+    public int AdminId { get; set; }
 
-    public int? AdminId { get; set; }
+    public int UserId { get; set; }
+
+    public virtual Admin Admin { get; set; } = null!;
 
     public virtual ICollection<Ordered> Ordereds { get; set; } = new List<Ordered>();
 
-    public virtual ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
+    public virtual OrderStatus? StatusNavigation { get; set; }
 
-    public virtual User UserName1 { get; set; } = null!;
-
-    public virtual Admin UserNameNavigation { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

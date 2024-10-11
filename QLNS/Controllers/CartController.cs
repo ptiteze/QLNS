@@ -44,7 +44,7 @@ namespace QLNS.Controllers
                     productsInCart.Add(productInCart);
                     CartDTO cartx = new CartDTO()
                     {
-                        UserName = null,
+                        UserId = 0,
                         ProductId = ProductId,
                         Quantity = Quantity,
                     };
@@ -73,6 +73,8 @@ namespace QLNS.Controllers
 			int length_order = 0;
 			Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             string cart_local = HttpContext.Session.GetString("cart_local");
             if (UserName == null)
             {
@@ -110,7 +112,7 @@ namespace QLNS.Controllers
 				{
                     RequestCheckCart requestCheck = new RequestCheckCart()
                     {
-                        username = UserName,
+                        userId = IdUser,
                         productId = productid,
                     };
 					if (await _cart.CheckExistCart(requestCheck))
@@ -126,7 +128,7 @@ namespace QLNS.Controllers
 					{
                         RequestAddCart requestAdd = new RequestAddCart()
                         {
-                            username = UserName,
+                            userId = IdUser,
                             productId = productid,
                             quantity = quantity,
                         };
@@ -162,6 +164,8 @@ namespace QLNS.Controllers
             int length_order = 0;
             Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             string cart_local = HttpContext.Session.GetString("cart_local");
             if (UserName == null)
             {
@@ -192,7 +196,7 @@ namespace QLNS.Controllers
                 {
                     RequestCheckCart requestCheck = new RequestCheckCart()
                     {
-                        username = UserName,
+                        userId = IdUser,
                         productId = productid,
                     };
                     if (await _cart.CheckExistCart(requestCheck))
@@ -204,7 +208,7 @@ namespace QLNS.Controllers
                     {
                         RequestAddCart requestAdd = new RequestAddCart()
                         {
-                            username = UserName,
+                            userId = IdUser,
                             productId = productid,
                             quantity = quantity,
                         };
@@ -234,6 +238,8 @@ namespace QLNS.Controllers
         {
             if(request== null) return RedirectToAction("Index", "Home");
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             string cart_local = "";
             if (UserName != null)
             {
@@ -244,7 +250,7 @@ namespace QLNS.Controllers
                     {
                         productId = item.ProductId,
                         quantity = item.Quantity,
-                        username = UserName,
+                        userId = IdUser,
                     };
                     bool check = await _cart.AddProduct(UpdateRequest);
                     if (!check)
@@ -287,12 +293,14 @@ namespace QLNS.Controllers
         public async Task<IActionResult> Remove(int id)
         {
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             string cart_local = HttpContext.Session.GetString("cart_local");
             int length_order = int.Parse(HttpContext.Session.GetString("length_order"));
             if (UserName != null)
             {
                 RequestRemoveCart requestRemove = new RequestRemoveCart() { 
-                    UserName = UserName,
+                    userId = IdUser,
                     ProductId = id,
                 };
                 bool check = await _cart.RemoveCart(requestRemove);
@@ -352,7 +360,7 @@ namespace QLNS.Controllers
                     int ProductId = int.Parse(parts[0]);
                     int Quantity = int.Parse(parts[1]);
                     ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault();
-                    sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount ?? 0)) / 100) * Quantity;
+                    sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount)) / 100) * Quantity;
                     cartLocal.Add(productInCart, Quantity);
                 }
                 var headerViewModel = new HeaderViewModel()

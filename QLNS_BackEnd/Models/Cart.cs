@@ -5,7 +5,7 @@ namespace QLNS_BackEnd.Models;
 
 public partial class Cart
 {
-    public string UserName { get; set; } = null!;
+    public int UserId { get; set; }
 
     public int ProductId { get; set; }
 
@@ -13,5 +13,5 @@ public partial class Cart
 
     public virtual Product Product { get; set; } = null!;
 
-    public virtual User UserNameNavigation { get; set; } = null!;
+    public virtual User User { get; set; } = null!;
 }

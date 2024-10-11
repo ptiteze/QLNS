@@ -10,7 +10,7 @@ public partial class Product
     public int CatalogId { get; set; }
 
     public string Name { get; set; } = null!;
-    public int? Quantity { get; set; }  = null;
+    public int? Quantity { get; set; } = null;
 
     public int Price { get; set; } = 0;
 
@@ -20,7 +20,7 @@ public partial class Product
 
     public string Content { get; set; } = null!;
 
-    public int? Discount { get; set; }
+    public int Discount { get; set; } = 0;
 
     public string ImageLink { get; set; } = null!;
 
@@ -40,7 +40,6 @@ public partial class Product
     public virtual ICollection<ImportDetail> ImportDetails { get; set; } = new List<ImportDetail>();
 
     public virtual ICollection<Ordered> Ordereds { get; set; } = new List<Ordered>();
-
-    public virtual ICollection<ProductPrice> ProductPrices { get; set; } = new List<ProductPrice>();
     public virtual ICollection<SupplyList> SupplyLists { get; set; } = new List<SupplyList>();
+    public virtual ICollection<UsedProduct> UsedProducts { get; set; } = new List<UsedProduct>();
 }

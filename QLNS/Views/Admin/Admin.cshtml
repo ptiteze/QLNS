@@ -48,9 +48,9 @@
                                     {
                                         <tr>
                                             <td scope="row">@item.Id</td>
-                                            <td>@item.Username</td>
+                                            <td>@Model.Accounts.Where(a=>a.Id==item.IdAccount).FirstOrDefault().Username</td>
                                             <td>@item.Name</td>
-                                            @if (@item.Status==1)
+                                            @if (@Model.Accounts.Where(a => a.Id == item.IdAccount).FirstOrDefault().Status == true)
                                             {
                                                 <td>Đang hoạt động</td>
                                                 <td>

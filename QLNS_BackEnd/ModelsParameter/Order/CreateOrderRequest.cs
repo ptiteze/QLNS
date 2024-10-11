@@ -8,13 +8,25 @@
 
         public DateOnly? Receiveddate { get; set; }
 
+        public string? UserName { get; set; }
+
+        public string? UserMail { get; set; }
+
+        public string? UserPhone { get; set; }
+
+        public string? Payment { get; set; }
+
+        public string? Message { get; set; }
+
+        public int? Amount { get; set; }
+
         /// <summary>
-        /// 0 : Đang chờ xác nhận, 1 Đang giao , 3 Dã nhận, 4 Đã hủy
+        /// 0 : chưa hoàn thành, 1 hoàn thành
         /// </summary>
         public int? Status { get; set; }
 
-        public string UserName { get; set; } = null!;
+        public int AdminId { get; set; }
 
-        public int? AdminId { get; set; }
+        public int UserId { get; set; }
     }
 }

@@ -34,11 +34,11 @@
                             </div>
                             <div class="form-group">
                                 <label for="input-1">Username</label>
-                                <input type="text" class="form-control" readonly id="input-1" placeholder="Username" name="username" value="@Model.Admin.Username">
+                                <input type="text" class="form-control" readonly id="input-1" placeholder="Username" name="username" value="@Model.Account.Username">
                             </div>
                             <div class="form-group">
                                 <label for="input-1">Password</label>
-                                <input type="password" class="form-control" id="myinput" placeholder="Mật khẩu" name="password" value="@Model.Admin.Password">
+                                <input type="password" class="form-control" id="myinput" placeholder="Mật khẩu" name="password" value="@Model.Account.Password">
                                 <input type="checkbox" onclick="myFunction1()">Hiển thị mật khẩu
                                 <script>
                                     function myFunction1() {
@@ -49,6 +49,24 @@
                                             x.type = "password";
                                         }
                                     }</script>
+                            </div>
+                            <div class="form-group">
+                                <label for="input-2">Chuyên mục</label>
+                                <div>
+                                    <select class="form-control valid" id="input-6" name="role" aria-invalid="false">
+                                        @if (Model.Account.IdRole == 1)
+                                        {
+                                            <option value="3">Quyền nhân viên</option>
+                                            <option value="1" selected>Quyền quản lý</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="3">Quyền nhân viên</option>
+                                            <option value="1">Quyền quản lý</option>
+                                        }
+
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label for="input-1">Tên Admin</label>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using QLNS.Data;
 using QLNS.Helper;
 using QLNS.Interfaces;
 using QLNS.Models;
@@ -19,9 +18,9 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
                 .AddTransient<ISupplyInvoice, SupplyInvoiceRepository>()
 				.AddTransient<IImportDetail, ImportDetailRepository>()
                 .AddTransient<IOrder, OrderRepository>()
-                .AddTransient<ITransaction, TransactionRepository>()
                 .AddTransient<IOrdered, OrderedRepository>()
-                .AddTransient<ISlide, SlideRepository>();
+                .AddTransient<ISlide, SlideRepository>()
+                .AddTransient<IAccount, AccountRepository>();
 				
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
@@ -40,15 +39,15 @@ builder.Services.AddSession(options =>
 //cart_local ----- list sản phẩm-số lượng trong giỏ hàng
 //errorMsg ---- thông báo lỗi
 //Role
-
+//id_user ---- mã khách/nvien
 // End list Sesstion
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
-builder.Services.AddDbContext<DataContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
+//builder.Services.AddDbContext<DataContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+//});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

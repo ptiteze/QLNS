@@ -16,7 +16,7 @@ namespace QLNS_BackEnd.Repositories
                 Order order = SingletonAutoMapper.GetInstance().Map<Order>(request);
                 SingletonDataBridge.GetInstance().Orders.Add(order);
                 SingletonDataBridge.GetInstance().SaveChanges();
-                List<Cart> carts = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserName == request.UserName).ToList();
+                List<Cart> carts = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == request.UserId).ToList();
                 List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
 
                 foreach (Cart c in carts)
@@ -106,10 +106,10 @@ namespace QLNS_BackEnd.Repositories
                 SingletonDataBridge.GetInstance().Orders.ToList());
         }
 
-        public List<OrderDTO> GetOrdersByUsername(string username)
+        public List<OrderDTO> GetOrdersByUserId(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<List<OrderDTO>>(
-                SingletonDataBridge.GetInstance().Orders.Where(o => o.UserName == username).ToList());
+                SingletonDataBridge.GetInstance().Orders.Where(o => o.UserId == id).ToList());
         }
         public bool UpDateOrder(OrderDTO request)
         {
@@ -117,7 +117,7 @@ namespace QLNS_BackEnd.Repositories
             {
                 Order order = SingletonDataBridge.GetInstance().Orders.Find(request.Id);
                 order.Status = request.Status;
-                Console.WriteLine(request.Id.ToString() +"-"+request.UserName);
+                Console.WriteLine(request.Id.ToString() +"-"+request.UserId);
                 SingletonDataBridge.GetInstance().Orders.Update(order);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return true;

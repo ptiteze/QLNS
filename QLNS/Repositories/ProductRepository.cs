@@ -1,5 +1,4 @@
 ﻿using Azure.Core;
-using QLNS.Data;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Product;

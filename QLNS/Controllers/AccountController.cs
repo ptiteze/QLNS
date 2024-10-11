@@ -4,6 +4,7 @@ using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Admin;
 using QLNS.ModelsParameter.Cart;
+using QLNS.ModelsParameter.User;
 using QLNS.ViewModels.Account;
 
 namespace QLNS.Controllers
@@ -11,13 +12,13 @@ namespace QLNS.Controllers
     public class AccountController : Controller
     {
         private readonly IUser _user;
-        private readonly IAdmin _admin;
         private readonly ICart _cart;
-        public AccountController(IUser user, IAdmin admin, ICart cart)
+        private readonly IAccount _account;
+        public AccountController(IUser user, ICart cart, IAccount account)
         {
-            _admin = admin; 
             _user = user;
             _cart = cart;
+            _account = account;
         }
         public IActionResult Index()
         {
@@ -36,41 +37,25 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Sai cú pháp");
                 return RedirectToAction("Login", "Home");
             }
-            var infoLogin = await _user.Login(request);
+            //check info
+            var infoLogin = await _account.Login(request);
             if (infoLogin == null)
             {
-                infoLogin = await _admin.Login(request);   
-                if(infoLogin == null)
-                {
-                    HttpContext.Session.SetString("errorMsg", "Tài khoản/mật khẩu của bạn không đúng");
-                    return RedirectToAction("Login", "Home");
-                }
-                else
-                {
-                    if (infoLogin.Status==0)
-                    {
-                        HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
-                        return RedirectToAction("Login", "Home");
-                    }
-                    HttpContext.Session.Remove("errorMsg");
-                    HttpContext.Session.SetString("Username", infoLogin.Username);
-                    HttpContext.Session.SetString("Fullname", infoLogin.Name);
-                    HttpContext.Session.SetString("Role", infoLogin.role);
-                    return RedirectToAction("Index", "Admin");
-					//HttpContext.Session.SetString("Cartcount", CartCount.ToString());
-				}
+                HttpContext.Session.SetString("errorMsg", "Tài khoản/mật khẩu của bạn không đúng");
+                return RedirectToAction("Login", "Home");
             }
-            else
+            if (!infoLogin.Status)
             {
-                if (infoLogin.Status == 0)
-                {
-                    HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
-                    return RedirectToAction("Login", "Home");
-                }
+                HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
+                return RedirectToAction("Login", "Home");
+            }
+            if (infoLogin.role.Equals("customer"))
+            {
                 HttpContext.Session.Remove("errorMsg");
                 HttpContext.Session.SetString("Username", infoLogin.Username);
                 HttpContext.Session.SetString("Fullname", infoLogin.Name);
-                
+                HttpContext.Session.SetString("Role", infoLogin.role);
+                HttpContext.Session.SetString("id_user", infoLogin.IdUser.ToString());
                 string cart_local = HttpContext.Session.GetString("cart_local");
                 if (cart_local != null)
                 {
@@ -80,32 +65,42 @@ namespace QLNS.Controllers
                         string[] parts = cart.Split(':');
                         int ProductId = int.Parse(parts[0]);
                         int Quantity = int.Parse(parts[1]);
-                        RequestCheckCart requestCheck = new RequestCheckCart() {
-                            username = infoLogin.Username,  
+                        RequestCheckCart requestCheck = new RequestCheckCart()
+                        {
+                            userId = infoLogin.IdUser,
                             productId = ProductId,
                         };
 
-						RequestAddCart requestAddCart = new RequestAddCart()
-				        {
-				        	productId = ProductId,
-                            username = infoLogin.Username,
+                        RequestAddCart requestAddCart = new RequestAddCart()
+                        {
+                            productId = ProductId,
+                            userId = infoLogin.IdUser,
                             quantity = Quantity,
-						};
-						if (!await _cart.CheckExistCart(requestCheck))
+                        };
+                        if (!await _cart.CheckExistCart(requestCheck))
                             _cart.AddProduct(requestAddCart);
                     }
                 }
-                List<CartDTO> listCart = await _cart.GetCartsByUsername(username);
+                List<CartDTO> listCart = await _cart.GetCartsByUserId(infoLogin.IdUser);
                 string temp_cart = "";
 
-                foreach(CartDTO cart in listCart)
+                foreach (CartDTO cart in listCart)
                 {
-                    if(cart!=null && cart.ProductId!=0)
-                    temp_cart += cart.ProductId.ToString() + ":" + cart.Quantity.ToString() + "|";
+                    if (cart != null && cart.ProductId != 0)
+                        temp_cart += cart.ProductId.ToString() + ":" + cart.Quantity.ToString() + "|";
                 }
-                if(temp_cart!="") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
+                if (temp_cart != "") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
                 else return RedirectToAction("Index", "Home");
                 HttpContext.Session.SetString("cart_local", temp_cart);
+            }
+            else
+            {
+                HttpContext.Session.Remove("errorMsg");
+                HttpContext.Session.SetString("Username", infoLogin.Username);
+                HttpContext.Session.SetString("Fullname", infoLogin.Name);
+                HttpContext.Session.SetString("Role", infoLogin.role);
+                HttpContext.Session.SetString("id_user", infoLogin.IdUser.ToString());
+                return RedirectToAction("Index", "Admin");
             }
             return RedirectToAction("Index","Home");
         }
@@ -119,7 +114,7 @@ namespace QLNS.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> RegisterResult([FromForm] UserDTO request)
+        public async Task<IActionResult> RegisterResult([FromForm] AddUser request)
         {
             bool check = await _user.CreateUser(request);
             if(check)
@@ -140,19 +135,33 @@ namespace QLNS.Controllers
         public async Task<IActionResult> Info()
         {
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             if (UserName == null) return RedirectToAction("Index", "Home");
-            List<UserDTO> users = await _user.GetUsers();
-            UserDTO info = users.Where(u => u.Username == UserName).FirstOrDefault();
-            InfoAccountViewModel model = new InfoAccountViewModel() { info = info };
+            UserDTO info = await _user.GetUserById(IdUser);
+            AccountDTO acc = await _account.GetAccountByUsername(UserName);
+            if (info == null || acc == null) return RedirectToAction("Error", "Home");
+            InfoAccountViewModel model = new InfoAccountViewModel()
+            {
+                info = info,
+                account = acc
+            };
             return View(model);
         }
         public async Task<IActionResult> EditInfo()
         {
             string UserName = HttpContext.Session.GetString("Username");
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = int.Parse(Id);
             if (UserName == null) return RedirectToAction("Index", "Home");
-            List<UserDTO> users = await _user.GetUsers();
-            UserDTO info = users.Where(u => u.Username == UserName).FirstOrDefault();
-            InfoAccountViewModel model = new InfoAccountViewModel() { info = info };
+            UserDTO info = await _user.GetUserById(IdUser);
+            AccountDTO acc = await _account.GetAccountByUsername(UserName);
+            if(info == null || acc == null) return RedirectToAction("Error", "Home");
+            InfoAccountViewModel model = new InfoAccountViewModel() 
+            { 
+                info = info,
+                account = acc
+            };
             return View(model);
         }
         public async Task<IActionResult> UpdateAccount([FromForm] UserDTO request)

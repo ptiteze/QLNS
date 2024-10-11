@@ -2,7 +2,7 @@
 {
     public class CartDTO
     {
-        public string UserName { get; set; } = null!;
+        public int UserId { get; set; }
 
         public int ProductId { get; set; }
 

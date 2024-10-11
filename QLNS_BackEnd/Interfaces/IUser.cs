@@ -1,17 +1,15 @@
 ﻿using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.ModelsParameter.Admin;
+using QLNS_BackEnd.ModelsParameter.User;
 
 namespace QLNS_BackEnd.Interfaces
 {
     public interface IUser
     {
-        InfoLogin Login(RequestLogin request);
-
         List<UserDTO> GetUsers();
-        bool LockUser(string username);
-        bool UnLockUser(string username);
-        bool CreateUser(UserDTO request);
-        bool UpdateUser(UserDTO request);
+        bool CreateUser(AddUser request);
+        bool UpdateUser(UpdateUser request);
+        UserDTO GetUserById(int id);
 
     }
 }

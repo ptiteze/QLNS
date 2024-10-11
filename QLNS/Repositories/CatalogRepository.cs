@@ -1,5 +1,4 @@
-﻿using QLNS.Data;
-using QLNS.DTO;
+﻿using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Catalog;
@@ -9,8 +8,6 @@ namespace QLNS.Repositories
 {
     public class CatalogRepository : ICatalog
     {
-        private readonly DataContext _dataContext;
-
 		private readonly HttpClient _httpClient;
 
 		public const string BaseUrl = "/api/Catalog";

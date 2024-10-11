@@ -2,7 +2,7 @@
 {
     public class RequestRemoveCart
     {
-        public string UserName { get; set; } = null!;
+        public int UserId { get; set; } = 0!;
 
         public int ProductId { get; set; }
     }

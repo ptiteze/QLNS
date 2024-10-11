@@ -19,8 +19,8 @@ namespace QLNS.Controllers
             _catalog = catalog;
             _review = review;
         }
-        [Route("Product/")]
-        [Route("Product/Index")]
+        [HttpGet("Product/")]
+        [HttpGet("Product/Index")]
         public async Task<IActionResult> Index(int? id)
         {
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
@@ -99,7 +99,7 @@ namespace QLNS.Controllers
                     int ProductId = int.Parse(parts[0]);
                     int Quantity = int.Parse(parts[1]);
                     ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault();
-                    sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount ?? 0)) / 100) * Quantity;
+                    sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount)) / 100) * Quantity;
                     cartLocal.Add(productInCart, Quantity);
                 }
                 var headerViewModel = new HeaderViewModel()

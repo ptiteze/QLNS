@@ -1,15 +1,14 @@
 ﻿using QLNS.DTO;
 using QLNS.ModelsParameter.Admin;
+using QLNS.ModelsParameter.User;
 
 namespace QLNS.Interfaces
 {
     public interface IUser
     {
-        Task<InfoLogin> Login(RequestLogin request);
 		Task<List<UserDTO>> GetUsers();
-        Task<bool> LockUser(string username);
-        Task<bool> UnLockUser(string username);
-        Task<bool> CreateUser(UserDTO request);
+        Task<bool> CreateUser(AddUser request);
         Task<bool> UpdateUser(UserDTO request);
+        Task<UserDTO> GetUserById(int id);
     }
 }

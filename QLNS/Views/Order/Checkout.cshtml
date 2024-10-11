@@ -59,7 +59,7 @@
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="aa-checkout-single-bill">
-                                                                <input type="text" placeholder="Họ Tên*" required="required" name="UserName" value="@(Model.Transaction.UserName ?? "")">
+                                                                <input type="text" placeholder="Họ Tên*" required="required" name="UserName" value="@(Model.User.Nameuser ?? "")">
                                                                 </div>
                                                             </div>
 
@@ -68,19 +68,19 @@
                                                         <div class="row">
                                                             <div class="col-md-6">
                                                                 <div class="aa-checkout-single-bill">
-                                                                <input type="email" placeholder="Email*" required="required" name="UserMail" value="@(Model.Transaction.UserMail ?? "") ">
+                                                                <input type="email" placeholder="Email*" required="required" name="UserMail" value="@(Model.User.Email ?? "") ">
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <div class="aa-checkout-single-bill">
-                                                                <input type="tel" placeholder="Số điện thoại*" required="required" name="UserPhone" value="@(Model.Transaction.UserPhone ?? "")">
+                                                                <input type="tel" placeholder="Số điện thoại*" required="required" name="UserPhone" value="@(Model.User.Phone ?? "")">
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="aa-checkout-single-bill">
-                                                                <textarea cols="8" rows="3" required="required" placeholder="Địa chỉ*" name="Address">@(Model.Transaction.UserPhone ?? "")</textarea>
+                                                                <textarea cols="8" rows="3" required="required" placeholder="Địa chỉ*" name="Address">@(Model.User.Address ?? "")</textarea>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -95,7 +95,8 @@
                                                         <div class="row">
                                                             <div class="col-md-12">
                                                                 <div class="aa-checkout-single-bill">
-                                                                <input type="date" placeholder="Password" name="Created" id="the-date" style="display: none">
+                                                                <input type="date" placeholder="Password" name="Sentdate" id="the-date" style="display: none">
+                                                                <input type="date" placeholder="Password" name="Receiveddate" id="the-date" style="display: none">
                                                                 </div>
                                                             </div>
                                                         </div>

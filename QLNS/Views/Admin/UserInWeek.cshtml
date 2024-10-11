@@ -52,12 +52,12 @@
                                             <td>@item.Nameuser</td>
                                             <td>@item.Email</td>
                                             <td>@item.Phone</td>
-                                            <td>@item.Username</td>
+                                            <td>@Model.Accounts.Where(a => a.Id == item.IdAccount).FirstOrDefault().Username</td>
                                             <td>@item.Created</td>
-                                            @if (item.Status == 1)
+                                            @if (@Model.Accounts.Where(a => a.Id == item.IdAccount).FirstOrDefault().Status == true)
                                             {
                                                 <td>
-                                                    <button class="btn btn-danger"><a href="/Admin/LockUser?username=@item.Username">Khóa</a></button>
+                                                    <button class="btn btn-danger"><a href="/Admin/LockUser?username=@item.IdAccount">Khóa</a></button>
 
                                                     <button class="btn btn-success"><a href="#">Sửa</a></button>
                                                 </td>
@@ -65,7 +65,7 @@
                                             else
                                             {
                                                 <td>
-                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?username=@item.Username">Mở Khóa</a></button>
+                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?username=@item.IdAccount">Mở Khóa</a></button>
 
                                                     <button class="btn btn-success"><a href="#">Sửa</a></button>
                                                 </td>

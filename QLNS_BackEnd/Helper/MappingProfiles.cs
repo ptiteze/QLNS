@@ -14,6 +14,8 @@ namespace QLNS_BackEnd.Helper
     public class MappingProfiles : Profile
     {
         public MappingProfiles() {
+            // Account
+            CreateMap<Account, AccountDTO>();
             // Admin
             CreateMap<Admin, AdminDTO>();
             CreateMap<AddAdmin, Admin>();
@@ -39,17 +41,12 @@ namespace QLNS_BackEnd.Helper
 			CreateMap<Product, ProductDTO>();
             CreateMap<InputProductRequest, Product>();
             CreateMap<UpdateProductRequest, Product>();
-            //ProductPrice
-            CreateMap<ProductPrice, ProductPriceDTO>();
             //SubppyInvoice
             CreateMap<SupplyInvoice, SupplyInvoiceDTO>();
             CreateMap<CreateSupplyInvoiceRequest, SupplyInvoice>();
             //SupplyList
             CreateMap<SupplyList, SupplyListDTO>();
             CreateMap<CreateSupplyListRequest, SupplyList>();
-            //Transaction
-            CreateMap<Transaction, TransactionDTO>();
-            CreateMap<CreateTransactionRequest, Transaction>();
             //User
             CreateMap<User, UserDTO>();
         }

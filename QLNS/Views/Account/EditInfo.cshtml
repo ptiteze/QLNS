@@ -48,15 +48,13 @@
                                     <label for="">Số điện thoại<span>*</span></label>
                                     <input type="text" placeholder="Số điện thoại" name="Phone" value="@Model.info.Phone" required>
                                     <label for="">Username<span>*</span></label>
-                                    <input type="text" placeholder="Username" name="Username" readonly value="@Model.info.Username">
+                                    <input type="text" placeholder="Username" name="Username" readonly value="@Model.account.Username">
                                     <label for="">Mật khẩu<span>*</span></label>
-                                    <input type="password" placeholder="Password" name="Password" value="@Model.info.Password" required>
+                                    <input type="password" placeholder="Password" name="Password" value="@Model.account.Password" required>
                                     <label for="">Ngày tạo<span>*</span></label>
                                     <input type="date" readonly placeholder="Create" name="Created" id="the-date" value="@Model.info.Created">
 
                                     <p style="color:red; display: block;">
-                                        @* <%=(request.getAttribute("errMessage") == null) ? ""
-                                        : request.getAttribute("errMessage")%> *@
                                         @errorMsg
                                     </p>
                                     <button type="reset" class="aa-browse-btn" value="Reset">Đặt lại</button>

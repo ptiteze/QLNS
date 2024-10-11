@@ -8,6 +8,7 @@
 
         public string Name { get; set; } = null!;
         public int? Quantity { get; set; } = null;
+
         public int Price { get; set; } = 0;
 
         public int Status { get; set; }
@@ -16,7 +17,7 @@
 
         public string Content { get; set; } = null!;
 
-        public int? Discount { get; set; } = 0;
+        public int Discount { get; set; } = 0;
 
         public string ImageLink { get; set; } = null!;
 

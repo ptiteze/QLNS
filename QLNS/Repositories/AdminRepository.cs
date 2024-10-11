@@ -88,36 +88,36 @@ namespace QLNS.Repositories
 			}
 		}
 
-		public async Task<InfoLogin> Login(RequestLogin request)
-		{
+		//public async Task<InfoLogin> Login(RequestLogin request)
+		//{
 
-			HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + "/login", request);
-			if (response.IsSuccessStatusCode)
-			{
-				var result = await response.Content.ReadFromJsonAsync<InfoLogin>();
-				return result;
-			}
-			else
-			{
-				return null;
-			}
+		//	HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + "/login", request);
+		//	if (response.IsSuccessStatusCode)
+		//	{
+		//		var result = await response.Content.ReadFromJsonAsync<InfoLogin>();
+		//		return result;
+		//	}
+		//	else
+		//	{
+		//		return null;
+		//	}
 
-		}
+		//}
 
-		public async Task<bool> UnLockAdmin(int id)
-		{
+		//public async Task<bool> UnLockAdmin(int id)
+		//{
 
-			HttpResponseMessage response = await _httpClient.PutAsync(BaseUrl + $"/unlock/{id}", null);
-			if (response.IsSuccessStatusCode)
-			{
-				var result = await response.Content.ReadFromJsonAsync<bool>();
-				return result;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		//	HttpResponseMessage response = await _httpClient.PutAsync(BaseUrl + $"/unlock/{id}", null);
+		//	if (response.IsSuccessStatusCode)
+		//	{
+		//		var result = await response.Content.ReadFromJsonAsync<bool>();
+		//		return result;
+		//	}
+		//	else
+		//	{
+		//		return false;
+		//	}
+		//}
 
 		public async Task<bool> UpdateAdmin(UpdateAdmin request)
 		{

@@ -19,21 +19,6 @@ namespace QLNS_BackEnd.Controllers
 		{
 			return Ok(_admin.GetAdmins());
 		}
-		[HttpPost("login")]
-		public IActionResult Login(RequestLogin request)
-		{
-			var res = _admin.Login(request);
-			if (res == null)
-			{
-				var errorResponse = new
-				{
-					message = "Login failed. Invalid credentials.",
-					errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
-				};
-				return BadRequest(errorResponse);
-			}
-			return Ok(res);
-		}
 		[HttpPost("check")]
 		public IActionResult CheckExits(RequestCheckAdmin request)
 		{
@@ -52,12 +37,6 @@ namespace QLNS_BackEnd.Controllers
 			var res = (_admin.UpdateAdmin(request));
 			return Ok(res);
 		}
-		[HttpPut("unlock/{id}")]
-		public IActionResult UnLockAdmin(int id)
-		{
-			var res = _admin.UnLockAdmin(id);
-			return Ok(res);
-		}
 		[HttpDelete("{id}")]
 		public IActionResult DeleteAdmin(int id) 
 		{
@@ -72,7 +51,7 @@ namespace QLNS_BackEnd.Controllers
 			{
 				var errorResponse = new
 				{
-					message = "Login failed. Invalid credentials.",
+					message = "Invalid credentials.",
 					errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
 				};
 				return BadRequest(errorResponse);
