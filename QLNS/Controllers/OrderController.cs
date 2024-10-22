@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Order;
@@ -28,8 +29,12 @@ namespace QLNS.Controllers
         {
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
-            int IdUser = int.Parse(Id);
-            UserDTO info = await _user.GetUserById(IdUser);
+			int IdUser = 0;
+			if (!Id.IsNullOrEmpty())
+			{
+				IdUser = int.Parse(Id);
+			}
+			UserDTO info = await _user.GetUserById(IdUser);
             if (UserName==null) return RedirectToAction("Index", "Home");
             if (info == null) return RedirectToAction("Error", "Home");
             List<ProductDTO> products = await _product.GetAllProducts();

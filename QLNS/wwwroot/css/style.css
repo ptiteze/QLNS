@@ -1458,6 +1458,36 @@ a.aa-product-img img {
 }
 
 /*==================
+ notification SECTION
+====================*/
+
+.hidden {
+    display: none;
+}
+
+.notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+    .notification button {
+        background-color: #f39c12;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+        .notification button:hover {
+            background-color: #e67e22;
+        }
+/*==================
  SUPPORT SECTION
 ====================*/
 

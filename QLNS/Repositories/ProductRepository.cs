@@ -98,5 +98,33 @@ namespace QLNS.Repositories
 				return false;
 			}
 		}
-	}
+
+        public async Task<List<ProductDTO>> GetRecommendedProducts(int id)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/recommend/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductDTO>>();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public async Task<List<ProductDTO>> GetBestSellingProducts()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/bestsell");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ProductDTO>>();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 }

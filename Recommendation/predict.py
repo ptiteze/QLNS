@@ -1,6 +1,12 @@
 import pickle
+import os
+import sys
+import json
 
-with open('data_indices.pkl', 'rb') as file:
+current_dir = os.path.dirname(os.path.abspath(__file__))
+pkl_file_path = os.path.join(current_dir, 'data_indices.pkl')
+
+with open(pkl_file_path, 'rb') as file:
     data = pickle.load(file)
 
 grouped_data = data['grouped_data']
@@ -11,7 +17,7 @@ def recommend_products(product_id, grouped_data, indices):
     recommended_product_ids = grouped_data['id'].iloc[indices[index]].tolist()
     recommended_product_ids = [pid for pid in recommended_product_ids if pid != product_id]
     return recommended_product_ids
-x = 22
-recommendation = recommend_products(x, grouped_data, indices)
+id = int(sys.argv[1])
+recommendation = recommend_products(id, grouped_data, indices)
 #print(f"Gợi ý cho sản phẩm {x}: {recommendation}")
-print(recommendation)
+print(json.dumps(recommendation))

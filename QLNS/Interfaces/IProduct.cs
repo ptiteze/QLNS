@@ -11,5 +11,7 @@ namespace QLNS.Interfaces
         Task<bool> CreateProduct(InputProductRequest request);
         Task<bool> UpdateProduct(UpdateProductRequest request);
         Task<bool> DeleteProduct(int id);
+        Task<List<ProductDTO>> GetRecommendedProducts(int id);
+        Task<List<ProductDTO>> GetBestSellingProducts();
     }
 }

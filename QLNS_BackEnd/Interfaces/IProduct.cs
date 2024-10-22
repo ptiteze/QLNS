@@ -11,6 +11,8 @@ namespace QLNS_BackEnd.Interfaces
         bool AddProduct(InputProductRequest request);
         bool UpdateProduct(UpdateProductRequest request);
         bool DeleteProduct(int id);
-        
+        List<ProductDTO> GetRecommendedProducts(int id);
+        Task<List<ProductDTO>> GetProductsBestSelling();
+
     }
 }

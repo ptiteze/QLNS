@@ -1,14 +1,26 @@
-﻿using QLNS_BackEnd.DTO;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Product;
 using QLNS_BackEnd.Singleton;
+using System.Data;
+using System.Diagnostics;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QLNS_BackEnd.Repositories
 {
     public class ProductRepository : IProduct
     {
-		public bool AddProduct(InputProductRequest request)
+        private readonly IConfiguration _configuration;
+        public ProductRepository(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+        public bool AddProduct(InputProductRequest request)
 		{
             try
             {
@@ -55,13 +67,93 @@ namespace QLNS_BackEnd.Repositories
                 SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.Id == id).FirstOrDefault());
         }
 
+        public async Task<List<ProductDTO>> GetProductsBestSelling()
+        {
+            List<ProductDTO> products = new List<ProductDTO>();
+            List<int> bestSellingProductIds = new List<int>();
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("SP_BEST_SELLING", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                ProductDTO pr = GetProductById(reader.GetInt32(0));
+                                if(pr != null) products.Add(pr);
+                            }
+                        }
+                    }
+                }
+                return products;
+
+            }catch(Exception ex) 
+            {
+                return null;
+            }
+        }
+
         public List<ProductDTO> GetProductsByCatalogId(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<List<ProductDTO>>(
                 SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.CatalogId == id).ToList());
         }
 
-		public bool UpdateProduct(UpdateProductRequest request)
+        public List<ProductDTO> GetRecommendedProducts(int id)
+        {
+            ProcessStartInfo start = new ProcessStartInfo();
+            start.FileName = "python";
+            start.Arguments = $"\"D:\\source\\repos\\QLNS\\Recommendation\\predict.py\" {id}"; // Truyền id
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            start.RedirectStandardError = true;
+            start.CreateNoWindow = true;
+            // Chạy process
+            using (Process process = Process.Start(start))
+            {
+                using (System.IO.StreamReader reader = process.StandardOutput)
+                {
+                    try
+                    {
+                        string result = reader.ReadToEnd().Trim();
+                        Console.WriteLine(result);
+                        int[] numbers = result.Trim(new char[] { '[', ']' })
+                              .Split(',')
+                              .Select(int.Parse)
+                              .ToArray();
+                       
+                        List<ProductDTO> products = new List<ProductDTO>();
+                        foreach (int number in numbers)
+                        {
+                            products.Add(GetProductById(number));
+                        }
+                        process.Close();
+                        return products;
+                    }
+                    catch(Exception  ex) 
+                    {
+                        Console.WriteLine("Errors: " + ex.Message);
+                    }
+                    
+                }
+                //string errors = process.StandardError.ReadToEnd();
+                //if (!string.IsNullOrEmpty(errors))
+                //{
+                //    Console.WriteLine("Errors: " + errors);
+                //}
+
+                //process.WaitForExit();
+                process.Close(); 
+            }
+            return null;
+        }
+        public bool UpdateProduct(UpdateProductRequest request)
 		{
             try
             {

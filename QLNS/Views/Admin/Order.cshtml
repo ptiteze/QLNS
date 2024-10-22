@@ -53,13 +53,13 @@
                                         <tr>
                                             <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Key.Id">@order.Key.Id</a></td>
                                             <td>@order.Key.UserName</td>
-                                            <td>@order.Key.UserName ?? "")</td>
-                                            <td>@order.Key.UserMail ?? "")</td>
-                                            <td>@order.Key.UserPhone ?? "")</td>
-                                            <td>@order.Key.Address ?? "")</td>
-                                            <td>@order.Key.Message ?? "")</td>
+                                            <td>@order.Key.UserName</td>
+                                            <td>@order.Key.UserMail</td>
+                                            <td>@order.Key.UserPhone</td>
+                                            <td>@order.Key.Address</td>
+                                            <td>@order.Key.Message</td>
                                             <td>@order.Value VNĐ</td>
-                                            <td>@order.Key.Payment ?? "")</td>
+                                            <td>@order.Key.Payment  </td>
                                             @switch (@order.Key.Status)
                                             {
                                                 case 0:

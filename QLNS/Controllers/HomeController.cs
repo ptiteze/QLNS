@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
@@ -31,7 +32,10 @@ namespace QLNS.Controllers
         {
             List<CatalogDTO> catalogs = await _icatalog.GetAllCatalog();
             List<ProductDTO> products = await _product.GetAllProducts();
-            List<Boardnew> boardnews = await _boardnew.GetBoardnews();
+            List<ProductDTO> bestsellproduct = await _product.GetBestSellingProducts();
+            HashSet<ProductDTO> setPrs = new HashSet<ProductDTO>();
+            List<ProductDTO> recommendedProducts = new List<ProductDTO>();
+			List<Boardnew> boardnews = await _boardnew.GetBoardnews();
             List<Slide> slides = await _slide.GetAllSlides();
             int sumprice = 0;
             // slide ViewModel
@@ -41,12 +45,32 @@ namespace QLNS.Controllers
             };
             ViewBag.SlideData = slideViewModel;
             sumprice = SetHeaderData(products, sumprice);
+			string cart_local = HttpContext.Session.GetString("cart_local");
+            if (!cart_local.IsNullOrEmpty())
+            {
+				List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
+                foreach (var item in list_cartLocal)
+                {
+					string[] parts = item.Split(':');
+					int ProductId = int.Parse(parts[0]);
+					List<ProductDTO> prs = await _product.GetRecommendedProducts(ProductId);
+					setPrs.UnionWith(prs);
+                    Console.WriteLine(setPrs.Count+"  --2212");
+				}
+                recommendedProducts = setPrs.ToList();
+            }
+            else
+            {
+                recommendedProducts = products;
 
-            HomeViewModel Models = new HomeViewModel()
+			}
+			HomeViewModel Models = new HomeViewModel()
             {
                 Catalogs = catalogs,
                 Products = products,
-                Boardnews = boardnews
+                Boardnews = boardnews,
+                BestSellingProducts = bestsellproduct,
+                RecommendedProducts = recommendedProducts,
             };
             return View(Models);
         }

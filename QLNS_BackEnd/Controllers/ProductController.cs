@@ -75,5 +75,35 @@ namespace QLNS_BackEnd.Controllers
 			var res = _product.UpdateProduct(request);
 			return Ok(res);
 		}
+		[HttpGet("recommend/{id}")]
+		public IActionResult GetRecommendedProducts(int id)
+		{
+            var res = _product.GetRecommendedProducts(id);
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
+            return Ok(res);
+        }
+		[HttpGet("bestsell")]
+		public async Task<IActionResult> GetBestsellingProduct()
+		{
+            var res = await _product.GetProductsBestSelling();
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
+            return Ok(res);
+        }
 	}
 }

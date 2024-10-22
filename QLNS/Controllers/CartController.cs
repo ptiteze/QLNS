@@ -74,9 +74,13 @@ namespace QLNS.Controllers
 			Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
-            int IdUser = int.Parse(Id);
-            string cart_local = HttpContext.Session.GetString("cart_local");
-            if (UserName == null)
+			int IdUser = 0;
+			if (!Id.IsNullOrEmpty())
+			{
+				IdUser = int.Parse(Id);
+			}
+			string cart_local = HttpContext.Session.GetString("cart_local");
+            if (UserName.IsNullOrEmpty())
             {
 				if (cart_local.IsNullOrEmpty())
 				{
@@ -160,14 +164,17 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddCart(int productid,int quantity)
         {
-            Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             int length_order = 0;
             Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
-            int IdUser = int.Parse(Id);
+            int IdUser = 0;
+            if (!Id.IsNullOrEmpty())
+            {
+                IdUser = int.Parse(Id);
+			}
             string cart_local = HttpContext.Session.GetString("cart_local");
-            if (UserName == null)
+            if (UserName.IsNullOrEmpty())
             {
                 if (cart_local.IsNullOrEmpty())
                 {
@@ -239,8 +246,12 @@ namespace QLNS.Controllers
             if(request== null) return RedirectToAction("Index", "Home");
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
-            int IdUser = int.Parse(Id);
-            string cart_local = "";
+			int IdUser = 0;
+			if (!Id.IsNullOrEmpty())
+			{
+				IdUser = int.Parse(Id);
+			}
+			string cart_local = "";
             if (UserName != null)
             {
                 foreach (var item in request.Items)
@@ -294,8 +305,12 @@ namespace QLNS.Controllers
         {
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
-            int IdUser = int.Parse(Id);
-            string cart_local = HttpContext.Session.GetString("cart_local");
+			int IdUser = 0;
+			if (!Id.IsNullOrEmpty())
+			{
+				IdUser = int.Parse(Id);
+			}
+			string cart_local = HttpContext.Session.GetString("cart_local");
             int length_order = int.Parse(HttpContext.Session.GetString("length_order"));
             if (UserName != null)
             {

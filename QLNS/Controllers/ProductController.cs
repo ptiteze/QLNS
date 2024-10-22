@@ -5,6 +5,7 @@ using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ViewModels.Header;
 using QLNS.ViewModels.Product;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QLNS.Controllers
 {
@@ -25,7 +26,8 @@ namespace QLNS.Controllers
         {
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
             List<ProductDTO> products = await _product.GetAllProducts();
-            var resentProducts = products.OrderByDescending(p => p.Created).Take(4).ToList();
+			//List<ProductDTO> prs = await _product.GetAllProducts();
+			var resentProducts = products.OrderByDescending(p => p.Created).Take(4).ToList();
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             if (id.HasValue)
@@ -60,23 +62,24 @@ namespace QLNS.Controllers
         {
             Console.WriteLine(id.ToString());
             List<ProductDTO> products = await _product.GetAllProducts();
+			List<ProductDTO> Recommendedproducts = await _product.GetRecommendedProducts(id);
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
             List<Review> reviews = await _review.GetReviewsByProductId(id);
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
-            ProductDTO product = products.Find(p => p.Id == id);
-            if(product == null)
+            ProductDTO product = await _product.GetProductById(id);
+            Console.WriteLine(products.Count().ToString());
+            if (product == null)
             {
                 return Redirect("/Home/Error");
             }
-            var relatedProducts = products.Where(p => p.CatalogId == product.CatalogId).ToList();
             CatalogDTO cata = await _catalog.GetCatalogById(product.CatalogId);
 			string nameCatalog = cata.Name;
 
             ProductDetailViewModel Model = new ProductDetailViewModel()
             {
                 Product = product,
-                RelatedProducts = relatedProducts,
+                RelatedProducts = Recommendedproducts,
                 Reviews = reviews,
                 NameCatalog = nameCatalog
             };
