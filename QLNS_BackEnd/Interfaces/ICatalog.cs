@@ -6,7 +6,7 @@ namespace QLNS_BackEnd.Interfaces
     public interface ICatalog
     {
         CatalogDTO GetCatalogById(int id);
-        List<CatalogDTO> GetAllCatalog();
+        Task<List<CatalogDTO>> GetAllCatalog();
         bool AddCatalog(string name);
         bool UpdateCatalog(UpdateCatalogRequest request);
         bool DeleteCatalog(int id);

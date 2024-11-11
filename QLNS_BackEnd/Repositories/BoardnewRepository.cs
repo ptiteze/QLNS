@@ -1,4 +1,5 @@
-﻿using QLNS_BackEnd.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.Singleton;
 
@@ -11,9 +12,9 @@ namespace QLNS_BackEnd.Repositories
 			return SingletonDataBridge.GetInstance().Boardnews.Find(id);
         }
 
-        public List<Boardnew> GetBoardnews()
+        public async Task<List<Boardnew>> GetBoardnews()
 		{
-			return SingletonDataBridge.GetInstance().Boardnews.ToList();
+			return await SingletonDataBridge.GetInstance().Boardnews.ToListAsync();
 		}
 	}
 }

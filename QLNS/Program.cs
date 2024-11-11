@@ -20,7 +20,9 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
                 .AddTransient<IOrder, OrderRepository>()
                 .AddTransient<IOrdered, OrderedRepository>()
                 .AddTransient<ISlide, SlideRepository>()
-                .AddTransient<IAccount, AccountRepository>();
+				.AddTransient<IVnPayment, VnPaymentRepository>()
+                .AddTransient<IAccount, AccountRepository>()
+				.AddTransient<IRecommendation, RecommendationRepository>();
 				
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>

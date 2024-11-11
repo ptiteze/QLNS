@@ -18,14 +18,17 @@ namespace QLNS.Controllers
 		private readonly ISlide _slide;
 		private readonly IBoardnew _boardnew;
 		private readonly ICart _cart;
+        private readonly IRecommendation _recommendation;
 
-		public HomeController(ILogger<HomeController> logger, ICatalog catalog, IProduct product, ISlide slide, IBoardnew boardnew)
+		public HomeController(ILogger<HomeController> logger, ICatalog catalog, IProduct product, ISlide slide
+            , IBoardnew boardnew, IRecommendation recommendation)
 		{
 			_logger = logger;
 			_icatalog = catalog;
 			_product = product;
 			_slide = slide;
 			_boardnew = boardnew;
+            _recommendation = recommendation;
 		}
 
 		public async Task<IActionResult> Index()
@@ -35,8 +38,18 @@ namespace QLNS.Controllers
             List<ProductDTO> bestsellproduct = await _product.GetBestSellingProducts();
             HashSet<ProductDTO> setPrs = new HashSet<ProductDTO>();
             List<ProductDTO> recommendedProducts = new List<ProductDTO>();
+			List<ProductDTO> recommendedProductsByRated = null;
+			string Id = HttpContext.Session.GetString("id_user");
+			int IdUser = 0;
+			if (!Id.IsNullOrEmpty())
+			{
+				IdUser = int.Parse(Id);
+				recommendedProductsByRated = await _product.GetRecommendedProductsByRated(IdUser);
+			}
 			List<Boardnew> boardnews = await _boardnew.GetBoardnews();
             List<Slide> slides = await _slide.GetAllSlides();
+            List<int> UsedListP = new List<int>();
+            string useds = "";
             int sumprice = 0;
             // slide ViewModel
             var slideViewModel = new SlideViewModel()
@@ -53,6 +66,7 @@ namespace QLNS.Controllers
                 {
 					string[] parts = item.Split(':');
 					int ProductId = int.Parse(parts[0]);
+                    UsedListP.Add(ProductId);
 					List<ProductDTO> prs = await _product.GetRecommendedProducts(ProductId);
 					setPrs.UnionWith(prs);
                     Console.WriteLine(setPrs.Count+"  --2212");
@@ -64,6 +78,8 @@ namespace QLNS.Controllers
                 recommendedProducts = products;
 
 			}
+            if(UsedListP.Count>0)
+            useds = await _recommendation.GetUseds(UsedListP);
 			HomeViewModel Models = new HomeViewModel()
             {
                 Catalogs = catalogs,
@@ -71,6 +87,8 @@ namespace QLNS.Controllers
                 Boardnews = boardnews,
                 BestSellingProducts = bestsellproduct,
                 RecommendedProducts = recommendedProducts,
+                Useds = useds, 
+                RecommendedProductsByRated = recommendedProductsByRated,
             };
             return View(Models);
         }

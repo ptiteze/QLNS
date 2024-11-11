@@ -7,7 +7,8 @@ namespace QLNS.ViewModels.Product
     {
         public List<ProductDTO> RelatedProducts { get; set; }
         public ProductDTO Product { get; set; }
-        public List<Review> Reviews { get; set; }
+        public List<ReviewDTO> Reviews { get; set; }
         public string NameCatalog { get; set; }
+        public ReviewDTO YourReview { get; set; }
     }
 }

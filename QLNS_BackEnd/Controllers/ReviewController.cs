@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
+using QLNS_BackEnd.ModelsParameter.Product;
 
 namespace QLNS_BackEnd.Controllers
 {
@@ -43,10 +45,10 @@ namespace QLNS_BackEnd.Controllers
 			}
 			return Ok(res);
 		}
-		[HttpGet("byuser/{ProductId}")]
-		public IActionResult GetReviewsByUsername(string username)
+		[HttpGet("byuser/{id}")]
+		public IActionResult GetReviewsByUserId(int id)
 		{
-			var res = _review.GetReviewsByUsername(username);
+			var res = _review.GetReviewsByUserId(id);
 			if (res == null)
 			{
 				var errorResponse = new
@@ -58,5 +60,32 @@ namespace QLNS_BackEnd.Controllers
 			}
 			return Ok(res);
 		}
+		[HttpPost]
+		public IActionResult GetReview(InputGetReview input)
+		{
+            var res = _review.GetReview(input);
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
+            return Ok(res);
+        }
+		[HttpPut]
+		public IActionResult CreateReview(CreateReviewRequest request) 
+		{
+            var res = _review.CreateReview(request);
+			return Ok(res);
+        }
+		[HttpPost("update")]
+		public IActionResult UpdateReview(ReviewDTO request)
+		{
+            var res = _review.UpdateReview(request);
+            return Ok(res);
+        }
 	}
 }

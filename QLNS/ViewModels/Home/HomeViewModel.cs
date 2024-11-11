@@ -10,6 +10,7 @@ namespace QLNS.ViewModels.Home
         public List<Boardnew> Boardnews { get; set; }
 		public List<ProductDTO> BestSellingProducts { get; set; }
 		public List<ProductDTO> RecommendedProducts { get; set; }
-
+        public string Useds { get; set; } = "";
+		public List<ProductDTO> RecommendedProductsByRated { get; set; }
 	}
 }

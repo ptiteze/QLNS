@@ -5,10 +5,7 @@ namespace QLNS_BackEnd.Singleton
     public class SingletonDataBridge
     {
         private static DataContext uniqueInstance;
-        private SingletonDataBridge()
-        {
-
-        }
+        private SingletonDataBridge() {}
         public static DataContext GetInstance()
         {        
             if (uniqueInstance == null)

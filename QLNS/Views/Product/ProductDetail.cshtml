@@ -1,9 +1,12 @@
 ﻿@using QLNS.DTO
-
+@inject IHttpContextAccessor HttpContextAccessor
 @{
     ViewData["Title"] = "Product Detail";
     // Layout = "~/Views/shared/_layout.cshtml";
     QLNS.ViewModels.Header.HeaderViewModel headerData = ViewBag.HeaderData;
+    //string UserName = HttpContextAccessor.HttpContext.Session.GetString("Username");
+
+
 }
 @section Header {
     @Html.Partial("Header", headerData)
@@ -108,7 +111,62 @@
                             </div>
                             <div class="tab-pane fade " id="review">
                                 <div class="aa-product-review-area">
-                                    <ul class="aa-review-nav">
+                                    <h4>Đánh giá</h4>
+                                    <div class="rate">
+                                        @if(Model.YourReview == null)
+                                        {
+                                            <span class="star" data-prid=@Model.Product.Id data-value="1"><i class="fas fa-star"></i></span>
+                                            <span class="star" data-prid=@Model.Product.Id data-value="2"><i class="fas fa-star"></i></span>
+                                            <span class="star" data-prid=@Model.Product.Id data-value="3"><i class="fas fa-star"></i></span>
+                                            <span class="star" data-prid=@Model.Product.Id data-value="4"><i class="fas fa-star"></i></span>
+                                            <span class="star" data-prid=@Model.Product.Id data-value="5"><i class="fas fa-star"></i></span>
+                                        }
+                                        else
+                                        {
+                                            if (Model.YourReview.Score >= 1)
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="1"><i class="active fas fa-star"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="1"><i class="fas fa-star"></i></span>
+                                            }
+                                            if (Model.YourReview.Score >= 2)
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="2"><i class="active fas fa-star"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="2"><i class="fas fa-star"></i></span>
+                                            }
+                                            if (Model.YourReview.Score >= 3)
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="3"><i class="active fas fa-star"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="3"><i class="fas fa-star"></i></span>
+                                            }
+                                            if (Model.YourReview.Score >= 4)
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="4"><i class="active fas fa-star"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="4"><i class="fas fa-star"></i></span>
+                                            }
+                                            if (Model.YourReview.Score == 5)
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="5"><i class="active fas fa-star"></i></span>
+                                            }
+                                            else
+                                            {
+                                                <span class="star" data-prid="@Model.Product.Id" data-value="5"><i class="fas fa-star"></i></span>
+                                            }
+                                        }
+
+                                    </div>
+                                   @*  <ul class="aa-review-nav">
                                         @if (Model.Reviews.Count != 0)
                                         {
                                             @foreach(Review review in Model.Reviews)
@@ -149,7 +207,7 @@
                                         </div>
 
                                         <button type="submit" class="btn btn-default aa-review-submit">Gửi</button>
-                                    </form>
+                                    </form> *@
                                 </div>
                             </div>
                         </div>

@@ -13,5 +13,11 @@ public partial class Review
 
     public DateOnly? Created { get; set; }
 
-    public string Name { get; set; } = null!;
+    public int? IdUser { get; set; }
+
+    public int Score { get; set; } = 0;
+
+    public virtual Product Product { get; set; } = null!;
+
+    public virtual User User { get; set; } = null!;
 }

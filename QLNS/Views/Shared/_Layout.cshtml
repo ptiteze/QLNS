@@ -89,11 +89,11 @@
         (function () {
             var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
             s1.async = true;
-            s1.src = 'https://embed.tawk.to/5eedbd889e5f69442290f4d1/default';
+            s1.src = 'https://embed.tawk.to/671d0fcd4304e3196ad8b033/1ib4obf6i';
             s1.charset = 'UTF-8';
             s1.setAttribute('crossorigin', '*');
             s0.parentNode.insertBefore(s1, s0);
-        })();   
+        })();
         $(document).ready(function () {
             $("#buyForm").submit(function (event) {
                 event.preventDefault(); // Ngăn hành động submit mặc định
@@ -124,14 +124,14 @@
                             }, 1500);
                         }
                     },
-                    error: function () {
-                        Swal.fire({
-                            position: "center",
-                            icon: "error",
-                            title: "Có lỗi xảy ra",
-                            showConfirmButton: true
-                        });
-                    }
+                    // error: function () {
+                    //     Swal.fire({
+                    //         position: "center",
+                    //         icon: "error",
+                    //         title: "Có lỗi xảy ra",
+                    //         showConfirmButton: true
+                    //     });
+                    // }
                 });
             });
             $("form[name='formRegister']").submit(function (event) {
@@ -211,6 +211,60 @@
                         });
                     }
                 });
+            });
+        });
+        $(document).ready(function () {
+            var userName = "@Context.Session.GetString("Username")";
+            
+            $(".star").on("click", function () {
+                if (!userName) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Thông báo',
+                        text: 'Bạn phải đăng nhập để thực hiện thao tác này!',
+                        confirmButtonText: 'Đăng nhập'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/Home/Login'; // Điều hướng đến trang đăng nhập
+                        }
+                    });
+                }else{
+                    var ratingValue = $(this).data("value");
+                    var productId = $(this).data("prid");
+                    // Xóa hết các class active trước đó
+                    $(".star i").removeClass("active");
+
+                    // Thêm class active cho các sao đã chọn
+                    $(this).prevAll().find("i").addClass("active");
+
+                    $(this).find("i").addClass("active");
+
+                    console.log("Rating value: " + ratingValue + "Pro Id: " + productId);
+
+                    $.ajax({
+                        url: "/Product/Rating",
+                        
+                        type: 'POST',
+                        data: { rating: ratingValue,
+                                product: productId,
+                                },
+                        success: function (response) {
+                            Swal.fire({
+                                icon: response.success ? 'success' : 'error',
+                                title: response.success ? 'Thành công' : 'Lỗi',
+                                text: response.message
+                            });
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi',
+                                text: 'Đã xảy ra lỗi khi gửi đánh giá.'
+                            });
+                        }
+                    });
+                }
+                
             });
         });
     </script>

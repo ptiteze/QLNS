@@ -339,10 +339,22 @@ public partial class DataContext : DbContext
                 .HasMaxLength(4000)
                 .HasColumnName("contentReview");
             entity.Property(e => e.Created).HasColumnName("created");
-            entity.Property(e => e.Name)
-                .HasMaxLength(50)
-                .HasColumnName("name");
+            entity.Property(e => e.IdUser)
+                .HasColumnName("id_user");
             entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Score)
+                .HasDefaultValue(0)
+                .HasColumnName("score");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_review_product");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Reviews)
+                .HasForeignKey(d => d.IdUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_review_users");
         });
 
         modelBuilder.Entity<Role>(entity =>

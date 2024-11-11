@@ -49,6 +49,12 @@ namespace QLNS_BackEnd.Helper
             CreateMap<CreateSupplyListRequest, SupplyList>();
             //User
             CreateMap<User, UserDTO>();
+            //Review
+            CreateMap<Review, ReviewDTO>();
+            CreateMap<ReviewDTO, Review>();
+            CreateMap<CreateReviewRequest, Review>();
+            //Used
+            CreateMap<Used, UsedDTO>();
         }
     }
 }

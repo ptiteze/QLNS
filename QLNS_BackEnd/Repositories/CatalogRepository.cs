@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using QLNS_BackEnd.Data;
 using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
@@ -50,9 +51,9 @@ namespace QLNS_BackEnd.Repositories
             
         }
 
-        public List<CatalogDTO> GetAllCatalog()
+        public async Task<List<CatalogDTO>> GetAllCatalog()
         {
-            return SingletonAutoMapper.GetInstance().Map<List<CatalogDTO>>(_dataContext.Catalogs.ToList());
+            return SingletonAutoMapper.GetInstance().Map<List<CatalogDTO>>(await _dataContext.Catalogs.ToListAsync());
         }
 
         public CatalogDTO GetCatalogById(int id)

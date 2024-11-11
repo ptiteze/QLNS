@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLNS_BackEnd.Interfaces;
+using QLNS_BackEnd.ModelsParameter.Cart;
 using QLNS_BackEnd.ModelsParameter.Product;
 
 namespace QLNS_BackEnd.Controllers
@@ -15,8 +16,8 @@ namespace QLNS_BackEnd.Controllers
 			_product = product;
 		}
 		[HttpGet]
-		public IActionResult GetAllProducts() {
-			var res = _product.GetAllProducts();
+		public async Task<IActionResult> GetAllProducts() {
+			var res = await _product.GetAllProducts();
 			if (res == null)
 			{
 				var errorResponse = new
@@ -90,10 +91,25 @@ namespace QLNS_BackEnd.Controllers
             }
             return Ok(res);
         }
-		[HttpGet("bestsell")]
-		public async Task<IActionResult> GetBestsellingProduct()
+		[HttpGet("rating_recommend/{id}")]
+		public IActionResult GetRecommendedProductsByRated(int id)
 		{
-            var res = await _product.GetProductsBestSelling();
+			var res = _product.GetRecommendedProductsByRated(id);
+			if (res == null)
+			{
+				var errorResponse = new
+				{
+					message = "Không thể lấy dữ liệu",
+					errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+				};
+				return BadRequest(errorResponse);
+			}
+			return Ok(res);
+		}
+		[HttpGet("bestsell")]
+		public IActionResult GetBestsellingProduct()
+		{
+            var res = _product.GetProductsBestSelling();
             if (res == null)
             {
                 var errorResponse = new
@@ -105,5 +121,11 @@ namespace QLNS_BackEnd.Controllers
             }
             return Ok(res);
         }
+		[HttpPost("check")]
+		public IActionResult CheckPurchase(RequestCheckCart request)
+		{
+			var res = _product.CheckPurchase(request);
+			return Ok(res);
+		}
 	}
 }

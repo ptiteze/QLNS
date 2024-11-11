@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
+using QLNS_BackEnd.ModelsParameter.Cart;
 using QLNS_BackEnd.ModelsParameter.Product;
 using QLNS_BackEnd.Singleton;
 using System.Data;
@@ -36,7 +37,17 @@ namespace QLNS_BackEnd.Repositories
             }
 		}
 
-		public bool DeleteProduct(int id)
+        public bool CheckPurchase(RequestCheckCart request)
+        {
+            Console.WriteLine(request.userId.ToString()+"  aa  "+request.productId.ToString());
+            List<Order> orders = SingletonDataBridge.GetInstance().Orders.ToList();
+            List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.ToList();
+            var HasPurchased = orders
+                                .Where(order => order.UserId == request.userId)
+                                .Any(order => ordereds.Any(ordered => ordered.OrderId == order.Id && ordered.ProductId == request.productId));
+            return  HasPurchased;
+        }
+        public bool DeleteProduct(int id)
 		{
             try
             {
@@ -55,19 +66,19 @@ namespace QLNS_BackEnd.Repositories
             }
 		}
 
-		public List<ProductDTO> GetAllProducts()
+		public async Task<List<ProductDTO>> GetAllProducts()
         {
             return SingletonAutoMapper.GetInstance().Map<List<ProductDTO>>(
-                SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1).ToList());
+                await SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1).ToListAsync());
         }
 
         public ProductDTO GetProductById(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<ProductDTO>(
-                SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.Id == id).FirstOrDefault());
+               SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.Id == id).FirstOrDefault());
         }
 
-        public async Task<List<ProductDTO>> GetProductsBestSelling()
+        public List<ProductDTO> GetProductsBestSelling()
         {
             List<ProductDTO> products = new List<ProductDTO>();
             List<int> bestSellingProductIds = new List<int>();
@@ -76,14 +87,14 @@ namespace QLNS_BackEnd.Repositories
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    await conn.OpenAsync();
+                    conn.Open();
                     using (SqlCommand cmd = new SqlCommand("SP_BEST_SELLING", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        using (SqlDataReader reader = cmd.ExecuteReader())
                         {
-                            while (await reader.ReadAsync())
+                            while (reader.Read())
                             {
                                 ProductDTO pr = GetProductById(reader.GetInt32(0));
                                 if(pr != null) products.Add(pr);
@@ -153,7 +164,50 @@ namespace QLNS_BackEnd.Repositories
             }
             return null;
         }
-        public bool UpdateProduct(UpdateProductRequest request)
+
+		public List<ProductDTO> GetRecommendedProductsByRated(int id)
+		{
+			ProcessStartInfo start = new ProcessStartInfo();
+			start.FileName = "python";
+			start.Arguments = $"\"D:\\source\\repos\\QLNS\\Recommendation\\rating_predict.py\" {id}"; // Truyền id
+			start.UseShellExecute = false;
+			start.RedirectStandardOutput = true;
+			start.RedirectStandardError = true;
+			start.CreateNoWindow = true;
+			// Chạy process
+			using (Process process = Process.Start(start))
+			{
+				using (System.IO.StreamReader reader = process.StandardOutput)
+				{
+					try
+					{
+						string result = reader.ReadToEnd().Trim();
+						Console.WriteLine(result);
+						int[] numbers = result.Trim(new char[] { '[', ']' })
+							  .Split(',')
+							  .Select(int.Parse)
+							  .ToArray();
+
+						List<ProductDTO> products = new List<ProductDTO>();
+						foreach (int number in numbers)
+						{
+							products.Add(GetProductById(number));
+						}
+						process.Close();
+						return products;
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Errors: " + ex.Message);
+					}
+
+				}
+				process.Close();
+			}
+			return null;
+		}
+
+		public bool UpdateProduct(UpdateProductRequest request)
 		{
             try
             {
@@ -169,7 +223,7 @@ namespace QLNS_BackEnd.Repositories
                 product.ExpiryDate = request.ExpiryDate;
                 product.Unit = request.Unit;
                 SingletonDataBridge.GetInstance().Products.Update(product);
-                SingletonDataBridge.GetInstance().SaveChanges();
+                SingletonDataBridge.GetInstance().SaveChangesAsync();
 				return true;
             }
             catch

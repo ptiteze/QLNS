@@ -31,9 +31,9 @@ namespace QLNS_BackEnd.Controllers
             return Ok(res);
         }
         [HttpGet("id/{id}")]
-        public IActionResult GetOrderById(int id)
+        public async Task<IActionResult> GetOrderById(int id)
         {
-            var res = _order.GetOrderById(id);
+            var res = await _order.GetOrderById(id);
             if (res == null)
             {
                 var errorResponse = new
@@ -52,9 +52,9 @@ namespace QLNS_BackEnd.Controllers
             return Ok(res);
         }
         [HttpPost]
-        public IActionResult UpDateOrder(OrderDTO request)
+        public async Task<IActionResult> UpDateOrder(OrderDTO request)
         {
-            var res = _order.UpDateOrder(request);
+            var res = await _order.UpDateOrder(request);
             return Ok(res);
         }
         [HttpGet]

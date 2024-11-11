@@ -43,6 +43,8 @@ namespace QLNS.Helper
             CreateMap<CreateSupplyListRequest, SupplyList>();
             //User
             CreateMap<User, UserDTO>();
+            //Review
+            CreateMap<Review, ReviewDTO>();
         }
     }
 }

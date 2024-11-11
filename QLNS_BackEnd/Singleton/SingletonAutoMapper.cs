@@ -21,7 +21,6 @@ namespace QLNS_BackEnd.Singleton
                         {
                             cfg.AddMaps(typeof(MappingProfiles).Assembly);
                         });
-
                         // Tạo IMapper từ MapperConfiguration
                         uniqueInstance = config.CreateMapper();
                     }

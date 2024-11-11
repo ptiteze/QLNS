@@ -14,9 +14,9 @@ namespace QLNS_BackEnd.Controllers
 			_boardnew = boardnew;
 		}
 		[HttpGet]
-		public IActionResult GetBoardnews()
+		public async Task<IActionResult> GetBoardnews()
 		{
-			var res = _boardnew.GetBoardnews();
+			var res = await _boardnew.GetBoardnews();
 			if(res == null)
 			{
 				var errorResponse = new

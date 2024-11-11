@@ -14,9 +14,9 @@ namespace QLNS_BackEnd.Controllers
 			_slide = slide;
 		}
 		[HttpGet]
-		public IActionResult GetAllSlides() 
+		public async Task<IActionResult> GetAllSlides() 
 		{
-			var res = _slide.GetAllSlides();
+			var res = await _slide.GetAllSlides();
 			if (res == null)
 			{
 				var errorResponse = new

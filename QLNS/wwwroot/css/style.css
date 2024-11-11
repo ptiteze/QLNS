@@ -2323,10 +2323,18 @@ a.aa-product-img img {
   padding: 20px 0;
   width: 100%;
 }
+.rate .star {
+    cursor: pointer;
+    font-size: 5rem;
+    color: #ccc;
+}
+.rate .star i.active {
+    color: #ffcc00;
+}
 #aa-product-details .aa-product-details-area .aa-product-details-bottom .aa-product-review-area > h4 {
-  font-size: 25px;
-  margin-bottom: 20px;
-  text-transform: uppercase;
+    font-size: 25px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
 }
 #aa-product-details .aa-product-details-area .aa-product-details-bottom .aa-product-review-area .aa-review-nav li {
   margin-bottom: 20px;

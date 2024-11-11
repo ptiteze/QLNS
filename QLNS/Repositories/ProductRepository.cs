@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using QLNS.DTO;
 using QLNS.Interfaces;
+using QLNS.ModelsParameter.Cart;
 using QLNS.ModelsParameter.Product;
 
 
@@ -126,5 +127,33 @@ namespace QLNS.Repositories
                 return null;
             }
         }
-    }
+
+        public async Task<bool> CheckPurchase(RequestCheckCart request)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + "/check", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+		public async Task<List<ProductDTO>> GetRecommendedProductsByRated(int id)
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/rating_recommend/{id}");
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<List<ProductDTO>>();
+				return result;
+			}
+			else
+			{
+				return null;
+			}
+		}
+	}
 }

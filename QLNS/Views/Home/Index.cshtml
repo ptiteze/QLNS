@@ -82,11 +82,15 @@
 		</div>
 	</div>
 </section>
-<!-- Thông báo gợi ý khi kéo tới section -->
-<div id="notification" class="notification hidden">
-	<p>Bạn đang quan tâm tới các sản phẩm làm đẹp</p>
-	<button id="goToSection" class="btn">Xem sản phẩm làm đẹp</button>
-</div>
+@if (Model.Useds != "")
+{
+	<!-- Thông báo gợi ý khi kéo tới section -->
+	<div id="notification" class="notification hidden">
+		<p>Bạn đang quan tâm tới các sản phẩm @Model.Useds</p>
+		<button id="goToSection" class="btn">Xem sản phẩm @Model.Useds</button>
+	</div>
+}
+
 <!-- / Promo section -->
 <!-- Products section -->
 <section id="aa-product">
@@ -218,8 +222,8 @@
 					<div class="aa-popular-category-area">
 						<!-- start prduct navigation -->
 						<ul class="nav nav-tabs aa-products-tab">
-							<li class="active"><a href="#sanphammoi" data-toggle="tab">Sản Phẩm Mới</a></li>
-							<li><a href="#sanphamchoban" data-toggle="tab">Sản Phẩm Gợi ý cho bạn</a></li>
+							<li class="active"><a href="#sanphamchoban" data-toggle="tab">Sản Phẩm Gợi ý cho bạn</a></li>
+							<li ><a href="#sanphammoi" data-toggle="tab">Sản Phẩm Mới</a></li>
 							<li><a href="#sanphambanchay" data-toggle="tab">Sản Phẩm Bán Chạy</a></li>
 							<li><a href="#sanphamgiamgia" data-toggle="tab">Sản Phẩm Giảm Giá</a></li>
 							
@@ -227,45 +231,7 @@
 						<!-- Tab panes -->
 						<div class="tab-content">
 							<!-- Start men popular category -->
-							<div class="tab-pane fade in active" id="sanphammoi">
-								<ul class="aa-product-catg aa-popular-slider">
-									<!-- start single product item -->
-									@foreach (ProductDTO item in Model.Products.OrderByDescending(p => p.Created).ToList())
-									{
-										<li>
-											<figure>
-												<a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
-												<a class="aa-add-card-btn" data-productid=@item.Id data-quantity=1 style="cursor: pointer;"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
-												<figcaption>
-													<h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
-													@if (item.Discount == 0)
-													{
-														<span class="aa-product-price">@item.Price VNĐ</span>
-														<span class="aa-product-price"></span>
-													}
-													else
-													{
-														<span class="aa-product-price">@string.Format("{0:N0}",item.Price - (item.Price / 100 * item.Discount)) VNĐ</span>
-														<span class="aa-product-price"><del>@item.Price VNĐ</del></span>
-													}
-												</figcaption>
-											</figure>
-
-											@if (item.Discount != 0)
-											{
-
-												<!-- product badge -->
-												<span class="aa-badge aa-sale">- @item.Discount%</span>
-											}
-										</li>
-										<!-- start single product item -->
-									}
-								</ul>
-
-							</div>
-							<!-- / popular product category -->
-							<!-- Start men popular category -->
-							<div class="tab-pane fade" id="sanphamchoban">
+							<div class="tab-pane fade in active" id="sanphamchoban">
 								<ul class="aa-product-catg aa-popular-slider">
 									<!-- start single product item -->
 									@foreach (ProductDTO item in Model.RecommendedProducts)
@@ -302,6 +268,45 @@
 
 							</div>
 							<!-- / popular product category -->
+							<!-- Start men popular category -->
+							<div class="tab-pane fade" id="sanphammoi">
+								<ul class="aa-product-catg aa-popular-slider">
+									<!-- start single product item -->
+									@foreach (ProductDTO item in Model.Products.OrderByDescending(p => p.Created).ToList())
+									{
+										<li>
+											<figure>
+												<a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
+												<a class="aa-add-card-btn" data-productid=@item.Id data-quantity=1 style="cursor: pointer;"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
+												<figcaption>
+													<h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+													@if (item.Discount == 0)
+													{
+														<span class="aa-product-price">@item.Price VNĐ</span>
+														<span class="aa-product-price"></span>
+													}
+													else
+													{
+														<span class="aa-product-price">@string.Format("{0:N0}",item.Price - (item.Price / 100 * item.Discount)) VNĐ</span>
+														<span class="aa-product-price"><del>@item.Price VNĐ</del></span>
+													}
+												</figcaption>
+											</figure>
+
+											@if (item.Discount != 0)
+											{
+
+												<!-- product badge -->
+												<span class="aa-badge aa-sale">- @item.Discount%</span>
+											}
+										</li>
+										<!-- start single product item -->
+									}
+								</ul>
+
+							</div>
+							<!-- / popular product category -->
+							
 							<!-- start featured product category -->
 							<div class="tab-pane fade" id="sanphambanchay">
 								<ul class="aa-product-catg aa-popular-slider">
@@ -387,6 +392,65 @@
 	</div>
 </section>
 <!-- / popular section -->
+<!-- recommend by rating-->
+<section id="aa-popular-category">
+	
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="aa-popular-category-area">
+						<h3> Những người mua hàng khác giống bạn cũng thích</h3>
+						<div class="tab-content">
+							@if (Model.RecommendedProductsByRated != null)
+							{
+								<div class="tab-pane fade in active">
+									<ul class="aa-product-catg aa-popular-slider">
+										<!-- start single product item -->
+										@foreach (ProductDTO item in Model.RecommendedProductsByRated)
+										{
+											<li>
+												<figure>
+													<a class="aa-product-img" href="/Product/ProductDetail?id=@item.Id"><img src="~/images/products/img-test/@item.ImageLink" alt="polo shirt img"></a>
+													<a class="aa-add-card-btn" data-productid=@item.Id data-quantity=1 style="cursor: pointer;"><span class="fa fa-shopping-cart"></span>Thêm vào giỏ hàng</a>
+													<figcaption>
+														<h4 class="aa-product-title"><a href="/Product/ProductDetail?id=@item.Id">@item.Name</a></h4>
+														@if (item.Discount == 0)
+														{
+															<span class="aa-product-price">@item.Price VNĐ</span>
+															<span class="aa-product-price"></span>
+														}
+														else
+														{
+															<span class="aa-product-price">@string.Format("{0:N0}", item.Price - (item.Price / 100 * item.Discount)) VNĐ</span>
+															<span class="aa-product-price"><del>@item.Price VNĐ</del></span>
+														}
+													</figcaption>
+												</figure>
+
+												@if (item.Discount != 0)
+												{
+
+													<!-- product badge -->
+													<span class="aa-badge aa-sale">- @item.Discount%</span>
+												}
+											</li>
+											<!-- start single product item -->
+										}
+									</ul>
+
+								</div>
+							}
+							</<div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+</section>
+<!--/ Recommend by rating-->
 <!-- Support section -->
 <section id="aa-support">
 	<div class="container">

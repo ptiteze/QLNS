@@ -94,10 +94,10 @@ namespace QLNS_BackEnd.Repositories
             
         }
 
-        public OrderDTO GetOrderById(int id)
+        public async Task<OrderDTO> GetOrderById(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<OrderDTO>(
-                SingletonDataBridge.GetInstance().Orders.Find(id));
+                await SingletonDataBridge.GetInstance().Orders.FindAsync(id));
         }
 
         public List<OrderDTO> GetOrders()
@@ -111,15 +111,16 @@ namespace QLNS_BackEnd.Repositories
             return SingletonAutoMapper.GetInstance().Map<List<OrderDTO>>(
                 SingletonDataBridge.GetInstance().Orders.Where(o => o.UserId == id).ToList());
         }
-        public bool UpDateOrder(OrderDTO request)
+        public async Task<bool> UpDateOrder(OrderDTO request)
         {
             try
             {
-                Order order = SingletonDataBridge.GetInstance().Orders.Find(request.Id);
+                Order order = await SingletonDataBridge.GetInstance().Orders.FindAsync(request.Id);
+                order.Payment = request.Payment;
                 order.Status = request.Status;
                 Console.WriteLine(request.Id.ToString() +"-"+request.UserId);
                 SingletonDataBridge.GetInstance().Orders.Update(order);
-                SingletonDataBridge.GetInstance().SaveChanges();
+                await SingletonDataBridge.GetInstance().SaveChangesAsync();
                 return true;
             }
             catch

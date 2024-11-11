@@ -31,9 +31,9 @@ namespace QLNS_BackEnd.Controllers
 			return Ok(res);
 		}
 		[HttpGet]
-		public IActionResult GetAllCatalog()
+		public async Task<IActionResult> GetAllCatalog()
 		{
-			var res = _catalog.GetAllCatalog();
+			var res = await _catalog.GetAllCatalog();
 			if (res == null)
 			{
 				var errorResponse = new

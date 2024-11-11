@@ -1,4 +1,5 @@
 ﻿using QLNS.DTO;
+using QLNS.ModelsParameter.Cart;
 using QLNS.ModelsParameter.Product;
 
 namespace QLNS.Interfaces
@@ -13,5 +14,7 @@ namespace QLNS.Interfaces
         Task<bool> DeleteProduct(int id);
         Task<List<ProductDTO>> GetRecommendedProducts(int id);
         Task<List<ProductDTO>> GetBestSellingProducts();
-    }
+        Task<bool> CheckPurchase(RequestCheckCart request);
+		Task<List<ProductDTO>> GetRecommendedProductsByRated(int id);
+	}
 }

@@ -3,6 +3,7 @@ using QLNS_BackEnd.Data;
 using QLNS_BackEnd.Helper;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Repositories;
+using QLNS_BackEnd.Services.PaymentService;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<IBoardnew, BoardnewRepository>()
@@ -18,11 +19,13 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<IOrder, OrderRepository>()
 				.AddTransient<IOrdered,  OrderedRepository>()
 				.AddTransient<ISlide, SlideRepository>()
-				.AddTransient<IAccount, AccountRepository>();
+				.AddTransient<IAccount, AccountRepository>()
+				.AddTransient<IUsed, UsedRepository>()
+				.AddTransient<IRecommend, RecommendRepository>();
 // Add services to the container.
-
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddDbContext<DataContext>(options =>
 {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

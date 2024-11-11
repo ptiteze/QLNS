@@ -71,7 +71,16 @@ namespace QLNS.Controllers
 			int productid = cartItem.productid;
 			int quantity = cartItem.quantity;
 			int length_order = 0;
-			Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
+            ProductDTO product = await _product.GetProductById(productid);
+            if (quantity > product.Quantity)
+            {
+                return Json(new
+                {
+                    error = $"Số lượng hàng mua ({quantity}) vượt quá số lượng trong kho ({product.Quantity})."
+                });
+            } 
+                
+			//Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
 			int IdUser = 0;

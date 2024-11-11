@@ -4,6 +4,7 @@ using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Order;
 using QLNS.ViewModels.Order;
+using System;
 
 namespace QLNS.Controllers
 {
@@ -15,7 +16,9 @@ namespace QLNS.Controllers
         private readonly IProduct _product;
         private readonly IOrder _order;
         private readonly IOrdered _ordered;
-        public OrderController(IUser user, IAdmin admin, ICart cart, IProduct product, IOrder order, IOrdered ordered)
+        private readonly IVnPayment _vnPayment;
+        public OrderController(IUser user, IAdmin admin, ICart cart, IProduct product, IOrder order,
+            IOrdered ordered, IVnPayment vnPayment)
         {
             _user = user;
             _admin = admin;
@@ -23,6 +26,7 @@ namespace QLNS.Controllers
             _product = product;
             _order = order;
             _ordered = ordered;
+            _vnPayment = vnPayment;
         }
 
         public async Task<IActionResult> Checkout()
@@ -101,6 +105,15 @@ namespace QLNS.Controllers
             HttpContext.Session.SetString("cart_local", "");
             HttpContext.Session.SetString("sumprice", "0");
             HttpContext.Session.SetString("length_order", "0");
+            if(request.Payment.Equals("Thanh toán bằng VNPay"))
+            {
+                var url = await _vnPayment.CreatePaymentUrl(orderId);
+                if (url != null)
+                {
+                    return Redirect(url);
+                }
+                
+            }
             return Json(new
             {
                 orderId
@@ -160,6 +173,7 @@ namespace QLNS.Controllers
             string UserName = HttpContext.Session.GetString("Username");
             if (UserName == null) return RedirectToAction("Index", "Home");
             OrderDTO order = await _order.GetOrderById(id);
+            if(order == null) return RedirectToAction("Error", "Home");
             order.Status = 3;
             bool check = await _order.UpDateOrder(order);
             if (check)

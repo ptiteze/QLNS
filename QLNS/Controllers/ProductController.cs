@@ -3,8 +3,11 @@ using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.Models;
+using QLNS.ModelsParameter.Cart;
+using QLNS.ModelsParameter.Product;
 using QLNS.ViewModels.Header;
 using QLNS.ViewModels.Product;
+using System.Data.SqlTypes;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QLNS.Controllers
@@ -64,7 +67,20 @@ namespace QLNS.Controllers
             List<ProductDTO> products = await _product.GetAllProducts();
 			List<ProductDTO> Recommendedproducts = await _product.GetRecommendedProducts(id);
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
-            List<Review> reviews = await _review.GetReviewsByProductId(id);
+            List<ReviewDTO> reviews = await _review.GetReviewsByProductId(id);
+            ReviewDTO review = null;
+            string Id = HttpContext.Session.GetString("id_user");
+            int IdUser = 0;
+            if (!Id.IsNullOrEmpty())
+            {
+                IdUser = int.Parse(Id);
+                InputGetReview input = new InputGetReview() 
+                {
+                    ProductId = id,
+                    UserId = IdUser,
+                };
+                review = await _review.GetReview(input);
+            }
             int sumprice = 0;
             sumprice = SetHeaderData(products, sumprice);
             ProductDTO product = await _product.GetProductById(id);
@@ -81,9 +97,109 @@ namespace QLNS.Controllers
                 Product = product,
                 RelatedProducts = Recommendedproducts,
                 Reviews = reviews,
-                NameCatalog = nameCatalog
+                NameCatalog = nameCatalog,
+                YourReview = review,
             };
             return View(Model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Rating(Rating request)
+        {
+            string Id = HttpContext.Session.GetString("id_user");
+            Console.WriteLine(request.product.ToString()+"   abc");
+            int IdUser = 0;
+            if (!Id.IsNullOrEmpty())
+            {
+                IdUser = int.Parse(Id);
+            }
+            else
+            {
+                return Json(new
+                {
+                    error = true,
+                    message = "Chưa đăng nhập không thể Rating!!!"
+                });
+            }
+            RequestCheckCart requestCheckPurchase = new RequestCheckCart()
+            {
+                productId = request.product,
+                userId = IdUser,
+            };
+            bool CheckPurchase = await _product.CheckPurchase(requestCheckPurchase);
+            if (!CheckPurchase)
+            {
+                return Json(new
+                {
+                    error = true,
+                    message = "Bạn chưa mua hàng, không thể đánh giá sản phẩm!!"
+                });
+            }
+            InputGetReview input = new InputGetReview() 
+            {
+                ProductId = request.product,
+                UserId = IdUser,
+            };
+            ReviewDTO review = await _review.GetReview(input);
+            try
+            {
+                if (review != null)
+                {
+                    review.Score = request.rating;
+                    bool check = await _review.UpdateReview(review);
+                    if(check)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Đánh giá sản phẩm thành công!!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            error = true,
+                            message = "Có lỗi xảy ra, không thể sửa đánh giá!!"
+                        });
+                    }
+                }
+                else
+                {
+                    CreateReviewRequest reviewRequest = new CreateReviewRequest()
+                    {
+                        ContentReview = "Đã sử dụng sản phẩm.",
+                        Created = DateOnly.FromDateTime(DateTime.Now),
+                        IdUser = IdUser,
+                        ProductId = request.product,
+                        Score = request.rating,
+                    };
+                    bool check = await _review.CreateReview(reviewRequest);
+                    if (check)
+                    {
+                        return Json(new
+                        {
+                            success = true,
+                            message = "Đánh giá sản phẩm thành công!!"
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            error = true,
+                            message = "Có lỗi xảy ra, Không thể tạo đánh giá!!"
+                        });
+                    }
+                }
+            }catch (Exception ex)
+            {
+                return Json(new
+                {
+                    error = true,
+                    message = "Có lỗi xảy ra!!"
+                });
+            }
+            
         }
         // Header ViewModel
         private int SetHeaderData(List<ProductDTO> products, int sumprice)

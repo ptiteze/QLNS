@@ -4,7 +4,7 @@ namespace QLNS_BackEnd.Interfaces
 {
     public interface IBoardnew
     {
-        List<Boardnew> GetBoardnews();
+        Task<List<Boardnew>> GetBoardnews();
         Boardnew GetBoardnewById(int id);
     }
 }
