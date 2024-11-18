@@ -31,10 +31,11 @@ namespace QLNS.Controllers
 		private readonly IOrdered _ordered;
 		private readonly IBoardnew _boardnew;
 		private readonly IAccount _acount;
+		private readonly IUsed _used;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, IOrder order, IOrdered ordered,
 			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
-			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account)
+			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account, IUsed used)
 		{
 			_admin = admin;
 			_user = user;
@@ -48,6 +49,7 @@ namespace QLNS.Controllers
 			_supplyInvoice = supplyInvoice;
 			_importDetail = importDetail;
 			_acount = account;
+			_used = used;
 			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
@@ -543,10 +545,14 @@ namespace QLNS.Controllers
             if (!CheckRole()) return RedirectToAction("Error", "Home");
 			ProductDTO product = await _product.GetProductById(id);
 			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
-			EditProductViewModel model = new EditProductViewModel()
+			List<UsedDTO> useds = await _used.GetAllUseds();
+			List<UsedDTO> usedOfProduct = await _used.GetUsedsByProduct(id);
+            EditProductViewModel model = new EditProductViewModel()
 			{
 				Catalogs = catalogs,
 				Product = product,
+				UsedsOfProduct = usedOfProduct,
+				Useds = useds,
 			};
 			return View(model);
         }
@@ -1100,5 +1106,20 @@ namespace QLNS.Controllers
 			};
 			return View(model);
 		}
-    }
+        public async Task<IActionResult> ChangeUsed([FromBody] List<int> selectedValues)
+		{
+			if (selectedValues.IsNullOrEmpty())
+			{
+				Console.WriteLine("không có giá trị");
+			}
+			else
+			{
+				foreach(var value in selectedValues)
+				{
+                    Console.WriteLine($"Giá trị: {value}");
+                }
+			}
+            return Json(new { success = true, message = "Dữ liệu đã được xử lý thành công." });
+        }
+	}
 }

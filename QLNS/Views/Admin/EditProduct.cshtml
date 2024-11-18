@@ -124,6 +124,55 @@
                                 <button type="submit" class="btn btn-success">Cập nhật</button>
                             </div>
                         </form>
+
+                    </div>
+
+                    <br />
+                    <div class="table-container" style=" gap:20px; margin-top: 20px;">
+                        <div class="card-title">Cập nhật Công dụng sản phẩm:</div>
+                        <br />
+                        <div style="display: flex; margin-left: 30px;">
+                            <!-- Bảng bên trái -->
+                            <div class="table-box" style="margin-right: 100px; width: 200px;border: 1px solid #333;border-radius: 5px;overflow: hidden;">
+                            <div class="table-title">Tất cả giá trị</div>
+                            <div class="table-content" style="max-height: 140px; overflow-y: auto;">
+                                <table style=" width: 100%;border-collapse: collapse;border: 1px solid #fff;">
+                                    <tbody>
+                                        @foreach (UsedDTO item in Model.Useds)
+                                        {
+                                            <tr><td onclick="moveToRight(this)" data-value="@item.Id">@item.Name</td></tr>
+                                        }
+                                        @* <tr><td onclick="moveToRight(this)" data-value="1">Giá trị 1</td></tr>
+                                        <tr><td onclick="moveToRight(this)" data-value="2">Giá trị 2</td></tr>
+                                        <tr><td onclick="moveToRight(this)" data-value="3">Giá trị 3</td></tr>
+                                        <tr><td onclick="moveToRight(this)" data-value="4">Giá trị 4</td></tr>
+                                        <tr><td onclick="moveToRight(this)" data-value="5">Giá trị 5</td></tr>
+                                        <tr><td onclick="moveToRight(this)" data-value="6">Giá trị 6</td></tr> *@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                            <!-- Bảng bên phải -->
+                            <form id="selectedValuesForm" method="post" asp-action="ChangeUsed" asp-controller="Admin">
+                            <div class="table-box" style="width: 250px;border: 1px solid #333;border-radius: 5px;overflow: hidden;">
+                            <div class="table-title">Giá trị đã chọn</div>
+                            <div class="table-content" style="max-height: 140px; overflow-y: auto;">
+                                    
+                                <table style=" width: 100%;border-collapse: collapse;border: 1px solid #fff;">
+                                    <tbody id="selectedValuesTable">
+                                        
+                                    </tbody>
+                                </table>
+                                        
+                            </div>
+                        </div>
+                                <input type="hidden" name="selectedValues" id="selectedValues">
+                                <button type="submit" style="margin: 20px; border: 2px; border-color: palegreen;">Xác nhận</button>
+
+                            </form>
+                            
+                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -152,5 +201,75 @@
 
 
         }
+    }
+    // const preselectedValues;
+    
+    function moveToRight(element) {
+        // Lấy giá trị từ thuộc tính data-value
+        const value = element.getAttribute("data-value");
+        const text = element.innerText;
+
+        // Kiểm tra xem giá trị đã có trong bảng bên phải chưa
+        const selectedTable = document.getElementById("selectedValuesTable");
+        const existingRow = selectedTable.querySelector(`tr[data-value="${value}"]`);
+        if (!existingRow) {
+            // Tạo hàng mới cho bảng bên phải
+            const newRow = document.createElement("tr");
+            newRow.setAttribute("data-value", value);
+            newRow.innerHTML = `<td onclick="removeFromRight(this)">${text}</td>`;
+            selectedTable.appendChild(newRow);
+        }
+    }
+
+    const preselectedValues = @Html.Raw(Json.Serialize(Model.UsedsOfProduct));
+
+    // Hàm khởi tạo khi trang tải
+    window.onload = function () {
+        const selectedTable = document.getElementById("selectedValuesTable");
+
+        // Duyệt qua mảng preselectedValues và tạo các hàng trong bảng
+        preselectedValues.forEach(item => {
+            const newRow = document.createElement("tr");
+            newRow.setAttribute("data-value", item.id); // Lưu giá trị ID vào data-value
+            newRow.innerHTML = `<td data-value="${item.id}" onclick="removeFromRight(this)">${item.name}</td>`;
+            selectedTable.appendChild(newRow);
+        });
+    };
+
+    function removeFromRight(element) {
+        element.parentNode.remove();
+    }
+
+    function submitSelectedValues() {
+        let selectedValues = [];
+        let rightTable = document.getElementById("selectedValuesTable");
+
+        // Lấy tất cả `data-value` từ các ô trong bảng
+        for (let i = 0; i < rightTable.rows.length; i++) {
+            let value = parseInt(rightTable.rows[i].cells[0].getAttribute('data-value'));
+            selectedValues.push(value);
+        }
+
+        // Cập nhật input ẩn với JSON
+        document.getElementById("selectedValues").value = JSON.stringify(selectedValues);
+        console.log(selectedValues)
+        // Gửi form qua fetch API
+        fetch('/Admin/ChangeUsed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ selectedValues: selectedValues })
+        })
+            .then(response => response.json())
+            .then(data => {
+                // Hiển thị thông báo thành công
+                Swal.fire('Thành công', 'Dữ liệu đã được gửi!', 'success');
+            })
+            .catch(error => {
+                Swal.fire('Lỗi', 'Gửi dữ liệu thất bại!', 'error');
+            });
+
+        return false; // Ngăn không cho form gửi đi theo cách mặc định
     }
 </script>

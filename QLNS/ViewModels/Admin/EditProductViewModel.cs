@@ -6,5 +6,7 @@ namespace QLNS.ViewModels.Admin
     {
         public ProductDTO Product { get; set; }
         public List<CatalogDTO> Catalogs { get; set; }
+        public List<UsedDTO> Useds { get; set; } 
+        public List<UsedDTO> UsedsOfProduct { get; set; }
     }
 }
