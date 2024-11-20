@@ -1,0 +1,74 @@
+﻿@using QLNS.DTO
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	Layout = "_AdminLayout";
+	ViewData["Title"] = "Update Product View";
+	string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Admin.EditProductViewModel
+@section AdminHeader {
+	@Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+	@Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+	<div class="container-fluid">
+		<div class="row mt-3">
+			<div class="col-lg-12">
+				<div class="card">
+					<div class="card-body">
+						<div class="card-title">Thông tin sản phẩm</div>
+						<p style="color:red; display:block">
+							@errorMsg
+						</p>
+						<hr>
+						<form>
+							<div class="form-group">
+								<label for="input-1">Mã sản phẩm</label>
+								<input type="text" class="form-control" readonly="readonly" id="input-1" placeholder="Mã sản phẩm" name="Id" value="@Model.Product.Id">
+							</div>
+							<div class="form-group">
+								<label for="input-1">Tên sản phẩm</label>
+								<input type="text" class="form-control" readonly="readonly" id="input-1" placeholder="Tên sản phẩm" name="Name" value="@Model.Product.Name">
+							</div>
+						</form>
+						<br />
+						<h5 class="card-title">Danh sách sản phẩm</h5>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th scope="col">Công dụng</th>
+										<th scope="col">Hành động</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach(UsedDTO item in Model.Useds)
+									{
+										<tr>
+											<th scope="row">
+												@item.Name
+											</th>
+											<td>
+												@if (Model.UsedsOfProduct.Any(u=>u.Id==item.Id))
+												{
+													<button class="btn btn-danger"><a asp-action="RemoveUsed" asp-controller="Admin" asp-route-id="@item.Id" asp-route-prid="@Model.Product.Id">Hủy công dụng</a></button>
+												}
+												else
+												{
+													<button class="btn btn-success"><a asp-action="AddUsed" asp-controller="Admin" asp-route-id="@item.Id" asp-route-prid="@Model.Product.Id">Thêm công dụng</a></button>
+												}
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</<div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="overlay toggle-menu"></div>
+	</div>
+</div>

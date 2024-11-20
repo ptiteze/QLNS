@@ -1106,20 +1106,61 @@ namespace QLNS.Controllers
 			};
 			return View(model);
 		}
-        public async Task<IActionResult> ChangeUsed([FromBody] List<int> selectedValues)
+        public async Task<IActionResult> ChangeUsed(int id)
 		{
-			if (selectedValues.IsNullOrEmpty())
+            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            ProductDTO product = await _product.GetProductById(id);
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+            List<UsedDTO> useds = await _used.GetAllUseds();
+            List<UsedDTO> usedOfProduct = await _used.GetUsedsByProduct(id);
+            EditProductViewModel model = new EditProductViewModel()
+            {
+                Catalogs = catalogs,
+                Product = product,
+                UsedsOfProduct = usedOfProduct,
+                Useds = useds,
+            };
+            return View(model);
+        }
+		public async Task<IActionResult> AddUsed(int id, int prid)
+		{
+			if (!CheckRole()) return RedirectToAction("Error", "Home");
+			UsedProductRequest request = new UsedProductRequest()
 			{
-				Console.WriteLine("không có giá trị");
+				ProductId = prid,
+				UsedId = id
+			};
+			bool check = await _used.CreateUsedProduct(request);
+			if (check)
+			{
+				HttpContext.Session.Remove("errorMsg");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = id });
 			}
 			else
 			{
-				foreach(var value in selectedValues)
-				{
-                    Console.WriteLine($"Giá trị: {value}");
-                }
+				HttpContext.Session.SetString("errorMsg", "Không Thể thêm công dụng");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = id });
 			}
-            return Json(new { success = true, message = "Dữ liệu đã được xử lý thành công." });
-        }
+		}
+		public async Task<IActionResult> RemoveUsed(int id, int prid)
+		{
+			if (!CheckRole()) return RedirectToAction("Error", "Home");
+			UsedProductRequest request = new UsedProductRequest()
+			{
+				ProductId = prid,
+				UsedId = id
+			};
+			bool check = await _used.DeleteUsedProduct(request);
+			if (check)
+			{
+				HttpContext.Session.Remove("errorMsg");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+			}
+			else
+			{
+				HttpContext.Session.SetString("errorMsg", "Không thể xóa công dụng");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+			}
+		}
 	}
 }

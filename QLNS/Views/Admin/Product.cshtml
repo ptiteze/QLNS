@@ -67,7 +67,7 @@
                                                     <button class="btn btn-success"><a href="/Admin/AddSupplyList?id=@item.Id">Nhập</a></button>
                                                 }
                                             </td>
-                                            <td>@item.Name</td>
+                                            <td><a href="/Admin/ChangeUsed?id=@item.Id">@item.Name</a></td>
                                             <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@item.ImageLink" alt="@item.ImageLink"></td>
                                             <td>@Model.Catalogs.Where(c=>c.Id==@item.CatalogId).FirstOrDefault().Name</td>
                                             <td>@item.Quantity</td>

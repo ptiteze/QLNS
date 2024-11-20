@@ -66,7 +66,7 @@ namespace QLNS_BackEnd.Controllers
             var res = _used.CreateUsedProduct(request);
             return Ok(res);
         }
-        [HttpPost("detele")]
+        [HttpPost("delete")]
         public IActionResult DeleteUsedProduct(UsedProductRequest request)
         {
             var res = _used.DeleteUsedProduct(request);
