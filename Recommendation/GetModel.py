@@ -17,8 +17,6 @@ conn = pyodbc.connect(
     'UID=sa;'           
     'PWD=nhitnho;'            
 )
-
-# Tạo truy vấn và chạy stored procedure
 # ---------------- predict Cosine Simularity----------------------
 query = "EXEC SP_DATA1"
 df = pd.read_sql_query(query, conn)

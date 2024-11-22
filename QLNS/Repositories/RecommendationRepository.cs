@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using QLNS.DTO;
 using QLNS.Interfaces;
 using System.Text;
 
@@ -28,6 +29,20 @@ namespace QLNS.Repositories
 			else
 			{
 				return "";
+			}
+		}
+
+		public async Task<bool> BuildDataset()
+		{
+			HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl);
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<bool>();
+				return result;
+			}
+			else
+			{
+				return false;
 			}
 		}
 	}

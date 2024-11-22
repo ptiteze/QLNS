@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
@@ -32,10 +33,11 @@ namespace QLNS.Controllers
 		private readonly IBoardnew _boardnew;
 		private readonly IAccount _acount;
 		private readonly IUsed _used;
+		private readonly IRecommendation _recommendation;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, IOrder order, IOrdered ordered,
 			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
-			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account, IUsed used)
+			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account, IUsed used, IRecommendation recommendation)
 		{
 			_admin = admin;
 			_user = user;
@@ -50,6 +52,7 @@ namespace QLNS.Controllers
 			_importDetail = importDetail;
 			_acount = account;
 			_used = used;
+			_recommendation = recommendation;
 			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
@@ -69,7 +72,7 @@ namespace QLNS.Controllers
 		//private readonly 
 		public async Task<IActionResult> Index()
 		{
-			if (!CheckRole()&&!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
+			if (!CheckRole()&&!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
 			List<OrderDTO> orders = await _order.GetOrders();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
             orders = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
@@ -120,7 +123,7 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> Admin() 
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
+            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
             List<AdminDTO> admins = await _admin.GetAdmins();
 			List<AccountDTO> accounts = await _acount.GetAccounts();
 			AdminViewModel Model = new AdminViewModel(){
@@ -201,8 +204,8 @@ namespace QLNS.Controllers
 		// Admin 
 		public async Task<IActionResult> AddAdmin()
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
-            return View();
+            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+			return View();
 		}
 		public async Task<IActionResult> AddAdminResult(int role, string? admin_username, string? admin_password, string? admin_name,
 			string? admin_email, string? admin_phone)
@@ -256,8 +259,8 @@ namespace QLNS.Controllers
 		}
 		public async Task<IActionResult> DeleteAdmin(int id)
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
-            bool check = await _admin.DeleteAdmin(id);
+            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+			bool check = await _admin.DeleteAdmin(id);
 			if(check)
 			{
                 HttpContext.Session.Remove("errorMsg");
@@ -271,8 +274,8 @@ namespace QLNS.Controllers
 		}
 		public async Task<IActionResult> EditAdmin(int id)
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
-            string UserName = HttpContext.Session.GetString("Username");
+            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+			string UserName = HttpContext.Session.GetString("Username");
             AdminDTO admin =  await _admin.GetAdmin(id);
 			AccountDTO account = await _acount.GetAccountByUsername(UserName);
 			EditAdminViewModel Model = new EditAdminViewModel() 
@@ -322,8 +325,8 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> UnLockAdmin(int id)
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
-            bool check = await _acount.UnLock(id);
+            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+			bool check = await _acount.UnLock(id);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -1162,5 +1165,25 @@ namespace QLNS.Controllers
 				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
 			}
 		}
+		public async Task<IActionResult> CreateUsed([FromForm] AddUsedRequest request)
+		{
+			if (!CheckRole()) return RedirectToAction("Error", "Home");
+			bool check = await _used.CreateUsed(request.used);
+			if (check)
+			{
+				HttpContext.Session.Remove("errorMsg");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = request.prid });
+			}
+			else
+			{
+				HttpContext.Session.SetString("errorMsg", "Không thể tạo công dụng");
+				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = request.prid });
+			}
+		}
+		public async Task<IActionResult> data()
+		{
+			bool check = await _recommendation.BuildDataset();
+            return RedirectToAction("Index", "Admin");
+        }
 	}
 }

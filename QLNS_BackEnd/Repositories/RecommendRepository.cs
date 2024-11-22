@@ -2,11 +2,43 @@
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Singleton;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace QLNS_BackEnd.Repositories
 {
 	public class RecommendRepository : IRecommend
 	{
+		public bool BuildDataset()
+		{
+			try
+			{
+				ProcessStartInfo start = new ProcessStartInfo();
+				start.FileName = "python";
+				start.Arguments = $"\"D:\\source\\repos\\QLNS\\Recommendation\\GetModel.py"; 
+				start.UseShellExecute = false;
+				start.RedirectStandardOutput = true;
+				start.RedirectStandardError = true;
+				start.CreateNoWindow = true;
+				// Chạy process
+				using (Process process = Process.Start(start))
+				{
+					process.WaitForExit();
+					string errors = process.StandardError.ReadToEnd();
+					if (!string.IsNullOrEmpty(errors))
+					{
+						return false;
+					}
+					process.Close();
+				}
+				return true;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
+
 		public string GetUseds(List<int> listProduct)
 		{
 			string result = "";

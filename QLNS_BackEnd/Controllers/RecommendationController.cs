@@ -19,5 +19,11 @@ namespace QLNS_BackEnd.Controllers
 			var res = _recommendation.GetUseds(listProduct);
 			return Content(res, "application/json");
 		}
+		[HttpGet]
+		public IActionResult BuildDataset()
+		{
+			var res = _recommendation.BuildDataset();
+			return Ok(res);
+		}
 	}
 }
