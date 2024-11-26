@@ -12,7 +12,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace QLNS_BackEnd.Repositories
+namespace QLNS_BackEnd.Repositories   
 {
     public class ProductRepository : IProduct
     {
@@ -132,6 +132,7 @@ namespace QLNS_BackEnd.Repositories
                 {
                     try
                     {
+                        process.WaitForExit();
                         string result = reader.ReadToEnd().Trim();
                         Console.WriteLine(result);
                         int[] numbers = result.Trim(new char[] { '[', ']' })
@@ -181,7 +182,8 @@ namespace QLNS_BackEnd.Repositories
 				{
 					try
 					{
-						string result = reader.ReadToEnd().Trim();
+                        process.WaitForExit();
+                        string result = reader.ReadToEnd().Trim();
 						Console.WriteLine(result);
 						int[] numbers = result.Trim(new char[] { '[', ']' })
 							  .Split(',')

@@ -178,12 +178,12 @@ namespace QLNS.Controllers
             bool check = await _order.UpDateOrder(order);
             if (check)
             {
-                //HttpContext.Session.Remove("errorMsg");
-                return RedirectToAction("Error", "Home");
+                return RedirectToAction("ShowOrder");
             }
             else
             {
-                return RedirectToAction("ShowOrder");
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Error", "Home");
             }
         }
     }

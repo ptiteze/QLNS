@@ -16,6 +16,23 @@
 	@Html.Partial("Slide", slideData)
 }
 
+<div id="banner" class="banner-overlay" style="position: fixed;top: 0;
+    left: 0;width: 100%; height: 100%;background-color: rgba(0, 0, 0, 0.5); /* Màu nền tối */display: flex;
+    justify-content: center; align-items: center; z-index: 1000;">
+	<div class="banner-content" style="background-color: #fff;padding: 20px;border-radius: 8px;text-align: center; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);position: relative; width: 600px;
+    max-width: 60%;">
+		<button id="closeBanner" class="close-btn" style="position: absolute; top: 10px;right: 10px;background: none;border: none;font-size: 18px; font-weight: bold; cursor: pointer;">
+			×
+		</button>
+		<p>Xu hướng từ khách hàng giống bạn:</p>
+		<button id="goToBanner" class="btn" style="{ padding: 10px 20px; background-color: #007bff;color: #fff; border: none; border-radius: 5px; cursor: pointer;:hover {background: #0056b3;} }">
+		<img src="~/images/khach_hang.jpg" alt="Banner Image" class="banner-img" style=" max-width: 100%; height: auto; margin: 10px 0;" >
+		
+			
+		</button>
+	</div>
+</div>
+
 <!-- Start Promo section -->
 <section id="aa-promo">
 	<div class="container">
@@ -393,13 +410,13 @@
 </section>
 <!-- / popular section -->
 <!-- recommend by rating-->
-<section id="aa-popular-category">
+<section id="aa-popular-similarity">
 	
 	<div class="container">
 		<div class="row">
 			<div class="col-md-12">
 				<div class="row">
-					<div class="aa-popular-category-area">
+					<div class="aa-popular-similarity-area">
 						<h3> Những người mua hàng khác giống bạn cũng thích</h3>
 						<div class="tab-content">
 							@if (Model.RecommendedProductsByRated != null)
@@ -548,7 +565,25 @@
 			@* document.querySelectorAll('#sanphammoi, #sanphamchoban, #sanphambanchay, #sanphamgiamgia').forEach(function (pane) {
 				pane.classList.remove('in', 'active'); *@
 		});
-		@* const targetTab = document.querySelector('#sanphamchoban');
-		targetTab.classList.add('in', 'active'); *@
+		document.getElementById('goToBanner').addEventListener('click', function () {
+			const target = document.getElementById('aa-popular-similarity');
+			if (target) {
+				target.scrollIntoView({ behavior: 'smooth' });
+			} else {
+				console.error('Section "aa-popular-similarity" không tồn tại.');
+			}
+			document.getElementById('banner').style.display = 'none';
+		});
+	});
+	document.getElementById('closeBanner').addEventListener('click', function () {
+		// Ẩn banner khi nhấn nút đóng
+		document.getElementById('banner').style.display = 'none';
+	});
+	document.getElementById('goToBanner').addEventListener('click', function () {
+		// Cuộn tới section với id "aa-popular-similarity"
+		document.getElementById('aa-popular-similarity').scrollIntoView({ behavior: 'smooth' });
+		document.querySelector('aa-popular-similarity').scrollIntoView({ behavior: 'smooth' });
+		// Ẩn banner
+		document.getElementById('banner').style.display = 'none';
 	});
 </script>

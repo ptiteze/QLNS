@@ -74,7 +74,10 @@ namespace QLNS.Controllers
 		{
 			if (!CheckRole()&&!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
 			List<OrderDTO> orders = await _order.GetOrders();
+			List<OrderDTO> orderslast = new List<OrderDTO>();
+            DateOnly DbDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-14));
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
+			orderslast = orders.Where(o =>o.Sentdate >= DbDaysAgo && o.Sentdate < sevenDaysAgo).ToList();
             orders = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
             int num_order = orders.Count();
             var orderIds = orders.Select(o => o.Id).ToList();
@@ -83,6 +86,8 @@ namespace QLNS.Controllers
 			{
 				ordereds.AddRange(await _ordered.GetOrderedsByOrderId(i));
 			}
+
+
 			int totalPrice = 0;
 			List<UserDTO> users = await _user.GetUsers();
 			int num_user = users.Where(u=>u.Created>= sevenDaysAgo).Count();
@@ -585,7 +590,7 @@ namespace QLNS.Controllers
                     Status = input.Status,
                     Unit = input.Unit,
                 };
-                if (input.imageFile == null && input.imageFile.Length == 0)
+                if (input.imageFile == null || input.imageFile.Length == 0)
 				{
 					request.ImageLink = product.ImageLink;
                     bool check = await _product.UpdateProduct(request);
@@ -969,7 +974,7 @@ namespace QLNS.Controllers
 			bool check = await _order.UpDateOrder(order);
 			if (check)
 			{
-				HttpContext.Session.Remove("errorMsg");
+                HttpContext.Session.Remove("errorMsg");
                 return RedirectToAction("Order");
             }
 			else

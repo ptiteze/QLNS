@@ -48,7 +48,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach(var order in Model.orders)
+                                    @foreach(var order in Model.orders.Reverse())
                                     {
                                         <tr>
                                             <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Key.Id">@order.Key.Id</a></td>

@@ -19,5 +19,4 @@ def recommend_products(product_id, grouped_data, indices):
     return recommended_product_ids
 id = int(sys.argv[1])
 recommendation = recommend_products(id, grouped_data, indices)
-#print(f"Gợi ý cho sản phẩm {x}: {recommendation}")
 print(json.dumps(recommendation))

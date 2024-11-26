@@ -21,8 +21,6 @@ conn = pyodbc.connect(
 query = "EXEC SP_DATA1"
 df = pd.read_sql_query(query, conn)
 
-# Ghi kết quả ra file Excel
-# output_file = 'output.xlsx'
 # df.to_excel(output_file, index=False)
 grouped_data = df.groupby('id')['used'].apply(list).reset_index()
 grouped_data.head(5)
