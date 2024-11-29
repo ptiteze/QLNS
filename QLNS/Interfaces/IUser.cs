@@ -8,7 +8,7 @@ namespace QLNS.Interfaces
     {
 		Task<List<UserDTO>> GetUsers();
         Task<bool> CreateUser(AddUser request);
-        Task<bool> UpdateUser(UserDTO request);
+        Task<bool> UpdateUser(UpdateUser request);
         Task<UserDTO> GetUserById(int id);
     }
 }

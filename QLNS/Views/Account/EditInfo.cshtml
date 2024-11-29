@@ -53,7 +53,11 @@
                                     <input type="password" placeholder="Password" name="Password" value="@Model.account.Password" required>
                                     <label for="">Ngày tạo<span>*</span></label>
                                     <input type="date" readonly placeholder="Create" name="Created" id="the-date" value="@Model.info.Created">
-
+                                    <br />
+                                    <label for="">Dịa chỉ<span>*</span></label>
+                                    <input type="text" placeholder="Address" name="Address" id="the-date" value="@Model.info.Address">
+                                    <input hidden name="Id"  value="@Model.info.Id"/>
+                                    <input hidden type="number" name="IdAccount" value="@Model.account.Id" />
                                     <p style="color:red; display: block;">
                                         @errorMsg
                                     </p>

@@ -59,25 +59,25 @@
                                                     {
                                                         case 0:
                                                             <td>Đang chờ xác nhận</td>
-                                                            <td>@order.Value</td>
+                                                            <td>@string.Format("{0:N0}", order.Value) VND</td>
                                                              <td>
                                                             <button class="btn btn-danger"><a href="/Order/RemoveOrder?id=@order.Key.Id">Hủy Đơn</a></button>
                                                             </td>
                                                             break;
                                                         case 1:
                                                         <td>Đang giao hàng</td>
-                                                            <td>@order.Value</td>
+                                                        <td>@string.Format("{0:N0}", order.Value) VND</td>
                                                             <td>
                                                         <button class="btn btn-success"><a href="/Order/Confirm?id=@order.Key.Id">Nhận Hàng></button>
                                                             </td>
                                                             break;
                                                         case 2:
                                                         <td>Đã nhận</td>
-                                                         <td>@order.Value</td>
+                                                        <td>@string.Format("{0:N0}", order.Value) VND</td>
                                                             break;
                                                         case 3:
                                                         <td>Đã hủy</td>
-                                                        <td>@order.Value</td>
+                                                        <td>@string.Format("{0:N0}", order.Value) VND</td>
                                                             break;
                                                     }
                                                 

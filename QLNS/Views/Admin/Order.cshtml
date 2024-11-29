@@ -58,7 +58,7 @@
                                             <td>@order.Key.UserPhone</td>
                                             <td>@order.Key.Address</td>
                                             <td>@order.Key.Message</td>
-                                            <td>@order.Value VNĐ</td>
+                                            <td>@string.Format("{0:N0}", order.Value) VNĐ</td>
                                             <td>@order.Key.Payment  </td>
                                             @switch (@order.Key.Status)
                                             {

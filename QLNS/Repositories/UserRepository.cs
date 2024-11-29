@@ -43,7 +43,7 @@ namespace QLNS.Repositories
             }
         }
 
-        public async Task<bool> UpdateUser(UserDTO request)
+        public async Task<bool> UpdateUser(UpdateUser request)
         {
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl + $"/update", request);
             if (response.IsSuccessStatusCode)

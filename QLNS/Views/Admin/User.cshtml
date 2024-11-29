@@ -57,17 +57,17 @@
                                             @if (@Model.Accounts.Where(a => a.Id == item.IdAccount).FirstOrDefault().Status == true)
                                             {
                                                 <td>
-                                                    <button class="btn btn-danger"><a href="/Admin/LockUser?username=@item.IdAccount">Khóa</a></button>
+                                                    <button class="btn btn-danger"><a href="/Admin/LockUser?id=@item.IdAccount">Khóa</a></button>
 
-                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                    @* <button class="btn btn-success"><a href="#">Sửa</a></button> *@
                                                 </td>
                                             }
                                             else
                                             {
                                                 <td>
-                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?username=@item.IdAccount">Mở Khóa</a></button>
+                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?id=@item.IdAccount">Mở Khóa</a></button>
 
-                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                    @* <button class="btn btn-success"><a href="#">Sửa</a></button> *@
                                                 </td>
                                             }
 

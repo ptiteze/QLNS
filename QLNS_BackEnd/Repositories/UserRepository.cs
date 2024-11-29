@@ -78,9 +78,9 @@ namespace QLNS_BackEnd.Repositories
                 user.Nameuser = request.Nameuser;
                 user.Email = request.Email;
                 user.Phone = request.Phone;
-                user.Created = request.Created;
+                //user.Created = request.Created;
                 user.Address = request.Address; 
-                if (Iacc.ChangePassword(request.Password, request.IdAccount)) return false;
+                if (!Iacc.ChangePassword(request.Password, request.IdAccount)) return false;
                 Console.WriteLine(request.Id + '-' + request.Password + '-' + request.Phone + '-' + request.Email + '-' + request.Created.ToString() + '-' + request.Nameuser);
                 SingletonDataBridge.GetInstance().Users.Update(user);
                 SingletonDataBridge.GetInstance().SaveChanges();

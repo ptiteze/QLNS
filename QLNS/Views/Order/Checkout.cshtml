@@ -139,7 +139,7 @@
                                             <tfoot>
                                                 <tr>
                                                     <th>Tạm tính</th>
-                                                    <td>@sumprice VNĐ</td>
+                                                    <td>@string.Format("{0:N0}", sumprice) VNĐ</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Thuế</th>
@@ -147,7 +147,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Tổng cộng</th>
-                                                    <td><strong>@sumprice VNĐ</strong></td>
+                                                    <td><strong>@string.Format("{0:N0}", sumprice) VNĐ</strong></td>
                                                 </tr>
                                             </tfoot>
                                         </table>

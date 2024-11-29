@@ -42,7 +42,7 @@
                                         <tr>
                                             <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@Model.Products.Where(p=>p.Id==cart.ProductId).First().ImageLink" alt="@cart.ProductId"></td>
                                             <td><a class="aa-cart-title" href="/Product/ProductDetail?id=@cart.ProductId">@Model.Products.Where(p => p.Id == cart.ProductId).First().Name</a></td>
-                                            <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Price VNĐ</td>
+                                            <td>@string.Format("{0:N0}", Model.Products.Where(p => p.Id == cart.ProductId).First().Price) VNĐ</td>
                                             <td>@cart.Qty</td>
                                             <td>@Model.Products.Where(p => p.Id == cart.ProductId).First().Discount %</td>
                                             <td>@string.Format("{0:N0}", @cart.Qty * (@Model.Products.Where(p => p.Id == cart.ProductId).First().Price - (@Model.Products.Where(p => p.Id == cart.ProductId).First().Price / 100 * @Model.Products.Where(p => p.Id == cart.ProductId).First().Discount))) VNĐ</td>
@@ -50,7 +50,7 @@
                                     }
                                     <tr>
                                         <td colspan="6" class=""><strong>TỔNG TIỀN</strong></td>
-                                        <td><strong>@Model.sumPrice VNĐ</strong></td>
+                                        <td><strong>@string.Format("{0:N0}", Model.sumPrice) VNĐ</strong></td>
                                     </tr>
                                 </tbody>
                             </table>

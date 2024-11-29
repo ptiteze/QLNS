@@ -141,9 +141,11 @@ namespace QLNS.Controllers
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<UserDTO> users = await _user.GetUsers();
+			List<AccountDTO> accounts = await _acount.GetAccounts();
 			UserViewModel Model = new UserViewModel() {
 				Users = users,
-			};
+                Accounts = accounts,
+            };
 			return View(Model);
 		}
 		public async Task<IActionResult> Cate()

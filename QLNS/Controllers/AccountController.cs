@@ -164,7 +164,7 @@ namespace QLNS.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> UpdateAccount([FromForm] UserDTO request)
+        public async Task<IActionResult> UpdateAccount([FromForm] UpdateUser request)
         {
             //request.Status = 1;
             bool check = await _user.UpdateUser(request);
