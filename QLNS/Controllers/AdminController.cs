@@ -164,7 +164,11 @@ namespace QLNS.Controllers
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			List<ProductDTO> products = await _product.GetAllProducts();
 			List<SupplyListDTO> supplyLists = await _supplyList.GetAllSupplyList();
-			ProductViewModel Model = new ProductViewModel() { 
+			if(products != null && products.Any())
+			{
+                products.Reverse();
+            }
+            ProductViewModel Model = new ProductViewModel() { 
 				Catalogs = catalogs,
 				Products = products,
 				SupplyList = supplyLists,
@@ -1122,7 +1126,8 @@ namespace QLNS.Controllers
             ProductDTO product = await _product.GetProductById(id);
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
             List<UsedDTO> useds = await _used.GetAllUseds();
-            List<UsedDTO> usedOfProduct = await _used.GetUsedsByProduct(id);
+			List<UsedDTO> usedOfProduct = new List<UsedDTO>();
+            usedOfProduct = await _used.GetUsedsByProduct(id);
             EditProductViewModel model = new EditProductViewModel()
             {
                 Catalogs = catalogs,

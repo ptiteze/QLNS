@@ -9,7 +9,7 @@ namespace QLNS_BackEnd.Repositories
 {
     public class OrderRepository : IOrder
     {
-        public int CreateOrder(CreateOrderRequest request)
+        public Task<int> CreateOrder(CreateOrderRequest request)
         {
             try
             {

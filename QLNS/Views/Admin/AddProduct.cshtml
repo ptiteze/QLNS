@@ -31,7 +31,7 @@
 
                                 <div class="form-group">
                                     <label for="input-1">Tên sản phẩm</label>
-                                    <input type="text" class="form-control" id="input-1" placeholder="Tên sản phẩm" name="product_name">
+                                    <input type="text" class="form-control" id="input-1" placeholder="Tên sản phẩm" name="product_name" required>
                                 </div>
 
 
@@ -47,12 +47,12 @@
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="input-1">Ngày</label>
+                                    <label for="input-1">Ngày tạo</label>
                                     <input type="date" class="form-control" id="the-date" placeholder="Ngày đăng" name="product_day">
                                 </div>
                                 <div class="form-group">
                                     <label for="input-1">Giá</label>
-                                    <input type="text" class="form-control" id="input-1" placeholder="Giá" name="product_price">
+                                    <input type="number" class="form-control" min="0"  id="input-1" placeholder="Giá" name="product_price" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="input-2">Trạng thái</label>
@@ -66,7 +66,7 @@
                                 <div class="form-group">
                                     <label for="input-2">Giảm giá</label>
                                     <div class="input-group">
-                                        <input type="number" max="100" min="0" class="form-control" value="0" placeholder="Giảm ... %" name="product_discount">
+                                        <input type="number" max="100" min="0" class="form-control" value="0" placeholder="Giảm ... %" name="product_discount" required>
                                         <div class="input-group-append">
                                             <button class="btn btn-light" type="button">%</button>
                                         </div>
@@ -87,16 +87,16 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="input-1">Hạn sử dụng(ngày)</label>
-                                    <input type="number" min="0" class="form-control" id="input-1" placeholder="Hạn sử dụng của sản phẩm(tính theo ngày)" name="product_expixy">
+                                    <input type="number" min="0" class="form-control" id="input-1" placeholder="Hạn sử dụng của sản phẩm(tính theo ngày)" required name="product_expixy">
                                 </div>
                                 <div class="form-group">
                                     <label for="input-1">Đơn vị sản phẩm</label>
-                                    <input type="text" min="0" class="form-control" id="input-1" placeholder="Đơn vị của sản phẩm" name="product_unit">
+                                    <input type="text" min="0" class="form-control" id="input-1" placeholder="Đơn vị của sản phẩm" required name="product_unit">
                                 </div>
                                 <div class="form-group">
                                     <label for="input-1">Ảnh đại diện</label>
                                     
-                                    <input type="text" class="form-control" readonly id="image-name" placeholder="Tên hình" name="product-image">
+                                    <input type="text" class="form-control" readonly id="image-name" placeholder="Tên hình" name="product-image" required>
                                     <input type="file" class="form-control-file" id="image-upload" name="imageFile" style="display: none;" onchange="handleFileUpload(event)">
                                     <button type="button" class="btn btn-primary" onclick="document.getElementById('image-upload').click();">Chọn ảnh</button>
                                 </div>

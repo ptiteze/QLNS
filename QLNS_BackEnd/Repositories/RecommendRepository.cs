@@ -13,25 +13,40 @@ namespace QLNS_BackEnd.Repositories
 		{
 			try
 			{
-				ProcessStartInfo start = new ProcessStartInfo();
-				start.FileName = "python";
-				start.Arguments = $"\"D:\\source\\repos\\QLNS\\Recommendation\\GetModel.py"; 
-				start.UseShellExecute = false;
-				start.RedirectStandardOutput = true;
-				start.RedirectStandardError = true;
-				start.CreateNoWindow = true;
-				// Chạy process
-				using (Process process = Process.Start(start))
-				{
-					process.WaitForExit();
-					string errors = process.StandardError.ReadToEnd();
-					if (!string.IsNullOrEmpty(errors))
-					{
-						return false;
-					}
-					process.Close();
-				}
-				return true;
+                string batFilePath = @"D:\source\repos\QLNS\Recommendation\RunGetModel.bat";
+                //            ProcessStartInfo start = new ProcessStartInfo();
+                //start.FileName = "python";
+                //start.Arguments = $"\"D:\\source\\repos\\QLNS\\Recommendation\\GetModel.py"; 
+                //start.UseShellExecute = false;
+                //start.RedirectStandardOutput = true;
+                //start.RedirectStandardError = true;
+                //start.CreateNoWindow = true;
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = batFilePath,  
+                    UseShellExecute = true,  
+                    CreateNoWindow = false,  
+                };
+                using (Process process = Process.Start(startInfo))
+                {
+                    process.WaitForExit();
+                    Console.WriteLine("File .bat đã được chạy thành công.");
+                }
+                // Chạy process
+
+                //            using (Process process = Process.Start(start))
+                //{
+                //	//process.WaitForExit();
+                //	string errors = process.StandardError.ReadToEnd();
+                //	if (!string.IsNullOrEmpty(errors))
+                //	{
+                //		Console.WriteLine("tạo datasett Lỗi");
+                //		return false;
+                //	}
+                //	process.Close();
+                //}
+
+                return true;
 			}
 			catch (Exception ex)
 			{

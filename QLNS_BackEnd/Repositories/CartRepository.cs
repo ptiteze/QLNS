@@ -9,20 +9,20 @@ namespace QLNS_BackEnd.Repositories
 {
     public class CartRepository : ICart
     {
-		public bool AddProduct(RequestAddCart request)
+		public async Task<bool> AddProduct(RequestAddCart request)
 		{
 			try
 			{
-				Product product = SingletonDataBridge.GetInstance().Products.Find(request.productId);
+				Product product = await SingletonDataBridge.GetInstance().Products.FindAsync(request.productId);
 				
 				RequestCheckCart check = new RequestCheckCart()
 				{
 					productId = request.productId,
 					userId = request.userId,
 				};
-				if (CheckExistCart(check))
+				if (await CheckExistCart(check))
 				{
-					Cart cart = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == request.userId && c.ProductId == request.productId).FirstOrDefault();
+					Cart cart = await SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == request.userId && c.ProductId == request.productId).FirstOrDefaultAsync();
 					cart.Quantity=request.quantity;
                     SingletonDataBridge.GetInstance().Carts.Update(cart);
 
@@ -37,7 +37,7 @@ namespace QLNS_BackEnd.Repositories
                     };
                     SingletonDataBridge.GetInstance().Carts.Add(cart);
                 }
-                SingletonDataBridge.GetInstance().SaveChanges();
+                 await SingletonDataBridge.GetInstance().SaveChangesAsync();
                 return true;
 			}
 			catch (Exception ex)
@@ -46,26 +46,26 @@ namespace QLNS_BackEnd.Repositories
 			}
 		}
 
-		public bool CheckExistCart(RequestCheckCart request)
+		public async Task<bool> CheckExistCart(RequestCheckCart request)
 		{
-			var cartCheck = SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == request.userId && c.ProductId == request.productId).FirstOrDefault();
+			var cartCheck = await SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == request.userId && c.ProductId == request.productId).FirstOrDefaultAsync();
 			if (cartCheck != null) return true;
 			return false;
 		}
 
-		public List<CartDTO> GetCartsByUserId(int id)
+		public async Task<List<CartDTO>> GetCartsByUserId(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<List<CartDTO>>(
-                SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == id));
+                await SingletonDataBridge.GetInstance().Carts.Where(c => c.UserId == id).ToListAsync());
         }
 
-        public bool RemoveCart(RequestRemoveCart request)
+        public async Task<bool> RemoveCart(RequestRemoveCart request)
         {
 			try
 			{
-				Cart cart = SingletonDataBridge.GetInstance().Carts.Where(c=>c.ProductId==request.ProductId && c.UserId ==request.UserId).FirstOrDefault();	
+				Cart cart = await SingletonDataBridge.GetInstance().Carts.Where(c=>c.ProductId==request.ProductId && c.UserId ==request.UserId).FirstOrDefaultAsync();	
 				SingletonDataBridge.GetInstance().Carts.Remove(cart);
-				SingletonDataBridge.GetInstance().SaveChanges();
+				await SingletonDataBridge.GetInstance().SaveChangesAsync();
                 return true;
 			}
 			catch

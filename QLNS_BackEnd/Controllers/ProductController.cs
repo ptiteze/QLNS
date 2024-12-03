@@ -107,9 +107,9 @@ namespace QLNS_BackEnd.Controllers
 			return Ok(res);
 		}
 		[HttpGet("bestsell")]
-		public IActionResult GetBestsellingProduct()
+		public async Task<IActionResult> GetBestsellingProduct()
 		{
-            var res = _product.GetProductsBestSelling();
+            var res = await _product.GetProductsBestSelling();
             if (res == null)
             {
                 var errorResponse = new

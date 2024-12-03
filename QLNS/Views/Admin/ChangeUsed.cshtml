@@ -51,7 +51,7 @@
 												@item.Name
 											</th>
 											<td>
-												@if (Model.UsedsOfProduct.Any(u=>u.Id==item.Id))
+												@if (Model.UsedsOfProduct!=null&&Model.UsedsOfProduct.Any(u => u.Id == item.Id))
 												{
 													<button class="btn btn-danger"><a asp-action="RemoveUsed" asp-controller="Admin" asp-route-id="@item.Id" asp-route-prid="@Model.Product.Id">Hủy công dụng</a></button>
 												}

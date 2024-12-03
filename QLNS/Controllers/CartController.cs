@@ -70,7 +70,15 @@ namespace QLNS.Controllers
         {
 			int productid = cartItem.productid;
 			int quantity = cartItem.quantity;
-			int length_order = 0;
+            ProductDTO prx = await _product.GetProductById(productid);
+            if (prx == null || prx.Status == 0)
+            {
+                return Json(new
+                {
+                    error = "Sản phẩm hiện không thể đặt hàng"
+                });
+            }
+            int length_order = 0;
             ProductDTO product = await _product.GetProductById(productid);
             if (quantity > product.Quantity)
             {
@@ -173,6 +181,11 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddCart(int productid,int quantity)
         {
+            ProductDTO prx = await _product.GetProductById(productid);
+            if(prx == null || prx.Status == 0 || prx.Quantity == 0)
+            {
+                return RedirectToAction("ProductDetail", "Product", new { id = productid });
+            }
             int length_order = 0;
             Console.WriteLine(productid.ToString() + "---" + quantity.ToString());
             string UserName = HttpContext.Session.GetString("Username");

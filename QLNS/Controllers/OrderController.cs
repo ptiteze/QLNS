@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
+using QLNS.Models;
 using QLNS.ModelsParameter.Order;
 using QLNS.ViewModels.Order;
 using System;
@@ -74,6 +75,14 @@ namespace QLNS.Controllers
             List<CartDTO> carts =await _cart.GetCartsByUserId(IdUser);
             foreach(CartDTO c in carts)
             {
+                ProductDTO prx = await _product.GetProductById(c.ProductId);
+                if (prx == null || prx.Status == 0)
+                {
+                    return Json(new
+                    {
+                        error = "Sản phẩm hiện không thể đặt hàng"
+                    });
+                }
                 if (c.Quantity > products.Where(p => p.Id == c.ProductId).FirstOrDefault().Quantity)
                 {
                     return Json(new

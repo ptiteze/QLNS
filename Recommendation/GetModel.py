@@ -19,7 +19,7 @@ conn = pyodbc.connect(
 )
 # ---------------- predict Cosine Simularity----------------------
 query = "EXEC SP_DATA1"
-df = pd.read_sql_query(query, conn)
+df = pd.read_sql_query(query, conn) #names= ['id', 'name', 'catalog', 'used'])
 
 # df.to_excel(output_file, index=False)
 grouped_data = df.groupby('id')['used'].apply(list).reset_index()
@@ -34,7 +34,7 @@ X = np.hstack([grouped_data[['catalog']], np.array(grouped_data['used_id_binary'
 knn = NearestNeighbors(n_neighbors=7, metric='cosine', algorithm='brute').fit(X)
 distances, indices = knn.kneighbors(X)
 
-with open('data_indices.pkl', 'wb') as file:
+with open('D:\\source\\repos\\QLNS\\Recommendation\\data_indices.pkl', 'wb') as file:
     pickle.dump({'grouped_data': grouped_data, 'indices': indices}, file)
 
 # ---------------- predict Cosine Collabora----------------------
@@ -46,7 +46,7 @@ data = Dataset.load_from_df(df2[['id_user', 'product_id', 'rating']], reader)
 trainset, testset = train_test_split(data, test_size=0.2)
 model = SVD()
 model.fit(trainset)
-with open('svd_model.pkl', 'wb') as file:
+with open('D:\\source\\repos\\QLNS\\Recommendation\\svd_model.pkl', 'wb') as file:
     pickle.dump({'model': model}, file)
 # Đóng kết nối
 conn.close()

@@ -43,7 +43,7 @@ namespace QLNS_BackEnd.Repositories
             List<Order> orders = SingletonDataBridge.GetInstance().Orders.ToList();
             List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.ToList();
             var HasPurchased = orders
-                                .Where(order => order.UserId == request.userId)
+                                .Where(order => order.UserId == request.userId && order.Status == 2)
                                 .Any(order => ordereds.Any(ordered => ordered.OrderId == order.Id && ordered.ProductId == request.productId));
             return  HasPurchased;
         }
@@ -69,16 +69,16 @@ namespace QLNS_BackEnd.Repositories
 		public async Task<List<ProductDTO>> GetAllProducts()
         {
             return SingletonAutoMapper.GetInstance().Map<List<ProductDTO>>(
-                await SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1).ToListAsync());
+                await SingletonDataBridge.GetInstance().Products.ToListAsync());//.Where(p => p.Status == 1)
         }
 
         public ProductDTO GetProductById(int id)
         {
             return SingletonAutoMapper.GetInstance().Map<ProductDTO>(
-               SingletonDataBridge.GetInstance().Products.Where(p => p.Status == 1 && p.Id == id).FirstOrDefault());
+               SingletonDataBridge.GetInstance().Products.Where(p => p.Id == id).FirstOrDefault());
         }
 
-        public List<ProductDTO> GetProductsBestSelling()
+        public async Task<List<ProductDTO>> GetProductsBestSelling()
         {
             List<ProductDTO> products = new List<ProductDTO>();
             List<int> bestSellingProductIds = new List<int>();
@@ -87,17 +87,17 @@ namespace QLNS_BackEnd.Repositories
             {
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
-                    conn.Open();
+                    await conn.OpenAsync();
                     using (SqlCommand cmd = new SqlCommand("SP_BEST_SELLING", conn))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
 
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
                             while (reader.Read())
                             {
                                 ProductDTO pr = GetProductById(reader.GetInt32(0));
-                                if(pr != null) products.Add(pr);
+                                if(pr != null && pr.Status == 1) products.Add(pr);
                             }
                         }
                     }
@@ -143,7 +143,9 @@ namespace QLNS_BackEnd.Repositories
                         List<ProductDTO> products = new List<ProductDTO>();
                         foreach (int number in numbers)
                         {
-                            products.Add(GetProductById(number));
+                            ProductDTO pr = GetProductById(number);
+                            if(pr != null && pr.Status == 1)
+                            products.Add(pr);
                         }
                         process.Close();
                         return products;
@@ -193,8 +195,10 @@ namespace QLNS_BackEnd.Repositories
 						List<ProductDTO> products = new List<ProductDTO>();
 						foreach (int number in numbers)
 						{
-							products.Add(GetProductById(number));
-						}
+                            ProductDTO pr = GetProductById(number);
+                            if (pr != null && pr.Status==1)
+                                products.Add(pr);
+                        }
 						process.Close();
 						return products;
 					}

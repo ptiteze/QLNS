@@ -15,9 +15,9 @@ namespace QLNS_BackEnd.Controllers
 			_cart = cart;
 		}
 		[HttpGet("{id}")]
-		public ActionResult GetCartsByUserid(int id) 
+		public async Task<ActionResult> GetCartsByUserid(int id) 
 		{
-			var res = _cart.GetCartsByUserId(id);
+			var res = await _cart.GetCartsByUserId(id);
 			if (res == null)
 			{
 				var errorResponse = new
@@ -30,21 +30,21 @@ namespace QLNS_BackEnd.Controllers
 			return Ok(res);
 		}
 		[HttpPut]
-		public IActionResult AddProduct(RequestAddCart request)
+		public async Task<IActionResult> AddProduct(RequestAddCart request)
 		{
-			var res = _cart.AddProduct(request);
+			var res = await _cart.AddProduct(request);
 			return Ok(res);
 		}
 		[HttpPost]
-		public IActionResult CheckExistCart(RequestCheckCart request)
+		public async Task<IActionResult> CheckExistCart(RequestCheckCart request)
 		{
-			var res = _cart.CheckExistCart(request);
+			var res = await _cart.CheckExistCart(request);
 			return Ok(res);
 		}
 		[HttpPost("remove")]
-		public IActionResult RemoveCart(RequestRemoveCart request)
+		public async Task<IActionResult> RemoveCart(RequestRemoveCart request)
 		{
-            var res = _cart.RemoveCart(request);
+            var res = await _cart.RemoveCart(request);
             return Ok(res);
         }
     }

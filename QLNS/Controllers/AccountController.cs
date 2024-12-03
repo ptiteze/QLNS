@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
 using QLNS.Interfaces;
 using QLNS.ModelsParameter.Admin;
@@ -57,7 +58,7 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("Role", infoLogin.role);
                 HttpContext.Session.SetString("id_user", infoLogin.IdUser.ToString());
                 string cart_local = HttpContext.Session.GetString("cart_local");
-                if (cart_local != null)
+                if (!cart_local.IsNullOrEmpty())
                 {
                     List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
                     foreach (string cart in list_cartLocal)
@@ -83,15 +84,17 @@ namespace QLNS.Controllers
                 }
                 List<CartDTO> listCart = await _cart.GetCartsByUserId(infoLogin.IdUser);
                 string temp_cart = "";
-
-                foreach (CartDTO cart in listCart)
+                if (!listCart.IsNullOrEmpty())
                 {
-                    if (cart != null && cart.ProductId != 0)
-                        temp_cart += cart.ProductId.ToString() + ":" + cart.Quantity.ToString() + "|";
+                    foreach (CartDTO cart in listCart)
+                    {
+                        if (cart != null && cart.ProductId != 0)
+                            temp_cart += cart.ProductId.ToString() + ":" + cart.Quantity.ToString() + "|";
+                    }
+                    if (temp_cart != "") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
+                    else return RedirectToAction("Index", "Home");
+                    HttpContext.Session.SetString("cart_local", temp_cart);
                 }
-                if (temp_cart != "") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
-                else return RedirectToAction("Index", "Home");
-                HttpContext.Session.SetString("cart_local", temp_cart);
             }
             else
             {
@@ -116,6 +119,13 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> RegisterResult([FromForm] AddUser request)
         {
+            if(request.Phone.Length!=10 || request.Phone[0]!='0')
+            {
+                return Json(new
+                {
+                    error = "Có lỗi xảy ra, số điện thoại sai định dạng"
+                });
+            }    
             bool check = await _user.CreateUser(request);
             if(check)
             {
@@ -167,6 +177,13 @@ namespace QLNS.Controllers
         public async Task<IActionResult> UpdateAccount([FromForm] UpdateUser request)
         {
             //request.Status = 1;
+            if (request.Phone.Length != 10 || request.Phone[0] != '0')
+            {
+                return Json(new
+                {
+                    error = "Có lỗi xảy ra, số điện thoại sai định dạng"
+                });
+            }
             bool check = await _user.UpdateUser(request);
             if (check)
             {
