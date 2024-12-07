@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using QLNS.DTO;
@@ -33,6 +34,7 @@ namespace QLNS.Controllers
                 username = username,
                 password = password,
             };
+            //check
             if (username == null || password == null)
             {
                 HttpContext.Session.SetString("errorMsg", "Sai cú pháp");
@@ -50,6 +52,8 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Tài khoản bị khóa");
                 return RedirectToAction("Login", "Home");
             }
+
+            // set info
             if (infoLogin.role.Equals("customer"))
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -57,6 +61,7 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("Fullname", infoLogin.Name);
                 HttpContext.Session.SetString("Role", infoLogin.role);
                 HttpContext.Session.SetString("id_user", infoLogin.IdUser.ToString());
+
                 string cart_local = HttpContext.Session.GetString("cart_local");
                 if (!cart_local.IsNullOrEmpty())
                 {
@@ -79,7 +84,7 @@ namespace QLNS.Controllers
                             quantity = Quantity,
                         };
                         if (!await _cart.CheckExistCart(requestCheck))
-                            _cart.AddProduct(requestAddCart);
+                            await _cart.AddProduct(requestAddCart);
                     }
                 }
                 List<CartDTO> listCart = await _cart.GetCartsByUserId(infoLogin.IdUser);
@@ -94,6 +99,7 @@ namespace QLNS.Controllers
                     if (temp_cart != "") temp_cart = temp_cart.Remove(temp_cart.Length - 1);
                     else return RedirectToAction("Index", "Home");
                     HttpContext.Session.SetString("cart_local", temp_cart);
+                    HttpContext.Session.SetString("length_order", listCart.Count.ToString());
                 }
             }
             else

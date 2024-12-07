@@ -9,7 +9,7 @@ namespace QLNS_BackEnd.Repositories
 {
     public class OrderRepository : IOrder
     {
-        public Task<int> CreateOrder(CreateOrderRequest request)
+        public int CreateOrder(CreateOrderRequest request)
         {
             try
             {
@@ -60,6 +60,13 @@ namespace QLNS_BackEnd.Repositories
                     SingletonDataBridge.GetInstance().Products.Update(pr);
                     SingletonDataBridge.GetInstance().SaveChanges();
                 }
+                bool check = SingletonDataBridge.GetInstance().Ordereds.Any(o=>o.OrderId==order.Id);
+                if (!check)
+                {
+                    SingletonDataBridge.GetInstance().Orders.Remove(order);
+                    SingletonDataBridge.GetInstance().SaveChanges();
+                    return 0;
+                }
                 SingletonDataBridge.GetInstance().RemoveRange(carts);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return order.Id;
@@ -74,6 +81,10 @@ namespace QLNS_BackEnd.Repositories
             try
             {
                 Order order = SingletonDataBridge.GetInstance().Orders.Find(id);
+                if(order == null || order.Status == 2 || order.Status == 3)
+                {
+                    return false;
+                }
                 order.Status = 3;
                 SingletonDataBridge.GetInstance().SaveChanges();
                 List<Ordered> ordereds = SingletonDataBridge.GetInstance().Ordereds.Where(o => o.OrderId == id).ToList();
@@ -81,7 +92,31 @@ namespace QLNS_BackEnd.Repositories
                 foreach (Ordered o in ordereds)
                 {
                     Product pr = products.Where(p => p.Id == o.ProductId).FirstOrDefault();
-                    pr.Quantity += o.Qty;
+                    
+                    List<ImportDetail> list_IDT = SingletonDataBridge.GetInstance().ImportDetails.Where(
+                        i => i.ProductId == pr.Id && i.Status == true && i.QuantityImport-i.Stock!=0).ToList();
+                    list_IDT = list_IDT.OrderByDescending(i => (i.QuantityImport ?? 0) - (i.Stock ?? 0)).ToList();
+                    int sumBack = 0;
+                    foreach(ImportDetail pd in list_IDT)
+                    {
+                        if (o.Qty - sumBack + pd.Stock > pd.QuantityImport)
+                        {
+                            sumBack += (pd.QuantityImport??0 - pd.Stock??0);
+                            pd.Stock = pd.QuantityImport;
+                            SingletonDataBridge.GetInstance().ImportDetails.Update(pd);
+                            SingletonDataBridge.GetInstance().SaveChanges();
+                        }
+                        else
+                        {
+                            sumBack = o.Qty;
+                            pd.Stock += (o.Qty - sumBack);
+                            SingletonDataBridge.GetInstance().ImportDetails.Update(pd);
+                            SingletonDataBridge.GetInstance().SaveChanges();
+                        }
+                        if (sumBack == o.Qty) break;
+                    }
+
+                    pr.Quantity += sumBack;
                     SingletonDataBridge.GetInstance().Products.Update(pr);
                     SingletonDataBridge.GetInstance().SaveChanges();
                 }
@@ -118,6 +153,7 @@ namespace QLNS_BackEnd.Repositories
                 Order order = await SingletonDataBridge.GetInstance().Orders.FindAsync(request.Id);
                 order.Payment = request.Payment;
                 order.Status = request.Status;
+                order.AdminId = request.AdminId;
                 Console.WriteLine(request.Id.ToString() +"-"+request.UserId);
                 SingletonDataBridge.GetInstance().Orders.Update(order);
                 await SingletonDataBridge.GetInstance().SaveChangesAsync();

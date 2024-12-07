@@ -59,15 +59,13 @@
                                                 <td>
                                                     <button class="btn btn-danger"><a href="/Admin/LockUser?username=@item.IdAccount">Khóa</a></button>
 
-                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                    <button class="btn btn-success"><a href="/Admin/OrderOfUser?id=@item.IdAccount">Xem đơn hàng của khách</a></button>
                                                 </td>
                                             }
                                             else
                                             {
                                                 <td>
-                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?username=@item.IdAccount">Mở Khóa</a></button>
-
-                                                    <button class="btn btn-success"><a href="#">Sửa</a></button>
+                                                    <button class="btn btn-danger"><a href="/Admin/UnLockUser?id=@item.IdAccount">Mở Khóa</a></button>
                                                 </td>
                                             }
 

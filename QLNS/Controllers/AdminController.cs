@@ -11,6 +11,7 @@ using QLNS.ModelsParameter.Producer;
 using QLNS.ModelsParameter.Product;
 using QLNS.ModelsParameter.SupplyInvoice;
 using QLNS.ModelsParameter.SupplyList;
+using QLNS.ModelsParameter.User;
 using QLNS.ViewModels.Admin;
 using QLNS.ViewModels.Cart;
 using QLNS.ViewModels.Order;
@@ -975,8 +976,11 @@ namespace QLNS.Controllers
 		public async Task<IActionResult> Confirm(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			OrderDTO order = await _order.GetOrderById(id);
+            string id_user = HttpContext.Session.GetString("id_user"); ;
+			if(id_user.IsNullOrEmpty()) return RedirectToAction("Error", "Home");
+            OrderDTO order = await _order.GetOrderById(id);
 			order.Status = 1;
+			order.AdminId = int.Parse(id_user);
 			bool check = await _order.UpDateOrder(order);
 			if (check)
 			{
@@ -994,8 +998,8 @@ namespace QLNS.Controllers
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             OrderDTO order = await _order.GetOrderById(id);
-			order.Status = 3;
-            bool check = await _order.UpDateOrder(order);
+			if(order != null) { return RedirectToAction("Error", "Home"); }
+            bool check = await _order.DeleteOrder(id);
             if (check)
             {
                 HttpContext.Session.Remove("errorMsg");
@@ -1041,12 +1045,14 @@ namespace QLNS.Controllers
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<UserDTO> users = await _user.GetUsers();
+			List<AccountDTO> accounts = await _acount.GetAccounts();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
 			List<UserDTO> usersInWeek = users.Where(u => u.Created > sevenDaysAgo).ToList();
 			if (usersInWeek.IsNullOrEmpty()) usersInWeek = new List<UserDTO>();
             UserViewModel Model = new UserViewModel()
             {
                 Users = usersInWeek,
+				Accounts = accounts,
             };
             return View(Model);
         }
@@ -1196,6 +1202,30 @@ namespace QLNS.Controllers
 		{
 			bool check = await _recommendation.BuildDataset();
             return RedirectToAction("Index", "Admin");
+        }
+		public async Task<IActionResult> OrderOfUser(int id)
+		{
+            List<OrderDTO> orders = await _order.GetOrdersByUserId(id);
+            if (orders == null) orders = new List<OrderDTO>();
+            Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();
+
+            foreach (OrderDTO o in orders)
+            {
+                int sumprice = 0;
+                List<OrderedDTO> ordereds = await _ordered.GetOrderedsByOrderId(o.Id);
+                if (ordereds == null) ordereds = new List<OrderedDTO>();
+                foreach (OrderedDTO ordered in ordereds)
+                {
+                    sumprice += ordered.Price * ordered.Qty;
+                    Console.WriteLine(sumprice.ToString());
+                }
+                order.Add(o, sumprice);
+            }
+            ShowOrderViewModel model = new ShowOrderViewModel()
+            {
+                orders = order,
+            };
+            return View(model);
         }
 	}
 }

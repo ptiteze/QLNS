@@ -7,7 +7,7 @@ namespace QLNS_BackEnd.Interfaces
     {
         List<OrderDTO> GetOrdersByUserId(int id);
         Task<OrderDTO> GetOrderById(int id);
-        Task<int> CreateOrder(CreateOrderRequest request);
+        int CreateOrder(CreateOrderRequest request);
         Task<bool> UpDateOrder(OrderDTO request);
         List<OrderDTO> GetOrders();
         bool DeleteOrder(int id);

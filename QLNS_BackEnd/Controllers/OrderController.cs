@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
@@ -70,6 +71,12 @@ namespace QLNS_BackEnd.Controllers
                 };
                 return BadRequest(errorResponse);
             }
+            return Ok(res);
+        }
+        [HttpGet("delete/{id}")]
+        public IActionResult DeleteOrders(int id)
+        {
+            var res = _order.DeleteOrder(id);
             return Ok(res);
         }
     }

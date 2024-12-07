@@ -83,5 +83,19 @@ namespace QLNS.Repositories
                 return null;
             }
         }
+
+        public async Task<bool> DeleteOrder(int id)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl + $"/delete/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

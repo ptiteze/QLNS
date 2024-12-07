@@ -154,7 +154,6 @@ namespace QLNS.Controllers
             ShowOrderViewModel model = new ShowOrderViewModel()
             {
                 orders = order,
-                //transactions = transactions,
             };
             return View(model);
         }
@@ -183,8 +182,7 @@ namespace QLNS.Controllers
             if (UserName == null) return RedirectToAction("Index", "Home");
             OrderDTO order = await _order.GetOrderById(id);
             if(order == null) return RedirectToAction("Error", "Home");
-            order.Status = 3;
-            bool check = await _order.UpDateOrder(order);
+            bool check = await _order.DeleteOrder(id);
             if (check)
             {
                 return RedirectToAction("ShowOrder");

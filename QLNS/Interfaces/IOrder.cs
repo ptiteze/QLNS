@@ -9,6 +9,7 @@ namespace QLNS.Interfaces
         Task<OrderDTO> GetOrderById(int id);
         Task<int> CreateOrder(CreateOrderRequest request);
         Task<bool> UpDateOrder(OrderDTO request);
+        Task<bool> DeleteOrder(int id);
         Task<List<OrderDTO>> GetOrders();
     }
 }
