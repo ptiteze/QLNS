@@ -35,7 +35,9 @@
               </div>
               <div class="col-12 col-lg-6 col-xl-3 border-light">
                 <div class="card-body">
+                            <a href="/Admin/AdminOrderReport" class="text-white">
                             <h5 class="text-white mb-0"> @string.Format("{0:N0}", @Model.revenue)  <span class="float-right">VNĐ</span></h5>
+                            </a>
                   <div class="progress my-3" style="height:3px;">
                     <div class="progress-bar" style="width:55%"></div>
                   </div>
@@ -89,12 +91,12 @@
                       <td>+@(Model.revenue == 0 ? 0 : (Model.revenue1 * 100 / Model.revenue)) %</td>
                     </tr>
                     <tr>
-                      <td><i class="fa fa-circle text-light-1 mr-2"></i>Củ quả</td>
+                      <td><i class="fa fa-circle text-light-1 mr-2"></i>quả/trái cây</td>
                       <td>@string.Format("{0:N0}", @Model.revenue2) VNĐ</td>
                       <td>+@(Model.revenue == 0 ? 0 : (Model.revenue2 * 100 / Model.revenue)) %</td>
                     </tr>
                     <tr>
-                      <td><i class="fa fa-circle text-light-2 mr-2"></i>Hạt</td>
+                      <td><i class="fa fa-circle text-light-2 mr-2"></i>các loại hạt</td>
                       <td>@string.Format("{0:N0}", @Model.revenue3) VNĐ</td>
                       <td>+@(Model.revenue == 0 ? 0 : (Model.revenue3 * 100 / Model.revenue)) %</td>
                     </tr>

@@ -97,5 +97,19 @@ namespace QLNS.Repositories
                 return false;
             }
         }
+
+        public async Task<List<ReportData>> DataOrder(RequestReportData request)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl+"/report", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ReportData>>();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

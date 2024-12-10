@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using DevExpress.ReportServer.ServiceModel.DataContracts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -7,6 +8,7 @@ using QLNS.Interfaces;
 using QLNS.Models;
 using QLNS.ModelsParameter.Admin;
 using QLNS.ModelsParameter.Catalog;
+using QLNS.ModelsParameter.Order;
 using QLNS.ModelsParameter.Producer;
 using QLNS.ModelsParameter.Product;
 using QLNS.ModelsParameter.SupplyInvoice;
@@ -73,7 +75,7 @@ namespace QLNS.Controllers
 		//private readonly 
 		public async Task<IActionResult> Index()
 		{
-			if (!CheckRole()&&!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+			if (!CheckRole()&&!CheckRoleAdmin()) return RedirectToAction("Error", "Home");
 			List<OrderDTO> orders = await _order.GetOrders();
 			List<OrderDTO> orderslast = new List<OrderDTO>();
             DateOnly DbDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-14));
@@ -140,7 +142,7 @@ namespace QLNS.Controllers
 		}
 		public async Task<IActionResult> User() 
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
             List<UserDTO> users = await _user.GetUsers();
 			List<AccountDTO> accounts = await _acount.GetAccounts();
 			UserViewModel Model = new UserViewModel() {
@@ -151,8 +153,8 @@ namespace QLNS.Controllers
 		}
 		public async Task<IActionResult> Cate()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			CatalogViewModel Model = new CatalogViewModel() 
 			{
 				Catalogs = catalogs,
@@ -161,7 +163,7 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> Product()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			List<ProductDTO> products = await _product.GetAllProducts();
 			List<SupplyListDTO> supplyLists = await _supplyList.GetAllSupplyList();
@@ -178,15 +180,15 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> Producer()
 		{
-			if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<ProducerDTO> producers = await _producer.GetAllProducer();
+			if (!CheckRole()) return RedirectToAction("Index", "Admin");
+            List<ProducerDTO> producers = await _producer.GetAllProducer();
 			ProducerViewModel model = new ProducerViewModel() { Producers = producers };
 			return View(model);
 		}
 		public async Task<IActionResult> SupplyInvoice()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<ProductDTO> products = new List<ProductDTO>();
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+            List<ProductDTO> products = new List<ProductDTO>();
 			List<SupplyListDTO> supplyLists = await _supplyList.GetAllSupplyList();
 			List<ProducerDTO> producers = await _producer.GetAllProducer();
 			foreach(var sp in supplyLists)
@@ -205,8 +207,8 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> News()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<Boardnew> boardnews = await _boardnew.GetBoardnews();
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+            List<Boardnew> boardnews = await _boardnew.GetBoardnews();
 			NewsViewModel Model = new NewsViewModel() {
 				Boardnews = boardnews,
 			};
@@ -531,6 +533,7 @@ namespace QLNS.Controllers
                         {
                             await input.imageFile.CopyToAsync(fileStream);
                         }
+                        //await _recommendation.BuildDataset();
                         HttpContext.Session.Remove("errorMsg");
 						return RedirectToAction("Product", "Admin");
 						
@@ -1047,7 +1050,7 @@ namespace QLNS.Controllers
             List<UserDTO> users = await _user.GetUsers();
 			List<AccountDTO> accounts = await _acount.GetAccounts();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
-			List<UserDTO> usersInWeek = users.Where(u => u.Created > sevenDaysAgo).ToList();
+			List<UserDTO> usersInWeek = users.Where(u => u.Created >= sevenDaysAgo).ToList();
 			if (usersInWeek.IsNullOrEmpty()) usersInWeek = new List<UserDTO>();
             UserViewModel Model = new UserViewModel()
             {
@@ -1189,7 +1192,8 @@ namespace QLNS.Controllers
 			bool check = await _used.CreateUsed(request.used);
 			if (check)
 			{
-				HttpContext.Session.Remove("errorMsg");
+                //await _recommendation.BuildDataset();
+                HttpContext.Session.Remove("errorMsg");
 				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = request.prid });
 			}
 			else
@@ -1227,5 +1231,35 @@ namespace QLNS.Controllers
             };
             return View(model);
         }
+		public async Task<IActionResult> AdminOrderReport()
+		{
+
+			return RedirectToAction("ReportOrder", new RequestReportData());
+		}
+		public async Task<IActionResult> ReportOrder(RequestReportData request)
+		{
+			
+			if (request.startDate > request.endDate)
+			{
+                HttpContext.Session.SetString("errorMsg", "Lỗi khi chọn thời gian");
+				return View(new ReportOrderViewModel());
+            }
+            List<ReportData> reportDatas = await _order.DataOrder(request);
+			Decimal value1 = 0;
+			value1 = reportDatas.Sum(x => x.Amount);
+            if (!reportDatas.IsNullOrEmpty())
+			{
+
+			}
+			ReportOrderViewModel model = new ReportOrderViewModel()
+			{
+				startDate = request.startDate,
+				endDate = request.endDate,
+				reportData = reportDatas,
+				value = value1
+			};
+            HttpContext.Session.Remove("errorMsg");
+            return View(model);
+		}
 	}
 }

@@ -1,0 +1,111 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Report Order View";
+    string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+}
+@model QLNS.ViewModels.Admin.ReportOrderViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <!--End Row-->
+
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <p style="color:red; display:block">
+                    @errorMsg
+                </p>
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> Chọn khoảng thời gian</h5>
+                        <hr />
+                        <form method="post" asp-action="ReportOrder" asp-controller="Admin">
+                            <div class="form-group">
+                                <label for="input-1">Ngày tạo</label>
+                                <input type="date" class="form-control" id="the-date" value="@Model.startDate" placeholder="Ngày tạo" name="startDate">
+                            </div>
+                            <div class="form-group">
+                                <label for="input-1">Ngày tạo</label>
+                                <input type="date" class="form-control" id="the-date-2"  value="@Model.endDate" placeholder="Ngày tạo" name="endDate">
+                            </div>
+                            <div class="form-footer">
+                                <button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> Tra cứu</button>
+                            </div>
+                        </form>
+                        <h5 class="card-title">Danh sách đơn hàng từ ngày: @Model.startDate.Date tới ngày @Model.endDate.Date</h5>
+                        <h5 class="card-title">     Tổng tạm tính: @((int)Model.value)</h5>
+                        <div class="table-responsive" style="max-height: 1000px;">
+                            @if (Model.reportData == null)
+                            {
+                                <h5 class="card-title">Danh sách trống</h5>
+                            }
+                            else
+                            {
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">Ngày tạo</th>
+                                            <th scope="col">Loại giao dịch</th>
+                                            <th scope="col">Tên nhân viên</th>
+                                            <th scope="col">Đối tác</th>
+                                            <th scope="col">trạng thái</th>
+                                            <th scope="col">Tổng tiền</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in Model.reportData)
+                                        {
+                                            <tr>
+                                                @if (order.LoaiGG=="Nhập hàng")
+                                                {
+                                                    <td scope="row"><a class="remove" href="/Admin/ShowImportDetail?id=@order.Id">@order.Id</a></td>
+                                                }
+                                                else
+                                                {
+                                                    <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Id">@order.Id</a></td>
+                                                }
+                                                <td>@order.Date</td>
+                                                <td>@order.LoaiGG</td>
+                                                <td>@order.Name</td>
+                                                <td>@order.Partner</td>
+                                                <td>@order.Status</td>
+                                                <td>@order.Amount</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+    document.getElementById('the-date').value = today
+    document.getElementById('the-date-2').value = today;
+</script>

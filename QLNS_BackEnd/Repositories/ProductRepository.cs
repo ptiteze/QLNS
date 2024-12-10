@@ -94,7 +94,7 @@ namespace QLNS_BackEnd.Repositories
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
-                            while (reader.Read())
+                            while (await reader.ReadAsync())
                             {
                                 ProductDTO pr = GetProductById(reader.GetInt32(0));
                                 if(pr != null && pr.Status == 1) products.Add(pr);

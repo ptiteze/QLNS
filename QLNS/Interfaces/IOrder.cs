@@ -11,5 +11,6 @@ namespace QLNS.Interfaces
         Task<bool> UpDateOrder(OrderDTO request);
         Task<bool> DeleteOrder(int id);
         Task<List<OrderDTO>> GetOrders();
+        Task<List<ReportData>> DataOrder(RequestReportData request);
     }
 }

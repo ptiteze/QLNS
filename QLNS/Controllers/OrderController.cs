@@ -130,6 +130,11 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> ShowOrder()
         {
+            string role = HttpContext.Session.GetString("Role"); ;
+            if (role.Equals("staff") || role.Equals("admin"))
+            {
+                return RedirectToAction("Error", "Home");
+            }
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
             int IdUser = int.Parse(Id);

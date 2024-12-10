@@ -17,11 +17,13 @@ namespace QLNS.Controllers
         private readonly IProduct _product;
         private readonly ICatalog _catalog;
         private readonly IReview _review;
-        public ProductController(IProduct product, ICatalog catalog, IReview review)
+        private readonly IRecommendation _recommendation;
+        public ProductController(IProduct product, ICatalog catalog, IReview review, IRecommendation recommendation)
         {
             _product = product;
             _catalog = catalog;
             _review = review;
+            _recommendation = recommendation;
         }
         [HttpGet("Product/")]
         [HttpGet("Product/Index")]
@@ -148,6 +150,7 @@ namespace QLNS.Controllers
                     bool check = await _review.UpdateReview(review);
                     if(check)
                     {
+                        //await _recommendation.BuildDataset();
                         return Json(new
                         {
                             success = true,

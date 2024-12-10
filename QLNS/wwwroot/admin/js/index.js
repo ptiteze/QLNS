@@ -11,7 +11,7 @@ $(function() {
 			var myChart = new Chart(ctx, {
 				type: 'doughnut',
 				data: {
-					labels: ["rau sạch", "hạt", "củ quả", "mật"],
+					labels: ["rau sạch", "quả/trái cây", "các loại hạt", "mật"],
 					datasets: [{
 						backgroundColor: [
 							"#ffffff",

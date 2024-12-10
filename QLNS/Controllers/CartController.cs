@@ -68,7 +68,15 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddToCart([FromBody] CartItem cartItem)
         {
-			int productid = cartItem.productid;
+            string role = HttpContext.Session.GetString("Role"); ;
+            if (role.Equals("staff") || role.Equals("admin"))
+            {
+                return Json(new
+                {
+                    error = "Quyền quản lý không thể mua hàng"
+                });
+            }
+            int productid = cartItem.productid;
 			int quantity = cartItem.quantity;
             ProductDTO prx = await _product.GetProductById(productid);
             if (prx == null || prx.Status == 0)
@@ -181,7 +189,12 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddCart(int productid,int quantity)
         {
-            ProductDTO prx = await _product.GetProductById(productid);
+            string role = HttpContext.Session.GetString("Role"); ;
+            if (role.Equals("staff") || role.Equals("admin"))
+            {
+                return RedirectToAction("Error", "Home");
+            }
+                ProductDTO prx = await _product.GetProductById(productid);
             if(prx == null || prx.Status == 0 || prx.Quantity == 0)
             {
                 return RedirectToAction("ProductDetail", "Product", new { id = productid });

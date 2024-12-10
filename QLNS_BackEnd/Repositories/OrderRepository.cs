@@ -4,11 +4,19 @@ using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Order;
 using QLNS_BackEnd.Singleton;
+using System.Data;
+using Microsoft.Data.SqlClient;
+using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
 
 namespace QLNS_BackEnd.Repositories
 {
     public class OrderRepository : IOrder
     {
+        private readonly IConfiguration _configuration;
+        public OrderRepository(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public int CreateOrder(CreateOrderRequest request)
         {
             try
@@ -73,6 +81,47 @@ namespace QLNS_BackEnd.Repositories
             }catch
             {
                 return 0;
+            }
+        }
+
+        public async Task<List<ReportData>> DataOrder(DateTime startDate, DateTime endDate)
+        {
+            List<ReportData> reports = new List<ReportData>();
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    await conn.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("V_BCDT", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        // Truyền tham số
+                        cmd.Parameters.AddWithValue("@bd", startDate);
+                        cmd.Parameters.AddWithValue("@kt", endDate);
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                reports.Add(new ReportData
+                                {
+                                    Id = Convert.ToInt32(reader["id"]),
+                                    Date = Convert.ToDateTime(reader["date"]),
+                                    LoaiGG = reader["LoaiGG"].ToString(),
+                                    Name = reader["name"].ToString(),
+                                    Partner = reader["patner"].ToString(),
+                                    Status = reader["status"].ToString(),
+                                    Amount = Convert.ToDecimal(reader["amount"])
+                                });
+                            }
+                        }
+                    }
+                }
+                return reports;
+            }
+            catch(Exception ex)
+            {
+                return null;
             }
         }
 

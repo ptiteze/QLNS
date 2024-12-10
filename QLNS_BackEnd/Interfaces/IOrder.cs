@@ -11,5 +11,6 @@ namespace QLNS_BackEnd.Interfaces
         Task<bool> UpDateOrder(OrderDTO request);
         List<OrderDTO> GetOrders();
         bool DeleteOrder(int id);
+        Task<List<ReportData>> DataOrder(DateTime startDate, DateTime endDate);
     }
 }

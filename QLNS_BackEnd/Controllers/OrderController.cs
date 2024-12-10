@@ -79,5 +79,20 @@ namespace QLNS_BackEnd.Controllers
             var res = _order.DeleteOrder(id);
             return Ok(res);
         }
+        [HttpPost("report")]
+        public async Task<IActionResult> DataOrder(RequestReportData request)
+        {
+            var res = await _order.DataOrder(request.startDate, request.endDate);
+            if (res == null)
+            {
+                var errorResponse = new
+                {
+                    message = "Không thể lấy dữ liệu",
+                    errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList()
+                };
+                return BadRequest(errorResponse);
+            }
+            return Ok(res);
+        }
     }
 }
