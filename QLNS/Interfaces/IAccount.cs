@@ -10,5 +10,6 @@ namespace QLNS.Interfaces
         Task<bool> UnLock(int id);
         Task<AccountDTO> GetAccountByUsername(string username);
         Task<List<AccountDTO>> GetAccounts();
+        Task<bool> ForgetPass(RequestForgetPass request);
     }
 }

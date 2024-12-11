@@ -78,5 +78,11 @@ namespace QLNS_BackEnd.Controllers
             var res = _account.UnlockAccount(id);
             return Ok(res);
         }
+        [HttpPost("forgetpass")]
+        public async Task<IActionResult> ForgetPass(RequestForgetPass request)
+        {
+            var res = await _account.ForgetPass(request);
+            return Ok(res);
+        }
     }
 }

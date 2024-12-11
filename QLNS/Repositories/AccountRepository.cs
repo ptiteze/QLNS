@@ -84,5 +84,19 @@ namespace QLNS.Repositories
                 return null;
             }
         }
+
+        public async Task<bool> ForgetPass(RequestForgetPass request)
+        {
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync(BaseUrl+"/forgetpass", request);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<bool>();
+                return result;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

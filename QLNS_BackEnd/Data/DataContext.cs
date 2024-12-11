@@ -88,7 +88,7 @@ public partial class DataContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__admin__3213E83F4640B4FB");
 
-            entity.ToTable("admin");
+            entity.ToTable("employee");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Email)
@@ -461,7 +461,7 @@ public partial class DataContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK_users_1");
 
-            entity.ToTable("users");
+            entity.ToTable("customer");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Created).HasColumnName("created");

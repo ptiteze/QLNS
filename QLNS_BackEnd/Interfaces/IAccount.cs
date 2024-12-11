@@ -13,5 +13,6 @@ namespace QLNS_BackEnd.Interfaces
         bool LockAccount(int id);
         bool UnlockAccount(int id);
         List<AccountDTO> GetAccounts();
+        Task<bool> ForgetPass(RequestForgetPass request);
     }
 }

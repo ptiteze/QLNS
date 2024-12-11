@@ -38,8 +38,8 @@ namespace QLNS.Controllers
             List<ProductDTO> bestsellproduct = await _product.GetBestSellingProducts();
             HashSet<ProductDTO> setPrs = new HashSet<ProductDTO>();
             List<ProductDTO> recommendedProducts = new List<ProductDTO>();
-			List<ProductDTO> recommendedProductsByRated = null;
-			string Id = HttpContext.Session.GetString("id_user");
+			List<ProductDTO> recommendedProductsByRated = new List<ProductDTO>();
+			string Id = HttpContext.Session.GetString("id_user") ?? "";
 			int IdUser = 0;
 			if (!Id.IsNullOrEmpty())
 			{
@@ -58,7 +58,7 @@ namespace QLNS.Controllers
             };
             ViewBag.SlideData = slideViewModel;
             sumprice = SetHeaderData(products, sumprice);
-			string cart_local = HttpContext.Session.GetString("cart_local");
+			string cart_local = HttpContext.Session.GetString("cart_local")?? "";
             if (!cart_local.IsNullOrEmpty())
             {
 				List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
@@ -69,7 +69,6 @@ namespace QLNS.Controllers
                     UsedListP.Add(ProductId);
 					List<ProductDTO> prs = await _product.GetRecommendedProducts(ProductId);
 					setPrs.UnionWith(prs);
-                    Console.WriteLine(setPrs.Count+"  --2212");
 				}
                 recommendedProducts = setPrs.ToList();
             }
@@ -174,7 +173,7 @@ namespace QLNS.Controllers
         {
             Dictionary<ProductDTO, int> cartLocal = new Dictionary<ProductDTO, int>();
             // Header ViewModel
-            string cart_local = HttpContext.Session.GetString("cart_local");
+            string cart_local = HttpContext.Session.GetString("cart_local") ?? "";
             
             if (!string.IsNullOrEmpty(cart_local))
             {
@@ -186,7 +185,7 @@ namespace QLNS.Controllers
                     string[] parts = cart.Split(':');
                     int ProductId = int.Parse(parts[0]);
                     int Quantity = int.Parse(parts[1]);
-                    ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault();
+                    ProductDTO productInCart = products.Where(p => p.Id == ProductId).FirstOrDefault() ?? new ProductDTO();
                     if(productInCart!=null)
                     sumprice += (productInCart.Price - (productInCart.Price * (productInCart.Discount)) / 100) * Quantity;
 

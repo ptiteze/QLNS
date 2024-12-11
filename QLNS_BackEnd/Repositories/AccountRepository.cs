@@ -1,15 +1,23 @@
 ﻿using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Admin;
 using QLNS_BackEnd.Singleton;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 
 namespace QLNS_BackEnd.Repositories
 {
     public class AccountRepository : IAccount
     {
+        private readonly IConfiguration _configuration;
+        public AccountRepository(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         public bool ChangePassword(string password, int id)
         {
             try
@@ -57,6 +65,50 @@ namespace QLNS_BackEnd.Repositories
             {
                 return 0;
             }
+        }
+
+        public async Task<bool> ForgetPass(RequestForgetPass request)
+        {
+            try
+            {
+                string gmailto = "";
+                Account acc = await SingletonDataBridge.GetInstance().Accounts.FindAsync(request.Id);
+                //var u = new object();
+                if (request.Role == 1)
+                {
+                    var u = await SingletonDataBridge.GetInstance().Admins.Where(a => a.IdAccount == acc.Id).FirstOrDefaultAsync();
+                    gmailto =  u.Email;
+                }
+                else
+                {
+                    var u = await SingletonDataBridge.GetInstance().Users.Where(a => a.IdAccount == acc.Id).FirstOrDefaultAsync();
+                    gmailto = u.Email;
+                }
+
+                Random random = new Random();
+                int randomNumber = random.Next(100000, 1000000);
+
+                var email = _configuration.GetValue<string>("Email_Configuration:EMAIL");
+                var password = _configuration.GetValue<string>("Email_Configuration:PASSWORD");
+                var host = _configuration.GetValue<string>("Email_Configuration:HOST");
+                var port = _configuration.GetValue<int>("Email_Configuration:PORT");
+
+                var smtpClient = new SmtpClient(host, port);
+                smtpClient.EnableSsl = true;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials = new NetworkCredential(email, password);
+                var message = new MailMessage(email!, gmailto, "Mật khẩu mới của bạn là: ", randomNumber.ToString());
+                await smtpClient.SendMailAsync(message);
+                acc.Password = randomNumber.ToString();
+                SingletonDataBridge.GetInstance().Accounts.Update(acc);
+                await SingletonDataBridge.GetInstance().SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
         }
 
         public AccountDTO GetAccountByUsername(string username)

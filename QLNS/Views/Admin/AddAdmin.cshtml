@@ -4,7 +4,7 @@
 @inject IHttpContextAccessor HttpContextAccessor
 @{
 	Layout = "_AdminLayout";
-	ViewData["Title"] = "Add Admin View";
+	ViewData["Title"] = "Add Nhân viên View";
     string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
 }
 @section AdminHeader {
@@ -20,7 +20,7 @@
             <div class="col-lg-8">
                 <div class="card">
                     <div class="card-body">
-                        <div class="card-title">Thêm Admin</div>
+                        <div class="card-title">Thêm Nhân viên</div>
                         <p style="color:red; display:block">
                             @errorMsg
                         </p>
@@ -28,8 +28,8 @@
                         <form asp-action="AddAdminResult" asp-controller="Admin" method="post">
 
                             <div class="form-group">
-                                <label for="input-2">Email Admin</label>
-                                <input type="email" class="form-control" id="input-2" placeholder="Email Admin" name="admin_email">
+                                <label for="input-2">Email Nhân viên</label>
+                                <input type="email" class="form-control" id="input-2" placeholder="Email Nhân viên" name="admin_email">
                             </div>
                             <div class="form-group">
                                 <label for="input-1">Password</label>
@@ -55,15 +55,15 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="input-1">Tên Admin</label>
-                                <input type="text" class="form-control" id="input-1" placeholder="Tên Admin" name="admin_name">
+                                <label for="input-1">Tên Nhân viên</label>
+                                <input type="text" class="form-control" id="input-1" placeholder="Tên Nhân viên" name="admin_name">
                             </div>
                             <div class="form-group">
                                 <label for="input-1">Username</label>
                                 <input type="text" class="form-control" id="input-1" placeholder="Username" name="admin_username">
                             </div>
                             <div class="form-group">
-                                <label for="input-3">Phone Admin</label>
+                                <label for="input-3">Phone nhan viên</label>
                                 <input type="tel" class="form-control" id="input-3" placeholder="Phone Admin" name="admin_phone">
                             </div>
                             

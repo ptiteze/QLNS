@@ -68,7 +68,8 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddToCart([FromBody] CartItem cartItem)
         {
-            string role = HttpContext.Session.GetString("Role"); ;
+            string role = HttpContext.Session.GetString("Role");
+            if(!role.IsNullOrEmpty())
             if (role.Equals("staff") || role.Equals("admin"))
             {
                 return Json(new
@@ -189,8 +190,9 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> AddCart(int productid,int quantity)
         {
-            string role = HttpContext.Session.GetString("Role"); ;
-            if (role.Equals("staff") || role.Equals("admin"))
+            string role = HttpContext.Session.GetString("Role");
+            if (!role.IsNullOrEmpty())
+                if (role.Equals("staff") || role.Equals("admin"))
             {
                 return RedirectToAction("Error", "Home");
             }

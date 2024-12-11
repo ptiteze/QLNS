@@ -204,6 +204,37 @@
                     }
                 });
             });
+            $("form[name='formForget']").submit(function (event) {
+                event.preventDefault(); // Ngăn hành động submit mặc định
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("ForgetPassResult", "Account")',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.error) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "error",
+                                title: response.error,
+                                showConfirmButton: true
+                            });
+                        } else if (response.check) {
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Mật khẩu mới đã được gửi về email đăng ký",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            setTimeout(function () {
+                                window.location.href = '/Home/Login';
+                            }, 3500);
+                        }
+                    }
+                });
+            });
         });
         $(document).ready(function () {
             var userName = "@Context.Session.GetString("Username")";

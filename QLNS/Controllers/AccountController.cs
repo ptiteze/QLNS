@@ -8,6 +8,7 @@ using QLNS.ModelsParameter.Admin;
 using QLNS.ModelsParameter.Cart;
 using QLNS.ModelsParameter.User;
 using QLNS.ViewModels.Account;
+using System.ComponentModel.DataAnnotations;
 
 namespace QLNS.Controllers
 {
@@ -16,11 +17,14 @@ namespace QLNS.Controllers
         private readonly IUser _user;
         private readonly ICart _cart;
         private readonly IAccount _account;
-        public AccountController(IUser user, ICart cart, IAccount account)
+        private readonly IAdmin _admin;
+
+        public AccountController(IUser user, ICart cart, IAccount account, IAdmin admin)
         {
             _user = user;
             _cart = cart;
             _account = account;
+            _admin = admin;
         }
         public IActionResult Index()
         {
@@ -208,6 +212,78 @@ namespace QLNS.Controllers
                 return Json(new
                 {
                     error = "Có lỗi xảy ra, thông tin bị trùng"
+                });
+            }
+        }
+        public IActionResult ForgetPass()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ForgetPassResult([FromForm] string email, [FromForm] string username)
+        {
+            try
+            {
+                bool check = false;
+                AccountDTO acc = await _account.GetAccountByUsername(username);
+                List<AdminDTO> admins = await _admin.GetAdmins();
+                AdminDTO admin = admins.Where(u => u.IdAccount == acc.Id).FirstOrDefault();
+                if (admin != null && acc.Status != false)
+                {
+                    RequestForgetPass request_admin = new RequestForgetPass()
+                    {
+                        Id = acc.Id,
+                        Role = 1
+                    };
+                    check = await _account.ForgetPass(request_admin);
+                    if (check)
+                    {
+                        return Json(new
+                        {
+                            check
+                        });
+                    }
+                    else
+                    {
+                        return Json(new
+                        {
+                            error = "Có lỗi xảy ra, chưa thể đổi mật khẩu"
+                        });
+                    }
+                }
+                List<UserDTO> users = await _user.GetUsers();
+                UserDTO thisUser = users.Where(u => u.IdAccount == acc.Id).FirstOrDefault();
+                if (thisUser == null || acc.Status == false) {
+                    return Json(new
+                    {
+                        error = "Có lỗi xảy ra, không tìm thấy người dùng, hoặc người dùng đã bị khóa"
+                    });
+                }
+                RequestForgetPass request = new RequestForgetPass() 
+                {
+                    Id = acc.Id,
+                    Role = 2
+                };
+                check = await _account.ForgetPass(request);
+                if (check)
+                {
+                    return Json(new
+                    {
+                        check
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        error = "Có lỗi xảy ra, chưa thể đổi mật khẩu"
+                    });
+                }
+            }
+            catch
+            {
+                return Json(new
+                {
+                    error = "Có lỗi xảy ra, hãy thử lại sau"
                 });
             }
         }

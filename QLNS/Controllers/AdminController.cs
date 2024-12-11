@@ -291,8 +291,11 @@ namespace QLNS.Controllers
             if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
 			string UserName = HttpContext.Session.GetString("Username");
             AdminDTO admin =  await _admin.GetAdmin(id);
-			AccountDTO account = await _acount.GetAccountByUsername(UserName);
-			EditAdminViewModel Model = new EditAdminViewModel() 
+			if(admin==null) return RedirectToAction("Admin", "Admin");
+            List<AccountDTO> accounts = await _acount.GetAccounts();
+			AccountDTO account = accounts.Where(a => a.Id == admin.IdAccount).FirstOrDefault();
+            if (account == null) return RedirectToAction("Admin", "Admin");
+            EditAdminViewModel Model = new EditAdminViewModel() 
 			{ 
 			Admin = admin,
 			Account = account
@@ -1018,7 +1021,7 @@ namespace QLNS.Controllers
         // In Week
         public async Task<IActionResult> OrderInWeek()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            //if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<OrderDTO> orders = await _order.GetOrders();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
 			List<OrderDTO> ordersInWeek = orders.Where(o => o.Sentdate > sevenDaysAgo).ToList();
@@ -1046,7 +1049,7 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> UserInWeek()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            //if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<UserDTO> users = await _user.GetUsers();
 			List<AccountDTO> accounts = await _acount.GetAccounts();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
@@ -1061,7 +1064,7 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> ProductInWeek()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            //if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
 			HashSet<ProductDTO> products = new HashSet<ProductDTO>();
 			Dictionary<int, int> qt = new Dictionary<int, int>(); // idProduct, quantity
@@ -1246,11 +1249,11 @@ namespace QLNS.Controllers
             }
             List<ReportData> reportDatas = await _order.DataOrder(request);
 			Decimal value1 = 0;
-			value1 = reportDatas.Sum(x => x.Amount);
+			
             if (!reportDatas.IsNullOrEmpty())
 			{
-
-			}
+                value1 = reportDatas.Sum(x => x.Amount);
+            }
 			ReportOrderViewModel model = new ReportOrderViewModel()
 			{
 				startDate = request.startDate,

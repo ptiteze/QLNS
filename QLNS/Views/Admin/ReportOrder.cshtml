@@ -44,7 +44,7 @@
                             </div>
                         </form>
                         <h5 class="card-title">Danh sách đơn hàng từ ngày: @Model.startDate.Date tới ngày @Model.endDate.Date</h5>
-                        <h5 class="card-title">     Tổng tạm tính: @((int)Model.value)</h5>
+                        <h5 class="card-title">     Tổng tạm tính: @((double)Model.value)</h5>
                         <div class="table-responsive" style="max-height: 1000px;">
                             @if (Model.reportData == null)
                             {
