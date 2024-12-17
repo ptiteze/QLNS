@@ -53,7 +53,7 @@ namespace QLNS_BackEnd.Repositories
             {
                 if (SingletonDataBridge.GetInstance().Ordereds.Any(o => o.ProductId == id))
                     return false;
-                
+
                 Product product = SingletonDataBridge.GetInstance().Products.Find(id);
                 if(product.Quantity != 0) return false;
                 SingletonDataBridge.GetInstance().Products.Remove(product);

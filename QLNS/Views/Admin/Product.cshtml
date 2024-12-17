@@ -31,8 +31,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Danh sách sản phẩm</h5>
-                        <div class="table-responsive" style="max-height: 1000px;">
-                            <table class="table table-striped">
+                        <div class="mb-3">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                        </div>
+                        <div class="table-responsive" style="max-height: 700px;">
+                            <table class="table table-striped" id="productTable">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
@@ -67,7 +70,7 @@
                                                     <button class="btn btn-success"><a href="/Admin/AddSupplyList?id=@item.Id">Nhập</a></button>
                                                 }
                                             </td>
-                                            <td><a href="/Admin/ChangeUsed?id=@item.Id">@item.Name</a></td>
+                                            <td class="product-name"><a href="/Admin/ChangeUsed?id=@item.Id">@item.Name</a></td>
                                             <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@item.ImageLink" alt="@item.ImageLink"></td>
                                             <td>@Model.Catalogs.Where(c=>c.Id==@item.CatalogId).FirstOrDefault().Name</td>
                                             <td>@item.Quantity</td>
@@ -96,3 +99,18 @@
         <div class="overlay toggle-menu"></div>
     </div>
 </div>
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#productTable tbody tr');
+
+        rows.forEach(row => {
+            const productName = row.querySelector('.product-name').textContent.toLowerCase();
+            if (productName.includes(filter)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>

@@ -196,45 +196,7 @@ $(document).ready(function () {
             }
         });
     });
-    $("form[name='formEdit']").submit(function (event) {
-        event.preventDefault(); // Ngăn hành động submit mặc định
-
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("UpdateAccount", "Account")',
-            data: $(this).serialize(),
-            success: function (response) {
-                if (response.error) {
-                    Swal.fire({
-                        position: "center",
-                        icon: "error",
-                        title: response.error,
-                        showConfirmButton: true
-                    });
-                } else if (response.check) {
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Tạo tài khoản thành công",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-
-                    setTimeout(function () {
-                        window.location.href = '/Home/Login';
-                    }, 1500);
-                }
-            },
-            error: function () {
-                Swal.fire({
-                    position: "center",
-                    icon: "error",
-                    title: "Có lỗi xảy ra",
-                    showConfirmButton: true
-                });
-            }
-        });
-    });
+    
 });
 $(document).ready(function () {
     // Xử lý khi click vào ngôi sao

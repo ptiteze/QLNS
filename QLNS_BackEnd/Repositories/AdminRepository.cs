@@ -25,6 +25,8 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
+                bool check = SingletonDataBridge.GetInstance().Admins.Any(a => a.Email == request.Email || a.Phone == request.Phone);
+                if (check) return false;
                 AccountRepository accountRepository;
                 Admin admin = new Admin()
                 {
@@ -93,6 +95,8 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
+                bool check = SingletonDataBridge.GetInstance().Admins.Any(a => (a.Email == request.Email || a.Phone == request.Phone) && a.Id!=request.Id);
+                if (check) return false;
                 Admin admin = SingletonDataBridge.GetInstance().Admins.Find(request.Id);
                 admin.Name = request.Name;
                 admin.Phone = request.Phone;

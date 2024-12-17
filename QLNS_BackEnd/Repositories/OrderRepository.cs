@@ -1,12 +1,10 @@
-﻿using Azure.Core;
-using QLNS_BackEnd.DTO;
+﻿using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Order;
 using QLNS_BackEnd.Singleton;
 using System.Data;
 using Microsoft.Data.SqlClient;
-using static DevExpress.Xpo.Helpers.AssociatedCollectionCriteriaHelper;
 
 namespace QLNS_BackEnd.Repositories
 {
@@ -31,7 +29,7 @@ namespace QLNS_BackEnd.Repositories
                 {
                     Product pr = products.Where(p => p.Id == c.ProductId).FirstOrDefault();
                     List<ImportDetail> ips = SingletonDataBridge.GetInstance().ImportDetails.Where(
-                        i => i.ProductId == pr.Id && i.Status == true).ToList();
+                        i => i.ProductId == pr.Id && i.Status == true && i.Stock!=0).ToList();
                     ips = ips.OrderByDescending(i => (i.QuantityImport ?? 0) - (i.Stock ?? 0)).ToList();
                     Ordered ordered = new Ordered()
                     {
@@ -51,24 +49,24 @@ namespace QLNS_BackEnd.Repositories
                         if (ip.Stock >= qty)
                         {
                             ip.Stock -= qty;
-                            if (ip.Stock == 0)
-                            {
-                                ip.Status = false;
-                            }
+                            //if (ip.Stock == 0)
+                            //{
+                            //    ip.Status = false;
+                            //}
                             break;
                         }
                         else
                         {
                             qty -= ip.Stock ?? 0;
                             ip.Stock = 0;
-                            ip.Status = false;
+                            //ip.Status = false;
                         }
                     }
                     SingletonDataBridge.GetInstance().ImportDetails.UpdateRange(ips);
                     SingletonDataBridge.GetInstance().Products.Update(pr);
                     SingletonDataBridge.GetInstance().SaveChanges();
                 }
-                bool check = SingletonDataBridge.GetInstance().Ordereds.Any(o=>o.OrderId==order.Id);
+                bool check = SingletonDataBridge.GetInstance().Ordereds.Any(o => o.OrderId == order.Id);
                 if (!check)
                 {
                     SingletonDataBridge.GetInstance().Orders.Remove(order);
@@ -78,7 +76,8 @@ namespace QLNS_BackEnd.Repositories
                 SingletonDataBridge.GetInstance().RemoveRange(carts);
                 SingletonDataBridge.GetInstance().SaveChanges();
                 return order.Id;
-            }catch
+            }
+            catch
             {
                 return 0;
             }
@@ -119,7 +118,7 @@ namespace QLNS_BackEnd.Repositories
                 }
                 return reports;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
@@ -130,7 +129,7 @@ namespace QLNS_BackEnd.Repositories
             try
             {
                 Order order = SingletonDataBridge.GetInstance().Orders.Find(id);
-                if(order == null || order.Status == 2 || order.Status == 3)
+                if (order == null || order.Status == 2 || order.Status == 3)
                 {
                     return false;
                 }
@@ -141,24 +140,24 @@ namespace QLNS_BackEnd.Repositories
                 foreach (Ordered o in ordereds)
                 {
                     Product pr = products.Where(p => p.Id == o.ProductId).FirstOrDefault();
-                    
+
                     List<ImportDetail> list_IDT = SingletonDataBridge.GetInstance().ImportDetails.Where(
-                        i => i.ProductId == pr.Id && i.Status == true && i.QuantityImport-i.Stock!=0).ToList();
+                        i => i.ProductId == pr.Id && i.Status == true && i.QuantityImport - i.Stock != 0).ToList();
                     list_IDT = list_IDT.OrderByDescending(i => (i.QuantityImport ?? 0) - (i.Stock ?? 0)).ToList();
                     int sumBack = 0;
-                    foreach(ImportDetail pd in list_IDT)
+                    foreach (ImportDetail pd in list_IDT)
                     {
                         if (o.Qty - sumBack + pd.Stock > pd.QuantityImport)
                         {
-                            sumBack += (pd.QuantityImport??0 - pd.Stock??0);
+                            sumBack += (pd.QuantityImport ?? 0 - pd.Stock ?? 0);
                             pd.Stock = pd.QuantityImport;
                             SingletonDataBridge.GetInstance().ImportDetails.Update(pd);
                             SingletonDataBridge.GetInstance().SaveChanges();
                         }
                         else
                         {
+                            pd.Stock += (o.Qty-sumBack);
                             sumBack = o.Qty;
-                            pd.Stock += (o.Qty - sumBack);
                             SingletonDataBridge.GetInstance().ImportDetails.Update(pd);
                             SingletonDataBridge.GetInstance().SaveChanges();
                         }
@@ -175,7 +174,7 @@ namespace QLNS_BackEnd.Repositories
             {
                 return false;
             }
-            
+
         }
 
         public async Task<OrderDTO> GetOrderById(int id)
@@ -203,7 +202,7 @@ namespace QLNS_BackEnd.Repositories
                 order.Payment = request.Payment;
                 order.Status = request.Status;
                 order.AdminId = request.AdminId;
-                Console.WriteLine(request.Id.ToString() +"-"+request.UserId);
+                Console.WriteLine(request.Id.ToString() + "-" + request.UserId);
                 SingletonDataBridge.GetInstance().Orders.Update(order);
                 await SingletonDataBridge.GetInstance().SaveChangesAsync();
                 return true;
@@ -212,7 +211,7 @@ namespace QLNS_BackEnd.Repositories
             {
                 return false;
             }
-            
+
         }
     }
 }

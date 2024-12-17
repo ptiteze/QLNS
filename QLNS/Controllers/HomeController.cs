@@ -33,63 +33,70 @@ namespace QLNS.Controllers
 
 		public async Task<IActionResult> Index()
         {
-            List<CatalogDTO> catalogs = await _icatalog.GetAllCatalog();
-            List<ProductDTO> products = await _product.GetAllProducts();
-            List<ProductDTO> bestsellproduct = await _product.GetBestSellingProducts();
-            HashSet<ProductDTO> setPrs = new HashSet<ProductDTO>();
-            List<ProductDTO> recommendedProducts = new List<ProductDTO>();
-			List<ProductDTO> recommendedProductsByRated = new List<ProductDTO>();
-			string Id = HttpContext.Session.GetString("id_user") ?? "";
-			int IdUser = 0;
-			if (!Id.IsNullOrEmpty())
-			{
-				IdUser = int.Parse(Id);
-				recommendedProductsByRated = await _product.GetRecommendedProductsByRated(IdUser);
-			}
-			List<Boardnew> boardnews = await _boardnew.GetBoardnews();
-            List<Slide> slides = await _slide.GetAllSlides();
-            List<int> UsedListP = new List<int>();
-            string useds = "";
-            int sumprice = 0;
-            // slide ViewModel
-            var slideViewModel = new SlideViewModel()
+            try
             {
-                Slides = slides
-            };
-            ViewBag.SlideData = slideViewModel;
-            sumprice = SetHeaderData(products, sumprice);
-			string cart_local = HttpContext.Session.GetString("cart_local")?? "";
-            if (!cart_local.IsNullOrEmpty())
-            {
-				List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
-                foreach (var item in list_cartLocal)
+                List<CatalogDTO> catalogs = await _icatalog.GetAllCatalog();
+                List<ProductDTO> products = await _product.GetAllProducts();
+                List<ProductDTO> bestsellproduct = await _product.GetBestSellingProducts();
+                HashSet<ProductDTO> setPrs = new HashSet<ProductDTO>();
+                List<ProductDTO> recommendedProducts = new List<ProductDTO>();
+                List<ProductDTO> recommendedProductsByRated = new List<ProductDTO>();
+                string Id = HttpContext.Session.GetString("id_user") ?? "";
+                int IdUser = 0;
+                if (!Id.IsNullOrEmpty())
                 {
-					string[] parts = item.Split(':');
-					int ProductId = int.Parse(parts[0]);
-                    UsedListP.Add(ProductId);
-					List<ProductDTO> prs = await _product.GetRecommendedProducts(ProductId);
-					setPrs.UnionWith(prs);
-				}
-                recommendedProducts = setPrs.ToList();
-            }
-            else
-            {
-                recommendedProducts = products;
+                    IdUser = int.Parse(Id);
+                    recommendedProductsByRated = await _product.GetRecommendedProductsByRated(IdUser);
+                }
+                List<Boardnew> boardnews = await _boardnew.GetBoardnews();
+                List<Slide> slides = await _slide.GetAllSlides();
+                List<int> UsedListP = new List<int>();
+                string useds = "";
+                int sumprice = 0;
+                // slide ViewModel
+                var slideViewModel = new SlideViewModel()
+                {
+                    Slides = slides
+                };
+                ViewBag.SlideData = slideViewModel;
+                sumprice = SetHeaderData(products, sumprice);
+                string cart_local = HttpContext.Session.GetString("cart_local") ?? "";
+                if (!cart_local.IsNullOrEmpty())
+                {
+                    List<string> list_cartLocal = new List<string>(cart_local.Split("|"));
+                    foreach (var item in list_cartLocal)
+                    {
+                        string[] parts = item.Split(':');
+                        int ProductId = int.Parse(parts[0]);
+                        UsedListP.Add(ProductId);
+                        List<ProductDTO> prs = await _product.GetRecommendedProducts(ProductId);
+                        setPrs.UnionWith(prs);
+                    }
+                    recommendedProducts = setPrs.ToList();
+                }
+                else
+                {
+                    recommendedProducts = products;
 
-			}
-            if(UsedListP.Count>0)
-            useds = await _recommendation.GetUseds(UsedListP);
-			HomeViewModel Models = new HomeViewModel()
+                }
+                if (UsedListP.Count > 0)
+                    useds = await _recommendation.GetUseds(UsedListP);
+                HomeViewModel Models = new HomeViewModel()
+                {
+                    Catalogs = catalogs,
+                    Products = products,
+                    Boardnews = boardnews,
+                    BestSellingProducts = bestsellproduct,
+                    RecommendedProducts = recommendedProducts,
+                    Useds = useds,
+                    RecommendedProductsByRated = recommendedProductsByRated,
+                };
+                return View(Models);
+            }
+            catch
             {
-                Catalogs = catalogs,
-                Products = products,
-                Boardnews = boardnews,
-                BestSellingProducts = bestsellproduct,
-                RecommendedProducts = recommendedProducts,
-                Useds = useds, 
-                RecommendedProductsByRated = recommendedProductsByRated,
-            };
-            return View(Models);
+                return RedirectToAction("Error");
+            }
         }
         public async Task<IActionResult> Login()
         {

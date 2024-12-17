@@ -26,7 +26,7 @@ namespace QLNS_BackEnd.Repositories
                 SingletonDataBridge.GetInstance().SaveChanges();
                 List<SupplyList> supplyLists = new List<SupplyList>(SingletonDataBridge.GetInstance().SupplyLists);
                 List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
-                foreach(SupplyList supply in supplyLists)
+                foreach (SupplyList supply in supplyLists)
                 {
                     Product pr = products.Where(p => p.Id == supply.ProductId).FirstOrDefault();
                     ImportDetail import = new ImportDetail()

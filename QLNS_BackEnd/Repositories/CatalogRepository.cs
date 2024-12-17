@@ -21,6 +21,8 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
+                bool check = SingletonDataBridge.GetInstance().Catalogs.Any(c => c.Name == name);
+                if(check) { return false; }
                 Catalog catalog = new Catalog();
                 catalog.Name = name;
                 SingletonDataBridge.GetInstance().Catalogs.Add(catalog);    
@@ -39,6 +41,8 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
+                bool check = SingletonDataBridge.GetInstance().Products.Any(p => p.CatalogId == id);
+                if (check) { return false; }
                 Catalog catalog = SingletonDataBridge.GetInstance().Catalogs.Find(id);
                 SingletonDataBridge.GetInstance().Catalogs.Remove(catalog);
                 SingletonDataBridge.GetInstance().SaveChanges();
@@ -66,7 +70,9 @@ namespace QLNS_BackEnd.Repositories
         {
 			try
 			{
-				Catalog catalog = SingletonDataBridge.GetInstance().Catalogs.Find(request.id);
+                bool check = SingletonDataBridge.GetInstance().Catalogs.Any(c => c.Name == request.name && c.Id!=request.id);
+                if (check) { return false; }
+                Catalog catalog = SingletonDataBridge.GetInstance().Catalogs.Find(request.id);
 				catalog.Name = request.name;
 				SingletonDataBridge.GetInstance().Catalogs.Update(catalog);
 				SingletonDataBridge.GetInstance().SaveChanges();

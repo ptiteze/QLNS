@@ -154,6 +154,8 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> Info()
         {
+            try 
+            {
             string UserName = HttpContext.Session.GetString("Username");
             string Id = HttpContext.Session.GetString("id_user");
             int IdUser = int.Parse(Id);
@@ -167,6 +169,11 @@ namespace QLNS.Controllers
                 account = acc
             };
             return View(model);
+            }
+            catch
+            {
+                return RedirectToAction("Error","Home");
+            }
         }
         public async Task<IActionResult> EditInfo()
         {

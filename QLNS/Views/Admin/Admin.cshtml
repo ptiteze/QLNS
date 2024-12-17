@@ -54,7 +54,7 @@
                                             {
                                                 <td>Đang hoạt động</td>
                                                 <td>
-                                                    <button class="btn btn-danger" onclick="confirmDelete('@item.Id')">Khóa/Xóa</button>
+                                                    <button class="btn btn-danger" @* onclick="confirmDelete('@item.Id')" *@><a href="/Admin/DeleteAdmin??id=@item.Id">Khóa/Xóa</a></button>
 
                                                     <button class="btn btn-success"><a href="/Admin/EditAdmin?id=@item.Id">Sửa</a></button>
                                                 </td>

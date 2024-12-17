@@ -6,6 +6,8 @@
     Layout = "_AdminLayout";
     ViewData["Title"] = "Edit Admin View";
     string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+    string Username = HttpContextAccessor.HttpContext.Session.GetString("Username");
+    string Role = HttpContextAccessor.HttpContext.Session.GetString("Role");
 }
 @model QLNS.ViewModels.Admin.EditAdminViewModel
 @section AdminHeader {
@@ -36,38 +38,72 @@
                                 <label for="input-1">Username</label>
                                 <input type="text" class="form-control" readonly id="input-1" placeholder="Username" name="username" value="@Model.Account.Username">
                             </div>
-                            <div class="form-group">
-                                <label for="input-1">Password</label>
-                                <input type="password" class="form-control" id="myinput" placeholder="Mật khẩu" name="password" value="@Model.Account.Password" required>
-                                <input type="checkbox" onclick="myFunction1()">Hiển thị mật khẩu
-                                <script>
-                                    function myFunction1() {
-                                        var x = document.getElementById("myinput");
-                                        if (x.type === "password") {
-                                            x.type = "text";
-                                        } else {
-                                            x.type = "password";
-                                        }
-                                    }</script>
-                            </div>
-                            <div class="form-group">
-                                <label for="input-2">Chuyên mục</label>
-                                <div>
-                                    <select class="form-control valid" id="input-6" name="role" aria-invalid="false">
-                                        @if (Model.Account.IdRole == 1)
-                                        {
-                                            <option value="3">Quyền nhân viên</option>
-                                            <option value="1" selected>Quyền quản lý</option>
-                                        }
-                                        else
-                                        {
-                                            <option value="3">Quyền nhân viên</option>
-                                            <option value="1">Quyền quản lý</option>
-                                        }
-
-                                    </select>
+                            @if (Username == Model.Account.Username)
+                            {
+                                <div class="form-group">
+                                    <label for="input-1">Password</label>
+                                    <input type="password" class="form-control" id="myinput" placeholder="Mật khẩu" name="password" value="@Model.Account.Password" required>
+                                    <input type="checkbox" onclick="myFunction1()">Hiển thị mật khẩu
+                                    <script>
+                                        function myFunction1() {
+                                            var x = document.getElementById("myinput");
+                                            if (x.type === "password") {
+                                                x.type = "text";
+                                            } else {
+                                                x.type = "password";
+                                            }
+                                        }</script>
                                 </div>
-                            </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <label for="input-1">Password</label>
+                                    <input type="password" class="form-control" id="myinput" placeholder="Mật khẩu" name="password" value="@Model.Account.Password" readonly>
+                                    <input type="checkbox" onclick="myFunction1()">Hiển thị mật khẩu
+                                    <script>
+                                        function myFunction1() {
+                                            var x = document.getElementById("myinput");
+                                            if (x.type === "password") {
+                                                x.type = "text";
+                                            } else {
+                                                x.type = "password";
+                                            }
+                                        }</script>
+                                </div>
+                            }
+                            @if (Role == "staff")
+                            {
+                                <div class="form-group">
+                                    <label for="input-2">Chuyên mục</label>
+                                    <div>
+                                        <select class="form-control valid" id="input-6" name="role" aria-invalid="false">
+                                                <option value="3">Quyền nhân viên</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="form-group">
+                                    <label for="input-2">Chuyên mục</label>
+                                    <div>
+                                        <select class="form-control valid" id="input-6" name="role" aria-invalid="false">
+                                            @if (Model.Account.IdRole == 1)
+                                            {
+                                                <option value="3">Quyền nhân viên</option>
+                                                <option value="1" selected>Quyền quản lý</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="3">Quyền nhân viên</option>
+                                                <option value="1">Quyền quản lý</option>
+                                            }
+
+                                        </select>
+                                    </div>
+                                </div>
+                            }
                             <div class="form-group">
                                 <label for="input-1">Tên Nhân viên</label>
                                 <input type="text" class="form-control" id="input-1" placeholder="Tên Nhân viên" name="name" value="@Model.Admin.Name" required>

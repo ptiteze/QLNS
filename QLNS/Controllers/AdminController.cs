@@ -80,8 +80,8 @@ namespace QLNS.Controllers
 			List<OrderDTO> orderslast = new List<OrderDTO>();
             DateOnly DbDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-14));
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
-			orderslast = orders.Where(o =>o.Sentdate >= DbDaysAgo && o.Sentdate < sevenDaysAgo).ToList();
-            orders = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
+			orderslast = orders.Where(o =>o.Sentdate >= DbDaysAgo && o.Sentdate < sevenDaysAgo && o.Status == 2).ToList();
+            orders = orders.Where(o => o.Sentdate >= sevenDaysAgo && o.Status == 2).ToList();
             int num_order = orders.Count();
             var orderIds = orders.Select(o => o.Id).ToList();
             List<OrderedDTO> ordereds = new List<OrderedDTO>();
@@ -91,7 +91,7 @@ namespace QLNS.Controllers
 			}
 
 
-			int totalPrice = 0;
+			int totalPrice = 0/*, sum_user = 0*/;
 			List<UserDTO> users = await _user.GetUsers();
 			int num_user = users.Where(u=>u.Created>= sevenDaysAgo).Count();
 			int sum_pr = 0, sum_1 = 0,sum_2 = 0, sum_3 = 0, sum_4 = 0;
@@ -131,7 +131,7 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> Admin() 
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+            //if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
             List<AdminDTO> admins = await _admin.GetAdmins();
 			List<AccountDTO> accounts = await _acount.GetAccounts();
 			AdminViewModel Model = new AdminViewModel(){
@@ -288,13 +288,15 @@ namespace QLNS.Controllers
 		}
 		public async Task<IActionResult> EditAdmin(int id)
 		{
-            if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
+            //if (!CheckRoleAdmin()) return RedirectToAction("Index", "Admin");
 			string UserName = HttpContext.Session.GetString("Username");
+            string role = HttpContext.Session.GetString("Role");
             AdminDTO admin =  await _admin.GetAdmin(id);
 			if(admin==null) return RedirectToAction("Admin", "Admin");
             List<AccountDTO> accounts = await _acount.GetAccounts();
 			AccountDTO account = accounts.Where(a => a.Id == admin.IdAccount).FirstOrDefault();
             if (account == null) return RedirectToAction("Admin", "Admin");
+			if(role=="staff"&& UserName!=account.Username) return RedirectToAction("Admin", "Admin");
             EditAdminViewModel Model = new EditAdminViewModel() 
 			{ 
 			Admin = admin,
@@ -1004,7 +1006,7 @@ namespace QLNS.Controllers
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             OrderDTO order = await _order.GetOrderById(id);
-			if(order != null) { return RedirectToAction("Error", "Home"); }
+			if(order == null) { return RedirectToAction("Error", "Home"); }
             bool check = await _order.DeleteOrder(id);
             if (check)
             {
@@ -1024,7 +1026,7 @@ namespace QLNS.Controllers
             //if (!CheckRole()) return RedirectToAction("Error", "Home");
             List<OrderDTO> orders = await _order.GetOrders();
             DateOnly sevenDaysAgo = DateOnly.FromDateTime(DateTime.Now.AddDays(-7));
-			List<OrderDTO> ordersInWeek = orders.Where(o => o.Sentdate > sevenDaysAgo).ToList();
+			List<OrderDTO> ordersInWeek = orders.Where(o => o.Sentdate >= sevenDaysAgo).ToList();
             if (ordersInWeek == null) ordersInWeek = new List<OrderDTO>();
             Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();
 
@@ -1151,43 +1153,65 @@ namespace QLNS.Controllers
         }
 		public async Task<IActionResult> AddUsed(int id, int prid)
 		{
-			if (!CheckRole()) return RedirectToAction("Error", "Home");
-			UsedProductRequest request = new UsedProductRequest()
+			try
 			{
-				ProductId = prid,
-				UsedId = id
-			};
-			bool check = await _used.CreateUsedProduct(request);
-			if (check)
-			{
-				HttpContext.Session.Remove("errorMsg");
-				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = id });
+                if (!CheckRole()) return RedirectToAction("Error", "Home");
+                UsedProductRequest request = new UsedProductRequest()
+                {
+                    ProductId = prid,
+                    UsedId = id
+                };
+                bool check = await _used.CreateUsedProduct(request);
+                ProductDTO pr = await _product.GetProductById(prid);
+                if (pr == null) return RedirectToAction("Product");
+                if (check)
+                {
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+                }
+                else
+                {
+                    HttpContext.Session.SetString("errorMsg", "Không Thể thêm công dụng");
+                    return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+                }
 			}
-			else
+			catch
 			{
-				HttpContext.Session.SetString("errorMsg", "Không Thể thêm công dụng");
-				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = id });
-			}
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+            }
+			
 		}
 		public async Task<IActionResult> RemoveUsed(int id, int prid)
 		{
-			if (!CheckRole()) return RedirectToAction("Error", "Home");
-			UsedProductRequest request = new UsedProductRequest()
+			try
 			{
-				ProductId = prid,
-				UsedId = id
-			};
-			bool check = await _used.DeleteUsedProduct(request);
-			if (check)
-			{
-				HttpContext.Session.Remove("errorMsg");
-				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+                if (!CheckRole()) return RedirectToAction("Error", "Home");
+                UsedProductRequest request = new UsedProductRequest()
+                {
+                    ProductId = prid,
+                    UsedId = id
+                };
+                bool check = await _used.DeleteUsedProduct(request);
+				ProductDTO pr = await _product.GetProductById(prid);
+				if (pr == null) return RedirectToAction("Product");
+                if (check)
+                {
+                    HttpContext.Session.Remove("errorMsg");
+                    return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+                }
+                else
+                {
+                    HttpContext.Session.SetString("errorMsg", "Không thể xóa công dụng");
+                    return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+                }
 			}
-			else
+			catch
 			{
-				HttpContext.Session.SetString("errorMsg", "Không thể xóa công dụng");
-				return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
-			}
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction(nameof(ChangeUsed), "Admin", new { id = prid });
+            }
+			
 		}
 		public async Task<IActionResult> CreateUsed([FromForm] AddUsedRequest request)
 		{

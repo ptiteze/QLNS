@@ -28,6 +28,14 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Danh sách đơn hàng trong tuần</h5>
+                        <label for="statusFilter" class="form-label">Lọc theo trạng thái đơn hàng:</label>
+                        <select id="statusFilter" class="form-control valid">
+                            <option value="">Tất cả</option>
+                            <option value="0">Chờ xác nhận</option>
+                            <option value="1">Đang giao</option>
+                            <option value="2">Đã chuyển</option>
+                            <option value="3">Đã hủy</option>
+                        </select>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -94,3 +102,28 @@
         </div>
     </div>
 </div>
+<script>
+    document.getElementById('statusFilter').addEventListener('change', function () {
+        const selectedStatus = this.value;
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const statusCell = row.querySelector('td:nth-child(10)'); // Cột trạng thái
+            if (selectedStatus === "" || statusCell.textContent.includes(getStatusText(selectedStatus))) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    function getStatusText(status) {
+        switch (status) {
+            case "0": return "Chờ xác nhận";
+            case "1": return "Đang giao";
+            case "2": return "Đã chuyển";
+            case "3": return "Đã hủy";
+            default: return "";
+        }
+    }
+</script>

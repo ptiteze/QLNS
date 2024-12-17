@@ -6,14 +6,14 @@
 
 function confirmDelete(id) {
     Swal.fire({
-        title: 'B?n có ch?c ch?n mu?n xóa?',
-        text: "Hành ??ng này không th? hoàn tác!",
+        title: 'Ban co chac chan muon xoa?',
+        text: "Hanh dong nay không the hoan tac!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
-        confirmButtonText: 'Xác nh?n',
-        cancelButtonText: 'H?y'
+        confirmButtonText: 'Xác nhan',
+        cancelButtonText: 'Huy'
     }).then((result) => {
         if (result.isConfirmed) {
             window.location.href = '/Admin/DeleteAdmin?id=' + id;
