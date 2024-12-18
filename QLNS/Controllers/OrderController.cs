@@ -87,7 +87,7 @@ namespace QLNS.Controllers
                 {
                     return Json(new
                     {
-                        error = $"Số lượng hàng mua ({c.Quantity}) vượt quá số lượng trong kho ({c.Quantity})."
+                        error = $"Số lượng hàng mua ({c.Quantity}) vượt quá số lượng trong kho."
                     });
                 }
             }

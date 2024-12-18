@@ -935,7 +935,7 @@ namespace QLNS.Controllers
 		// Order
 		public async Task<IActionResult> Order()
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
             List<OrderDTO> orders = await _order.GetOrders();
             if (orders == null) orders = new List<OrderDTO>();
             Dictionary<OrderDTO, int> order = new Dictionary<OrderDTO, int>();

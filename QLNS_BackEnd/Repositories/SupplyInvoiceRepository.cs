@@ -3,6 +3,7 @@ using QLNS_BackEnd.DTO;
 using QLNS_BackEnd.ModelsParameter.SupplyInvoice;
 using QLNS_BackEnd.Singleton;
 using QLNS_BackEnd.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace QLNS_BackEnd.Repositories
 {
@@ -12,6 +13,8 @@ namespace QLNS_BackEnd.Repositories
         {
             try
             {
+                List<SupplyList> supplyLists = new List<SupplyList>(SingletonDataBridge.GetInstance().SupplyLists);
+                if (supplyLists.IsNullOrEmpty()) return false;
                 Admin ad = SingletonDataBridge.GetInstance().Admins.Find(request.AdId);
                 Producer pru = SingletonDataBridge.GetInstance().Producers.Find(request.ProducerId);
                 SupplyInvoice si = new SupplyInvoice
@@ -24,7 +27,7 @@ namespace QLNS_BackEnd.Repositories
                 };
                 SingletonDataBridge.GetInstance().SupplyInvoices.Add(si);
                 SingletonDataBridge.GetInstance().SaveChanges();
-                List<SupplyList> supplyLists = new List<SupplyList>(SingletonDataBridge.GetInstance().SupplyLists);
+                
                 List<Product> products = SingletonDataBridge.GetInstance().Products.ToList();
                 foreach (SupplyList supply in supplyLists)
                 {

@@ -69,12 +69,12 @@
                                     <select class="form-control valid" id="input-6" name="Status" required aria-invalid="false">
                                         @if (Model.Product.Status == 1)
                                         {
-                                            <option value="1" selected>Đang bán</option>
+                                            <option value="1" selected>Được bán</option>
                                             <option value="0">Bị khóa</option>
                                         }
                                         else
                                         {
-                                            <option value="1">Đang bán</option>
+                                            <option value="1">Được bán</option>
                                             <option value="0" selected>Bị khóa</option>
                                         }
 
@@ -128,52 +128,6 @@
                     </div>
 
                     <br />
-                    <div class="table-container" style=" gap:20px; margin-top: 20px;">
-                        <div class="card-title">Cập nhật Công dụng sản phẩm:</div>
-                        <br />
-                        <div style="display: flex; margin-left: 30px;">
-                            <!-- Bảng bên trái -->
-                            <div class="table-box" style="margin-right: 100px; width: 200px;border: 1px solid #333;border-radius: 5px;overflow: hidden;">
-                            <div class="table-title">Tất cả giá trị</div>
-                            <div class="table-content" style="max-height: 140px; overflow-y: auto;">
-                                <table style=" width: 100%;border-collapse: collapse;border: 1px solid #fff;">
-                                    <tbody>
-                                        @foreach (UsedDTO item in Model.Useds)
-                                        {
-                                            <tr><td onclick="moveToRight(this)" data-value="@item.Id">@item.Name</td></tr>
-                                        }
-                                        @* <tr><td onclick="moveToRight(this)" data-value="1">Giá trị 1</td></tr>
-                                        <tr><td onclick="moveToRight(this)" data-value="2">Giá trị 2</td></tr>
-                                        <tr><td onclick="moveToRight(this)" data-value="3">Giá trị 3</td></tr>
-                                        <tr><td onclick="moveToRight(this)" data-value="4">Giá trị 4</td></tr>
-                                        <tr><td onclick="moveToRight(this)" data-value="5">Giá trị 5</td></tr>
-                                        <tr><td onclick="moveToRight(this)" data-value="6">Giá trị 6</td></tr> *@
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                            <!-- Bảng bên phải -->
-                            <form id="selectedValuesForm" method="post" asp-action="ChangeUsed" asp-controller="Admin">
-                            <div class="table-box" style="width: 250px;border: 1px solid #333;border-radius: 5px;overflow: hidden;">
-                            <div class="table-title">Giá trị đã chọn</div>
-                            <div class="table-content" style="max-height: 140px; overflow-y: auto;">
-                                    
-                                <table style=" width: 100%;border-collapse: collapse;border: 1px solid #fff;">
-                                    <tbody id="selectedValuesTable">
-                                        
-                                    </tbody>
-                                </table>
-                                        
-                            </div>
-                        </div>
-                                <input type="hidden" name="selectedValues" id="selectedValues">
-                                <button type="submit" style="margin: 20px; border: 2px; border-color: palegreen;">Xác nhận</button>
-
-                            </form>
-                            
-                        </div>
-                        
-                    </div>
                 </div>
             </div>
         </div>

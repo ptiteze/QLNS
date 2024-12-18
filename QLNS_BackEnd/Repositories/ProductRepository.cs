@@ -153,6 +153,8 @@ namespace QLNS_BackEnd.Repositories
                     catch(Exception  ex) 
                     {
                         Console.WriteLine("Errors: " + ex.Message);
+                        process.Close();
+                        return null;
                     }
                     
                 }
@@ -205,6 +207,8 @@ namespace QLNS_BackEnd.Repositories
 					catch (Exception ex)
 					{
 						Console.WriteLine("Errors: " + ex.Message);
+                        process.Close();
+                        return null;
 					}
 
 				}

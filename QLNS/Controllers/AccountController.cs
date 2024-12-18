@@ -233,9 +233,16 @@ namespace QLNS.Controllers
                 bool check = false;
                 AccountDTO acc = await _account.GetAccountByUsername(username);
                 List<AdminDTO> admins = await _admin.GetAdmins();
-                AdminDTO admin = admins.Where(u => u.IdAccount == acc.Id).FirstOrDefault();
+                AdminDTO admin = admins.Where(u => u.Email == email).FirstOrDefault();
                 if (admin != null && acc.Status != false)
                 {
+                    if(admin.IdAccount != acc.Id)
+                    {
+                        return Json(new
+                        {
+                            error = "Có lỗi xảy ra, email không phải của bạn"
+                        });
+                    }
                     RequestForgetPass request_admin = new RequestForgetPass()
                     {
                         Id = acc.Id,
@@ -258,11 +265,18 @@ namespace QLNS.Controllers
                     }
                 }
                 List<UserDTO> users = await _user.GetUsers();
-                UserDTO thisUser = users.Where(u => u.IdAccount == acc.Id).FirstOrDefault();
+                UserDTO thisUser = users.Where(u => u.Email == email).FirstOrDefault();
                 if (thisUser == null || acc.Status == false) {
                     return Json(new
                     {
                         error = "Có lỗi xảy ra, không tìm thấy người dùng, hoặc người dùng đã bị khóa"
+                    });
+                }
+                if (thisUser.IdAccount != acc.Id)
+                {
+                    return Json(new
+                    {
+                        error = "Có lỗi xảy ra, email không phải của bạn"
                     });
                 }
                 RequestForgetPass request = new RequestForgetPass() 

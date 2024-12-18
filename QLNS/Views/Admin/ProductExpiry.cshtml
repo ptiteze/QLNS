@@ -36,6 +36,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Tên sản phẩm</th>
+                                        <th scope="col">Thuộc đơn nh</th>
                                         <th scope="col">Hình ảnh</th>
                                         <th scope="col">Danh mục</th>
                                         <th scope="col">Số lượng nhập</th>
@@ -52,6 +53,7 @@
                                         <tr>
                                             <th scope="row">@item.ProductId</th>
                                             <td>@Model.Products.Where(p=>p.Id==@item.ProductId).FirstOrDefault().Name</td>
+                                            <td><a href="/Admin/ShowImportDetail?id=@item.InvoiceId">@item.InvoiceId</a></td>
                                             <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@Model.Products.Where(p=>p.Id==@item.ProductId).FirstOrDefault().ImageLink" alt="@item.ProductId"></td>
                                             <td>@Model.Catalogs.Where(c => c.Id == @Model.Products.Where(p => p.Id == @item.ProductId).FirstOrDefault().CatalogId).FirstOrDefault().Name</td>
                                             <td>@item.QuantityImport</td>
