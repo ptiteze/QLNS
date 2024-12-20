@@ -360,7 +360,7 @@ namespace QLNS.Controllers
 		//User
 		public async Task<IActionResult> LockUser(int id)
 		{
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
             bool check = await _acount.Lock(id);
             if (check)
             {
@@ -375,7 +375,7 @@ namespace QLNS.Controllers
         }
         public async Task<IActionResult> UnLockUser(int id)
         {
-            if (!CheckRole()) return RedirectToAction("Error", "Home");
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
             bool check = await _acount.UnLock(id);
             if (check)
             {
@@ -735,7 +735,7 @@ namespace QLNS.Controllers
                 }
 				else
 				{
-                    HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
+                    HttpContext.Session.SetString("errorMsg", "Không thể xóa nhà cung cáp");
                     return RedirectToAction("Producer", "Admin");
                 }
 			}
@@ -761,7 +761,7 @@ namespace QLNS.Controllers
                 || request.Email.IsNullOrEmpty())
                 {
                     HttpContext.Session.SetString("errorMsg", "Không được bỏ trống");
-                    return RedirectToAction("AddProducer", "Admin");
+                    return RedirectToAction("EditProducer", "Admin", new { id = request.Id });
                 }
                 bool check = await _producer.UpdateProducer(request);
 				if (check)
@@ -772,13 +772,13 @@ namespace QLNS.Controllers
 				else
 				{
                     HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
-                    return RedirectToAction("EditProducer", "Admin");
+                    return RedirectToAction("EditProducer", "Admin", new { id = request.Id });
                 }
 			}
 			catch
 			{
                 HttpContext.Session.SetString("errorMsg", "Có lỗi xảy ra");
-                return RedirectToAction("EditProducer", "Admin");
+                return RedirectToAction("EditProducer", "Admin", new { id = request.Id });
             }
         }
 		// Supply List

@@ -26,9 +26,9 @@
                     <div class="card-body">
                         <h5 class="card-title">Danh sách sản phẩm Hết hạn</h5>
                         <div class="mb-3 d-flex">
-                            <label for="expiryDateFilter" class="form-label me-2">Lọc theo ngày hết hạn:</label>
-                            <input type="date" id="expiryDateFilter" class="form-control me-2" style="width: 200px;">
-                            <button id="resetFilter" class="btn btn-secondary">Hiển thị tất cả</button>
+                            @* <label for="expiryDateFilter" class="form-label me-2">Lọc theo ngày hết hạn:</label>
+                            <input type="date" id="expiryDateFilter" class="form-control" style="width: 200px;">
+                            <button id="resetFilter" class="btn btn-secondary">Hiển thị tất cả</button> *@
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -75,9 +75,25 @@
     </div>
 </div>
 <script>
+    // var date = new Date();
+
+    // var day = date.getDate();
+    // var month = date.getMonth() + 1;
+    // var year = date.getFullYear();
+
+    // if (month < 10) month = "0" + month;
+    // if (day < 10) day = "0" + day;
+
+    // var today = year + "-" + month + "-" + day;
+    // document.getElementById('expiryDateFilter').value = today
+
     document.getElementById('expiryDateFilter').addEventListener('change', function () {
         const selectedDate = new Date(this.value); // Ngày được chọn từ Date Picker
-        const formattedSelectedDate = selectedDate.toLocaleDateString('en-US'); 
+        const formattedSelectedDate = selectedDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
 
         const rows = document.querySelectorAll('tbody tr');
 
@@ -86,7 +102,11 @@
             const expiryDateText = expiryDateCell.textContent.trim();
             const expiryDate = new Date(expiryDateText);
 
-            const formattedExpiryDate = expiryDate.toLocaleDateString('en-US'); 
+            const formattedExpiryDate = expiryDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
 
             if (formattedSelectedDate === formattedExpiryDate) {
                 row.style.display = ''; //  ngày khớp

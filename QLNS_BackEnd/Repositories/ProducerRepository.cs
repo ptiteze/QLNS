@@ -63,7 +63,11 @@ namespace QLNS_BackEnd.Repositories
 		{
 			try
 			{
-				Producer producer = SingletonAutoMapper.GetInstance().Map<Producer>(request);
+				Producer producer = SingletonDataBridge.GetInstance().Producers.Find(request.Id);
+				producer.Name = request.Name;
+				producer.Address = request.Address;
+				producer.Numphone = request.Numphone;
+				producer.Email = request.Email;
 				SingletonDataBridge.GetInstance().Producers.Update(producer);
 				SingletonDataBridge.GetInstance().SaveChanges();
 				return true;
