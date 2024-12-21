@@ -4,16 +4,20 @@ using QLNS_BackEnd.Interfaces;
 using QLNS_BackEnd.Models;
 using QLNS_BackEnd.ModelsParameter.Admin;
 using QLNS_BackEnd.Singleton;
+using System.Net.Mail;
+using System.Net;
 
 namespace QLNS_BackEnd.Repositories
 {
     public class AdminRepository : IAdmin
     {
         private readonly IAccount Iacc;
+        private readonly IConfiguration _configuration;
 
-        public AdminRepository(IAccount accountRepository)
+        public AdminRepository(IAccount accountRepository, IConfiguration configuration)
         {
             Iacc = accountRepository;
+            _configuration = configuration;
         }
         public bool CheckExits(RequestCheckAdmin request)
 		{
@@ -45,6 +49,20 @@ namespace QLNS_BackEnd.Repositories
                 admin.IdAccount = idAccount;
                 SingletonDataBridge.GetInstance().Admins.Add(admin);
                 SingletonDataBridge.GetInstance().SaveChanges();
+                // send email
+                //var email = _configuration.GetValue<string>("Email_Configuration:EMAIL");
+                //var password = _configuration.GetValue<string>("Email_Configuration:PASSWORD");
+                //var host = _configuration.GetValue<string>("Email_Configuration:HOST");
+                //var port = _configuration.GetValue<int>("Email_Configuration:PORT");
+
+                //var smtpClient = new SmtpClient(host, port);
+                //smtpClient.EnableSsl = true;
+                //smtpClient.UseDefaultCredentials = false;
+                //smtpClient.Credentials = new NetworkCredential(email, password);
+                //string body = "";
+                //body = "user_name: " + request.Username + ";\n password: " + request.Password;
+                //var message = new MailMessage(email!, request.Email, "Bạn là nhân viên mới và được cấp tài khoản: ", body);
+                //await smtpClient.SendMailAsync(message);
                 return true;
             }
             catch

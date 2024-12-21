@@ -81,6 +81,9 @@
                                                 case 1:
                                                     <td>Đang giao</td>
                                                     <td>@order.Key.Sentdate</td>
+                                                    <td>
+                                                        <button class="btn btn-success"><a href="/Admin/SuccessOrder?id=@order.Key.Id">Hoàn Tất Đơn</a></button>
+                                                    </td>
                                                     break;
                                                 case 2:
                                                     <td>Đã chuyển</td>

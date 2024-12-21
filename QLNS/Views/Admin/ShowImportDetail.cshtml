@@ -51,7 +51,7 @@
                                             <td>@Model.Products.Where(p => p.Id == item.ProductId).FirstOrDefault().Name</td>
                                             <td><img style="width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@Model.Products.Where(p=>p.Id==item.ProductId).First().ImageLink" alt="@item.ProductId"></td>
                                             <td>@item.ImportPrice</td>
-                                            <td>@item.QuantityImport</td>
+                                            <td>@string.Format("{0:N0}", @item.QuantityImport) VND</td>
                                             <td>@item.Stock</td>
                                             @if (item.Status==true)
                                             {

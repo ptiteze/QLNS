@@ -902,15 +902,19 @@ namespace QLNS.Controllers
 		public async Task<IActionResult> ShowSupply()
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
-			List<SupplyInvoiceDTO> supplyInvoices = await _supplyInvoice.GetAllSupplyInvoice();
-            supplyInvoices = supplyInvoices.OrderByDescending(s => s.SupplyTime).ToList();
             List<AdminDTO> admins = await _admin.GetAdmins();
-			List<ProducerDTO> producers = await _producer.GetAllProducer();
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
+            List<ProducerDTO> producers = await _producer.GetAllProducer();
+            List<ViewSupply> supplyInvoices = await _supplyInvoice.ViewSupplies();
+            supplyInvoices = supplyInvoices.OrderByDescending(s => s.SupplyTime).ToList();
+            List<ProductDTO> products = await _product.GetAllProducts();
 			ShowSupplyViewModel model = new ShowSupplyViewModel()
 			{
 				adminList = admins,
 				invoiceList = supplyInvoices,
 				producerList = producers,
+				catalogList = catalogs,
+				productList = products
 			};
 			return View(model);
         }
@@ -1016,6 +1020,26 @@ namespace QLNS.Controllers
             else
             {
                 HttpContext.Session.SetString("errorMsg", "Hủy đơn không thành công");
+                return RedirectToAction("Order");
+
+            }
+        }
+		public async Task<IActionResult> SuccessOrder(int id)
+		{
+			string id_user = HttpContext.Session.GetString("id_user");
+			if(id_user.IsNullOrEmpty()) return RedirectToAction("Order");
+            OrderDTO order = await _order.GetOrderById(id);
+            order.Status = 2;
+			order.AdminId = int.Parse(id_user);
+            bool check = await _order.UpDateOrder(order);
+            if (check)
+            {
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Order");
+            }
+            else
+            {
+                HttpContext.Session.SetString("errorMsg", "Nhận đơn không thành công");
                 return RedirectToAction("Order");
 
             }
@@ -1271,8 +1295,10 @@ namespace QLNS.Controllers
                 HttpContext.Session.SetString("errorMsg", "Lỗi khi chọn thời gian");
 				return View(new ReportOrderViewModel());
             }
+            List<CatalogDTO> catalogs = await _catalog.GetAllCatalog();
             List<ReportData> reportDatas = await _order.DataOrder(request);
-			Decimal value1 = 0;
+            List<ProductDTO> products = await _product.GetAllProducts();
+            Decimal value1 = 0;
 			
             if (!reportDatas.IsNullOrEmpty())
 			{
@@ -1283,7 +1309,9 @@ namespace QLNS.Controllers
 				startDate = request.startDate,
 				endDate = request.endDate,
 				reportData = reportDatas,
-				value = value1
+				value = value1,
+				catalogList = catalogs,
+				productList = products
 			};
             HttpContext.Session.Remove("errorMsg");
             return View(model);

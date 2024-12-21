@@ -68,7 +68,7 @@
                                         }
                                         <tr>
                                             <td colspan="6" class=""><strong>TỔNG TIỀN</strong></td>
-                                            <td><strong>@sumprice VNĐ</strong></td>
+                                            <td><strong>@string.Format("{0:N0}",int.Parse(@sumprice)) VNĐ</strong></td>
                                         </tr>
                                         <tr>
                                             <td colspan="7" class="aa-cart-view-bottom">
@@ -87,7 +87,7 @@
                                 <tbody>
                                     <tr>
                                         <th>Tạm tính</th>
-                                        <td>@string.Format("{0:N0}", sumprice) VNĐ</td>
+                                        <td>@string.Format("{0:N0}", int.Parse(sumprice)) VNĐ</td>
                                     </tr>
                                     <tr>
                                         <th>VAT</th>
@@ -95,7 +95,7 @@
                                     </tr>
                                     <tr>
                                         <th>Tổng cộng</th>
-                                        <td><strong>@string.Format("{0:N0}", sumprice) VNĐ</strong></td>
+                                        <td><strong>@string.Format("{0:N0}", int.Parse(sumprice)) VNĐ</strong></td>
                                     </tr>
                                 </tbody>
                             </table>

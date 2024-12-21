@@ -9,5 +9,6 @@ namespace QLNS_BackEnd.Interfaces
         List<SupplyInvoiceDTO> GetAllSupplyInvoice();
         bool CreateSupplyInvoice(CreateSupplyInvoiceRequest request);
         SupplyInvoiceDTO GetSupplyInvoiceById(int id);
+        List<ViewSupply> ViewSupplies();
     }
 }

@@ -8,5 +8,6 @@ namespace QLNS.Interfaces
         Task<List<SupplyInvoiceDTO>> GetAllSupplyInvoice();
         Task<bool> CreateSupplyInvoice(CreateSupplyInvoiceRequest request);
         Task<SupplyInvoiceDTO> GetSupplyInvoiceById(int id);
+        Task<List<ViewSupply>> ViewSupplies();
     }
 }

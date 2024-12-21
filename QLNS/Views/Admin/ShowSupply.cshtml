@@ -1,4 +1,5 @@
 ﻿@using QLNS.DTO
+@using QLNS.ModelsParameter.SupplyInvoice
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -28,6 +29,33 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Danh sách đơn nhập</h5>
+                        <br />
+                        <label for="producerFilter" class="form-label">Lọc theo nhà cung cấp:</label>
+                        <select id="producerFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            @foreach(ProducerDTO pr in Model.producerList)
+                            {
+                                <option value="@pr.Name">@pr.Name</option>
+                            }
+                        </select>
+                        <br />
+                        <label for="catalogFilter" class="form-label">Danh mục sản phẩm:</label>
+                        <select id="catalogFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            @foreach (CatalogDTO ct in Model.catalogList)
+                            {
+                                <option value="@ct.Id">@ct.Name</option>
+                            }
+                        </select>
+                        <br />
+                        <label for="productFilter" class="form-label">Lọc theo sản phẩm trong đơn nhập:</label>
+                        <select id="productFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            @foreach (ProductDTO prt in Model.productList)
+                            {
+                                <option value="@prt.Id" data-catalog="@prt.CatalogId">@prt.Name</option>
+                            }
+                        </select>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -36,17 +64,21 @@
                                         <th scope="col">Nhân viên tạo</th>
                                         <th scope="col">Nhà cung cấp</th>
                                         <th scope="col">Ngày tạo</th>
+                                        <th scope="col">Tổng tiền</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (SupplyInvoiceDTO item in Model.invoiceList)
+                                    @foreach (ViewSupply item in Model.invoiceList)
                                     {
                                         <tr>
                                             <th scope="row">@item.Id</th>
                                             <td>@Model.adminList.Where(a=>a.Id==item.AdId).FirstOrDefault().Name</td>
                                             <td>@Model.producerList.Where(p=>p.Id==item.ProducerId).FirstOrDefault().Name</td>
                                             <td>@item.SupplyTime</td>
+                                            <td>@string.Format("{0:N0}", @item.Amount) VND</td>
+                                            <td class="hidden-catalog" style="display: none">@item.CatalogIn</td>
+                                            <td class="hidden-product" style="display: none">@item.ProductIn</td>
                                             <td>
                                                 <button class="btn btn-success"><a href="/Admin/ShowImportDetail?id=@item.Id">Xem chi tiết</a></button>
                                             </td>
@@ -62,3 +94,61 @@
         <div class="overlay toggle-menu"></div>
     </div>
 </div>
+<script>
+    document.getElementById('producerFilter').addEventListener('change', function () {
+        const selectedProducer = this.value.toLowerCase(); // Lấy giá trị đã chọn, chuyển về chữ thường
+        const rows = document.querySelectorAll('tbody tr'); // Lấy tất cả các hàng trong bảng
+
+        rows.forEach(row => {
+            const producerCell = row.querySelector('td:nth-child(3)'); // Cột nhà cung cấp (cột thứ 3)
+
+            if (!producerCell) return;
+
+            // Hiển thị tất cả nếu chọn "Tất cả", hoặc lọc theo nhà cung cấp
+            if (selectedProducer === "tất cả" || producerCell.textContent.toLowerCase().includes(selectedProducer)) {
+                row.style.display = ''; // Hiển thị hàng nếu khớp
+            } else {
+                row.style.display = 'none'; // Ẩn hàng nếu không khớp
+            }
+        });
+    });
+    document.getElementById('catalogFilter').addEventListener('change', function () {
+        const selectedCatalogId = this.value;
+        const productFilter = document.getElementById('productFilter');
+        const allOptions = productFilter.querySelectorAll('option');
+
+        allOptions.forEach(option => {
+            const catalogId = option.getAttribute('data-catalog');
+            if (selectedCatalogId === "Tất cả" || catalogId === selectedCatalogId) {
+                option.style.display = ''; // Hiển thị
+            } else {
+                option.style.display = 'none'; // Ẩn
+            }
+        });
+
+        // Đặt lại giá trị `productFilter` về "Tất cả"
+        productFilter.value = "Tất cả";
+    });
+    function filterTable() {
+        const catalogFilter = document.getElementById('catalogFilter').value;
+        const productFilter = document.getElementById('productFilter').value;
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const catalogCell = row.querySelector('.hidden-catalog').textContent.trim();
+            const productCell = row.querySelector('.hidden-product').textContent.trim();
+
+            const catalogMatch = catalogFilter === "Tất cả" || catalogCell.split(' ').includes(catalogFilter);
+            const productMatch = productFilter === "Tất cả" || productCell.split(' ').includes(productFilter);
+
+            if (catalogMatch && productMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    document.getElementById('catalogFilter').addEventListener('change', filterTable);
+    document.getElementById('productFilter').addEventListener('change', filterTable);
+</script>

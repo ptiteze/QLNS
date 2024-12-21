@@ -55,5 +55,19 @@ namespace QLNS.Repositories
                 return null;
             }
         }
+
+        public async Task<List<ViewSupply>> ViewSupplies()
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync(BaseUrl+"/view");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<List<ViewSupply>>();
+                return result;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }

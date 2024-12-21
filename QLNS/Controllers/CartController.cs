@@ -84,7 +84,8 @@ namespace QLNS.Controllers
             {
                 return Json(new
                 {
-                    error = "Sản phẩm hiện không thể đặt hàng"
+                    error = "Sản phẩm hiện không thể đặt hàng",
+                    message = "Sản phẩm này không có sẵn hoặc đã hết hàng."
                 });
             }
             int length_order = 0;
@@ -93,7 +94,8 @@ namespace QLNS.Controllers
             {
                 return Json(new
                 {
-                    error = $"Số lượng hàng mua ({quantity}) vượt quá số lượng trong kho ({product.Quantity})."
+                    error = "Sản phẩm hiện không thể đặt hàng",
+                    message = $"Số lượng hàng mua ({quantity}) vượt quá số lượng trong kho ({product.Quantity})."
                 });
             } 
                 

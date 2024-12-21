@@ -40,7 +40,7 @@ namespace QLNS.Controllers
 				IdUser = int.Parse(Id);
 			}
 			UserDTO info = await _user.GetUserById(IdUser);
-            if (UserName==null) return RedirectToAction("Index", "Home");
+            if (UserName==null) return RedirectToAction("Login", "Home");
             if (info == null) return RedirectToAction("Error", "Home");
             List<ProductDTO> products = await _product.GetAllProducts();
             List<CartDTO> carts = await _cart.GetCartsByUserId(IdUser);

@@ -110,12 +110,15 @@ namespace QLNS_BackEnd.Repositories
                                     Name = reader["name"].ToString(),
                                     Partner = reader["patner"].ToString(),
                                     Status = reader["status"].ToString(),
-                                    Amount = Convert.ToDecimal(reader["amount"])
+                                    Amount = Convert.ToDecimal(reader["amount"]),
+                                    ProductIn = reader["productin"].ToString()
                                 });
                             }
                         }
+                        await conn.CloseAsync();
                     }
                 }
+                
                 return reports;
             }
             catch (Exception ex)

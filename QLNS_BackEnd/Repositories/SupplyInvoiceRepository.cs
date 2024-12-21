@@ -4,6 +4,7 @@ using QLNS_BackEnd.ModelsParameter.SupplyInvoice;
 using QLNS_BackEnd.Singleton;
 using QLNS_BackEnd.Models;
 using Microsoft.IdentityModel.Tokens;
+using DevExpress.Office.Utils;
 
 namespace QLNS_BackEnd.Repositories
 {
@@ -68,6 +69,39 @@ namespace QLNS_BackEnd.Repositories
         {
             return SingletonAutoMapper.GetInstance().Map<SupplyInvoiceDTO>(
                 SingletonDataBridge.GetInstance().SupplyInvoices.Find(id));
+        }
+
+        public List<ViewSupply> ViewSupplies()
+        {
+            List<ViewSupply> viewSupplies = new List<ViewSupply>();
+            List<SupplyInvoice> list_supply = SingletonDataBridge.GetInstance().SupplyInvoices.ToList();
+            List<ImportDetail> list_ip = SingletonDataBridge.GetInstance().ImportDetails.ToList();
+            List<Product> list_pr = SingletonDataBridge.GetInstance().Products.ToList();
+            foreach (SupplyInvoice si in list_supply)
+            {
+                ViewSupply view = new ViewSupply() 
+                {
+                    Id = si.Id,
+                    AdId = si.AdId,
+                    SupplyTime = si.SupplyTime,
+                    ProducerId = si.ProducerId,
+                };
+                int sum = 0;
+                string cataIn = "";
+                string proIn = "";
+                foreach (ImportDetail ip in list_ip.Where(i => i.InvoiceId == si.Id).ToList())
+                {
+                    sum += ip.ImportPrice;
+                    Product pr = list_pr.Where(p=>p.Id == ip.ProductId).FirstOrDefault();
+                    cataIn += (" " + pr.CatalogId.ToString());
+                    proIn += (" " + pr.Id.ToString());
+                }
+                view.Amount = sum;
+                view.ProductIn = proIn;
+                view.CatalogIn = cataIn;
+                viewSupplies.Add(view);
+            }
+            return viewSupplies;
         }
     }
 }

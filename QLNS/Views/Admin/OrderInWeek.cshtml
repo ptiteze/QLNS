@@ -66,7 +66,7 @@
                                             <td>@order.Key.UserPhone </td>
                                             <td>@order.Key.Address</td>
                                             <td>@order.Key.Message</td>
-                                            <td>@order.Value VNĐ</td>
+                                            <td>@string.Format("{0:N0}", @order.Value) VNĐ</td>
                                             <td>@order.Key.Payment</td>
                                             @switch (@order.Key.Status)
                                             {
@@ -81,6 +81,9 @@
                                                 case 1:
                                                     <td>Đang giao</td>
                                                     <td>@order.Key.Sentdate</td>
+                                                    <td>
+                                                        <button class="btn btn-success"><a href="/Admin/SuccessOrder?id=@order.Key.Id">Hoàn Tất Đơn</a></button>
+                                                    </td>
                                                     break;
                                                 case 2:
                                                     <td>Đã chuyển</td>

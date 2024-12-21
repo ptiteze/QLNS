@@ -1,4 +1,5 @@
-﻿@*
+﻿@using QLNS.DTO
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @inject IHttpContextAccessor HttpContextAccessor
@@ -44,7 +45,32 @@
                             </div>
                         </form>
                         <h5 class="card-title">Danh sách đơn hàng từ ngày: @Model.startDate.Date tới ngày @Model.endDate.Date</h5>
-                        <h5 class="card-title">     Tổng tạm tính: @((double)Model.value)</h5>
+                        <h5 class="card-title">     Tổng tạm tính: @string.Format("{0:N0}", ((double)Model.value)) VND</h5>
+                        <br />
+                        <label for="typeFilter" class="form-label">Lọc theo loại đơn:</label>
+                        <select id="typeFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            <option value="Nhập hàng">Nhập hàng</option>
+                            <option value="Bán hàng">Bán hàng</option>
+                        </select>
+                        <br />
+                        <label for="catalogFilter" class="form-label">Lọc theo danh mục sản phẩm trong đơn nhập:</label>
+                        <select id="catalogFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            @foreach (CatalogDTO ct in Model.catalogList)
+                            {
+                                <option value="@ct.Id">@ct.Name</option>
+                            }
+                        </select>
+                        <br />
+                        <label for="productFilter" class="form-label">Lọc theo sản phẩm trong đơn nhập:</label>
+                        <select id="productFilter" class="form-control valid">
+                            <option value="Tất cả">Tất cả</option>
+                            @foreach (ProductDTO prt in Model.productList)
+                            {
+                                <option value="@prt.Id" data-catalog="@prt.CatalogId">@prt.Name</option>
+                            }
+                        </select>
                         <div class="table-responsive" style="max-height: 1000px;">
                             @if (Model.reportData == null)
                             {
@@ -71,18 +97,19 @@
                                             <tr>
                                                 @if (order.LoaiGG=="Nhập hàng")
                                                 {
-                                                    <td scope="row"><a class="remove" href="/Admin/ShowImportDetail?id=@order.Id">@order.Id</a></td>
+                                                    <td scope="row"><a class="remove" href="/Admin/ShowImportDetail?id=@order.Id" target="_blank">@order.Id</a></td>
                                                 }
                                                 else
                                                 {
-                                                    <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Id">@order.Id</a></td>
+                                                    <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Id" target="_blank">@order.Id</a></td>
                                                 }
                                                 <td>@order.Date</td>
                                                 <td>@order.LoaiGG</td>
                                                 <td>@order.Name</td>
                                                 <td>@order.Partner</td>
                                                 <td>@order.Status</td>
-                                                <td>@order.Amount</td>
+                                                <td>@string.Format("{0:N0}", @order.Amount) VND</td>
+                                                <td class="hidden-product" style="display: none">@order.ProductIn</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -108,4 +135,47 @@
     var today = year + "-" + month + "-" + day;
     document.getElementById('the-date').value = today
     document.getElementById('the-date-2').value = today;
+
+    document.getElementById('catalogFilter').addEventListener('change', function () {
+        const selectedCatalogId = this.value;
+        const productFilter = document.getElementById('productFilter');
+        const allOptions = productFilter.querySelectorAll('option');
+
+        allOptions.forEach(option => {
+            const catalogId = option.getAttribute('data-catalog');
+            if (selectedCatalogId === "Tất cả" || catalogId === selectedCatalogId) {
+                option.style.display = ''; // Hiển thị
+            } else {
+                option.style.display = 'none'; // Ẩn
+            }
+        });
+
+        // Đặt lại giá trị `productFilter` về "Tất cả"
+        productFilter.value = "Tất cả";
+    });
+
+    function filterTable() {
+        const selectedType = document.getElementById('typeFilter').value.toLowerCase();
+        const selectedProduct = document.getElementById('productFilter').value;
+        const rows = document.querySelectorAll('tbody tr');
+
+        rows.forEach(row => {
+            const typeCell = row.querySelector('td:nth-child(3)'); // Cột loại đơn
+            const productCell = row.querySelector('.hidden-product').textContent.trim(); // Cột sản phẩm (ẩn)
+
+            const typeMatch = !typeCell || selectedType === "tất cả" || typeCell.textContent.toLowerCase().includes(selectedType);
+            const productMatch = selectedProduct === "Tất cả" || productCell.split(' ').includes(selectedProduct);
+
+            // Hiển thị hàng nếu cả hai điều kiện khớp
+            if (typeMatch && productMatch) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Thêm sự kiện cho cả hai bộ lọc
+    document.getElementById('typeFilter').addEventListener('change', filterTable);
+    document.getElementById('productFilter').addEventListener('change', filterTable);
 </script>
