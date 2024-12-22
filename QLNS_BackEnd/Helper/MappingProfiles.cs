@@ -55,6 +55,9 @@ namespace QLNS_BackEnd.Helper
             CreateMap<CreateReviewRequest, Review>();
             //Used
             CreateMap<Used, UsedDTO>();
+            //Sale
+            CreateMap<Sale, SaleDTO>();
+            CreateMap<SaleDetail, SaleDetailDTO>();
         }
     }
 }

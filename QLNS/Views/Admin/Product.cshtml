@@ -58,7 +58,7 @@
                                         <tr>
                                             <th scope="row">@item.Id</th>
                                             <td>
-                                                <button class="btn btn-danger"><a href="/Admin/DeleteProduct?id=@item.Id">Xóa</a></button>
+                                                @* <button class="btn btn-danger"><a href="/Admin/DeleteProduct?id=@item.Id">Xóa</a></button> *@
 
                                                 <button class="btn btn-success"><a href="/Admin/EditProduct?id=@item.Id">Sửa</a></button>
                                                 @if (Model.SupplyList.Any(s => s.ProductId == item.Id))

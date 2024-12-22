@@ -33,7 +33,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Tài khoản User</th>
+                                        @* <th scope="col">Tài khoản User</th> *@
                                         <th scope="col">Họ Tên</th>
                                         <th scope="col">Email</th>
                                         <th scope="col">SĐT</th>
@@ -52,7 +52,7 @@
                                     {
                                         <tr>
                                             <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Key.Id">@order.Key.Id</a></td>
-                                            <td>@order.Key.UserName</td>
+                                            @* <td>@order.Key.UserName</td> *@
                                             <td>@order.Key.UserName</td>
                                             <td>@order.Key.UserMail</td>
                                             <td>@order.Key.UserPhone</td>
@@ -75,6 +75,7 @@
                                                     <td>@order.Key.Sentdate</td>
                                                     <td>
                                                         <button class="btn btn-success"><a href="/Admin/SuccessOrder?id=@order.Key.Id">Hoàn Tất Đơn</a></button>
+                                                        <button class="btn btn-danger"><a href="/Admin/DeleteOrder?id=@order.Key.Id">Hủy Đơn</a></button>
                                                     </td>
                                                     break;
                                                 case 2:

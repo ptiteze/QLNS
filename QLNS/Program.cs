@@ -23,6 +23,7 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<IVnPayment, VnPaymentRepository>()
                 .AddTransient<IAccount, AccountRepository>()
                 .AddTransient<IUsed, UsedRepository>()
+                .AddTransient<ISale, SaleRepository>()
                 .AddTransient<IRecommendation, RecommendationRepository>();
 				
 builder.Services.AddHttpContextAccessor();

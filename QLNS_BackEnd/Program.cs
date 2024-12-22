@@ -21,6 +21,7 @@ builder.Services.AddTransient<ICatalog, CatalogRepository>()
 				.AddTransient<ISlide, SlideRepository>()
 				.AddTransient<IAccount, AccountRepository>()
 				.AddTransient<IUsed, UsedRepository>()
+				.AddTransient<ISale, SaleRepository>()
 				.AddTransient<IRecommend, RecommendRepository>();
 // Add services to the container.
 builder.Services.AddControllers();

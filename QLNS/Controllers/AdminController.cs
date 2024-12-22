@@ -36,11 +36,12 @@ namespace QLNS.Controllers
 		private readonly IBoardnew _boardnew;
 		private readonly IAccount _acount;
 		private readonly IUsed _used;
+		private readonly ISale _sale;
 		private readonly IRecommendation _recommendation;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		public AdminController(IAdmin admin, IUser user, ICatalog catalog, IProduct product, IOrder order, IOrdered ordered,
 			IBoardnew boardnew, IWebHostEnvironment webHostEnvironment, IProducer producer, ISupplyList supplyList,
-			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account, IUsed used, IRecommendation recommendation)
+			ISupplyInvoice supplyInvoice, IImportDetail importDetail, IAccount account, IUsed used, ISale sale, IRecommendation recommendation)
 		{
 			_admin = admin;
 			_user = user;
@@ -56,6 +57,7 @@ namespace QLNS.Controllers
 			_acount = account;
 			_used = used;
 			_recommendation = recommendation;
+			_sale = sale;
 			_webHostEnvironment = webHostEnvironment;
 		}
 		private bool CheckRole()
@@ -964,7 +966,97 @@ namespace QLNS.Controllers
             };
             return View(model);
         }
-		public async Task<IActionResult> ShowCart(int id)
+		public async Task<IActionResult> Sale()
+		{
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+            List<SaleDTO> sales = await _sale.GetSales();
+            if (sales == null) sales = new List<SaleDTO>();
+			List<AdminDTO> admins = await _admin.GetAdmins();
+			ShowSaleViewModel model = new ShowSaleViewModel()
+			{
+				Admins = admins,
+				Sales = sales
+			};
+			return View(model);
+        }
+		public async Task<IActionResult> AddSale()
+		{
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+			List<ProductDTO> products = await _product.GetAllProducts();
+			products = products.Where(p => p.Discount == 0).ToList();
+			AddSaleViewModel model = new AddSaleViewModel()
+			{
+				Products = products,
+			};
+			return View(model);
+        }
+
+		public async Task<IActionResult> AddSaleResult(AddSaleRequest request)
+		{
+
+            if (string.IsNullOrEmpty(request.discountData))
+            {
+                HttpContext.Session.SetString("errorMsg", "Chưa chọn sản phẩm áp dụng giảm giá.");
+                return RedirectToAction("AddSale");
+            }
+			Dictionary<int, int>? discount = new Dictionary<int, int>();
+            List<string> list_pr = new List<string>(request.discountData.Trim().Split(" "));
+			foreach (string str in list_pr)
+			{
+                string[] parts = str.Split('-');
+                int ProductId = int.Parse(parts[0]);
+                int Discount = int.Parse(parts[1]);
+				discount.Add(ProductId, Discount);
+            }
+			CreateSaleRequest saleRequest = new CreateSaleRequest()
+			{
+				StartDate = request.start_date,
+				EndDate = request.end_date,
+				AdminId = request.admin_id,
+				Des = request.desc,
+				Discount = discount
+			};
+			bool check = await _sale.CreateSale(saleRequest);
+			if (check)
+			{
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Sale");
+			}
+			else
+			{
+                HttpContext.Session.SetString("errorMsg", "Không thể tạo đợt giảm giá");
+                return RedirectToAction("AddSale");
+            }
+        }
+
+		public async Task<IActionResult> ShowSaleDetail(int id)
+		{
+            if (!CheckRole()) return RedirectToAction("Index", "Admin");
+			SaleDTO sale = await _sale.GetSaleById(id);
+			if(sale==null)
+			{
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Sale");
+            }
+			AdminDTO admin = await _admin.GetAdmin(sale.AdminId);
+            if (admin == null)
+            {
+                HttpContext.Session.Remove("errorMsg");
+                return RedirectToAction("Sale");
+            }
+			List<SaleDetailDTO> saleDetails = await _sale.GetSaleDetailById(id);
+			List<ProductDTO> products = await _product.GetAllProducts();
+			ShowSaleDetailViewModel model = new ShowSaleDetailViewModel()
+			{
+				sale = sale,
+				nameEmployee = admin.Name,
+				saleDetails = saleDetails,
+				products = products
+			};
+			return View(model);
+        }
+
+        public async Task<IActionResult> ShowCart(int id)
 		{
             if (!CheckRole()) return RedirectToAction("Error", "Home");
             int sumprice = 0;

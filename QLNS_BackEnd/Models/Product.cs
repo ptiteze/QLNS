@@ -40,7 +40,12 @@ public partial class Product
     public virtual ICollection<ImportDetail> ImportDetails { get; set; } = new List<ImportDetail>();
 
     public virtual ICollection<Ordered> Ordereds { get; set; } = new List<Ordered>();
+
     public virtual ICollection<SupplyList> SupplyLists { get; set; } = new List<SupplyList>();
+
     public virtual ICollection<UsedProduct> UsedProducts { get; set; } = new List<UsedProduct>();
+
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+    public virtual ICollection<SaleDetail> SaleDetails { get; set; } = new List<SaleDetail>();
 }

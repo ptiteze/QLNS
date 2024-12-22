@@ -132,7 +132,7 @@ namespace QLNS_BackEnd.Repositories
             try
             {
                 Order order = SingletonDataBridge.GetInstance().Orders.Find(id);
-                if (order == null || order.Status == 2 || order.Status == 3)
+                if (order == null || order.Status == 3)
                 {
                     return false;
                 }

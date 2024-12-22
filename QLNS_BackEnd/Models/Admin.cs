@@ -20,4 +20,6 @@ public partial class Admin
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     public virtual ICollection<SupplyInvoice> SupplyInvoices { get; set; } = new List<SupplyInvoice>();
+
+    public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
 }

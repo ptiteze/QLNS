@@ -43,6 +43,10 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<Sale> Sales { get; set; }
+
+    public virtual DbSet<SaleDetail> SaleDetails { get; set; }
+
     public virtual DbSet<Slide> Slides { get; set; }
 
     public virtual DbSet<SupplyInvoice> SupplyInvoices { get; set; }
@@ -368,6 +372,45 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(50)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Sale>(entity =>
+        {
+            entity.ToTable("sale");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AdminId).HasColumnName("admin_id");
+            entity.Property(e => e.Des)
+                .HasMaxLength(50)
+                .HasColumnName("des");
+            entity.Property(e => e.EndDate).HasColumnName("end_date");
+            entity.Property(e => e.StartDate).HasColumnName("start_date");
+
+            entity.HasOne(d => d.Admin).WithMany(p => p.Sales)
+                .HasForeignKey(d => d.AdminId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_sale_employee");
+        });
+
+        modelBuilder.Entity<SaleDetail>(entity =>
+        {
+            entity.HasKey(e => new { e.SaleId, e.ProductId });
+
+            entity.ToTable("sale_detail");
+
+            entity.Property(e => e.SaleId).HasColumnName("sale_id");
+            entity.Property(e => e.ProductId).HasColumnName("product_id");
+            entity.Property(e => e.Discount).HasColumnName("discount");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.SaleDetails)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_sale_detail_product");
+
+            entity.HasOne(d => d.Sale).WithMany(p => p.SaleDetails)
+                .HasForeignKey(d => d.SaleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_sale_detail_sale");
         });
 
         modelBuilder.Entity<Slide>(entity =>

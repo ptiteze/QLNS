@@ -41,7 +41,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Mã khách hàng</th>
+                                        @* <th scope="col">Mã khách hàng</th> *@
                                         <th scope="col">Họ Tên</th>
                                         <th scope="col">Email</th>
                                         <th scope="col">SĐT</th>
@@ -60,7 +60,7 @@
                                     {
                                         <tr>
                                             <td scope="row"><a class="remove" href="/Admin/ShowCart?id=@order.Key.Id">@order.Key.Id</a></td>
-                                            <td>@order.Key.Id</td>
+                                            @* <td>@order.Key.Id</td> *@
                                             <td>@order.Key.UserName</td>
                                             <td>@order.Key.UserMail</td>
                                             <td>@order.Key.UserPhone </td>
@@ -83,6 +83,7 @@
                                                     <td>@order.Key.Sentdate</td>
                                                     <td>
                                                         <button class="btn btn-success"><a href="/Admin/SuccessOrder?id=@order.Key.Id">Hoàn Tất Đơn</a></button>
+                                                        <button class="btn btn-danger"><a href="/Admin/DeleteOrder?id=@order.Key.Id">Hủy Đơn</a></button>
                                                     </td>
                                                     break;
                                                 case 2:
@@ -111,7 +112,7 @@
         const rows = document.querySelectorAll('tbody tr');
 
         rows.forEach(row => {
-            const statusCell = row.querySelector('td:nth-child(10)'); // Cột trạng thái
+            const statusCell = row.querySelector('td:nth-child(9)'); // Cột trạng thái
             if (selectedStatus === "" || statusCell.textContent.includes(getStatusText(selectedStatus))) {
                 row.style.display = '';
             } else {

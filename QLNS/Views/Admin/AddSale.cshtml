@@ -1,0 +1,196 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@inject IHttpContextAccessor HttpContextAccessor
+@{
+	Layout = "_AdminLayout";
+	ViewData["Title"] = "Add Sale View";
+	string errorMsg = HttpContextAccessor.HttpContext.Session.GetString("errorMsg");
+    string id_user = HttpContextAccessor.HttpContext.Session.GetString("id_user");
+}
+@model QLNS.ViewModels.Admin.AddSaleViewModel
+@section AdminHeader {
+	@Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+	@Html.Partial("AdminFooter")
+}
+<style>
+    .product-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .product-row span {
+            flex: 1; /* Chiếm toàn bộ chiều rộng còn lại */
+        }
+
+        .product-row input {
+            width: 80px;
+            margin-right: 10px;
+        }
+
+        .product-row button {
+            margin-left: 10px;
+        }
+</style>
+<div class="content-wrapper">
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="card-title">Thêm đợt giảm giá</div>
+                        <p style="color:red; display:block">
+                            @errorMsg
+                        </p>
+                        <hr>
+                        <form method="post" asp-action="AddSaleResult" asp-controller="Admin" enctype="multipart/form-data">
+
+                            <div class="form-group">
+                                <label for="input-1">Ngày bắt đầu</label>
+                                <input type="date" class="form-control" readonly id="the-date" placeholder="Ngày tạo" name="start_date">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="input-1">Ngày kết thúc</label>
+                                <input type="date" class="form-control" id="the-date-2" placeholder="Ngày tạo" name="end_date">
+                            </div>
+
+                            <input type="int" class="form-control" hidden value="@id_user" name="admin_id">
+
+                            <div class="form-group">
+                                <label for="input-2" class="col-form-label">Mô tả</label>
+                                <div>
+                                    <textarea class="form-control" value="" rows="4" id="input-17" name="desc"></textarea>
+                                </div>
+                            </div>
+                            <h5>Chọn sản phẩm để áp dụng giảm giá</h5>
+                            <div class="form-group">
+                                <label for="productSelect">Chọn sản phẩm</label>
+                                <select id="productSelect" class="form-control">
+                                    @* <option value="">-- Chọn sản phẩm --</option> *@
+                                    @foreach (var product in Model.Products)
+                                    {
+                                        <option value="@product.Id">@product.Name</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <h5>Danh sách sản phẩm được chọn:</h5>
+                            <div id="selectedProducts"></div>
+
+                            <!-- Trường ẩn để gửi dữ liệu sản phẩm và giảm giá -->
+                            <input type="hidden" id="discountData" name="discountData" />
+
+                            <div class="form-footer">
+                                <button class="btn btn-danger"><i class="fa fa-times"></i><a href="/Admin/Product">Hủy</a></button>
+                                <button type="submit" class="btn btn-success"><i class="fa fa-check-square-o"></i> Thêm</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>
+<script>
+    var date = new Date();
+
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    var nextd = date.getDate() + 1;
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    var today = year + "-" + month + "-" + day;
+    var nextday = year + "-" + month + "-" + nextd;
+    document.getElementById('the-date').value = today
+    document.getElementById('the-date-2').value = nextday;
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const productSelect = document.getElementById("productSelect");
+        const selectedProducts = document.getElementById("selectedProducts");
+        const discountDataInput = document.getElementById("discountData");
+
+        let discountData = ""; // Lưu dữ liệu sản phẩm và giảm giá
+
+        // Khi chọn sản phẩm
+        productSelect.addEventListener("change", function () {
+            const productId = this.value;
+            const productName = this.options[this.selectedIndex].text;
+
+            if (!productId) return;
+
+            // Kiểm tra nếu sản phẩm đã được thêm
+            if (document.getElementById(`product-${productId}`)) {
+                alert("Sản phẩm này đã được chọn!");
+                return;
+            }
+
+            // Thêm sản phẩm vào danh sách
+            const productRow = `
+                    <div id="product-${productId}" class="product-row" style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span style="flex: 1;">${productName}</span>
+                        <input type="number" value="5" min="1" max="100"
+                               class="form-control discount-input"
+                               style="width: 80px; margin-right: 10px;" data-id="${productId}" />
+                        <button type="button" class="btn btn-danger btn-sm remove-product" data-id="${productId}">Xóa</button>
+                    </div>
+                `;
+            selectedProducts.insertAdjacentHTML("beforeend", productRow);
+
+            // Thêm sản phẩm vào chuỗi dữ liệu
+            discountData += `${productId}-5 `;
+            updateDiscountDataInput();
+        });
+
+        // Cập nhật tỷ lệ giảm giá
+        selectedProducts.addEventListener("input", function (e) {
+            if (e.target.classList.contains("discount-input")) {
+                const productId = e.target.dataset.id;
+                const discountValue = e.target.value.trim();
+
+                // Kiểm tra nếu giá trị không hợp lệ (rỗng hoặc không phải số trong khoảng 1-100)
+                if (discountValue === "" || isNaN(discountValue) || discountValue < 1 || discountValue > 100) {
+                    return; // Không làm gì nếu giá trị không hợp lệ
+                }
+
+                // Cập nhật giá trị trong chuỗi dữ liệu
+                const regex = new RegExp(`${productId}-\\d+`);
+                if (regex.test(discountData)) {
+                    discountData = discountData.replace(regex, `${productId}-${discountValue}`);
+                } else {
+                    discountData += `${productId}-${discountValue} `;
+                }
+
+                updateDiscountDataInput();
+            }
+        });
+
+        // Xóa sản phẩm
+        selectedProducts.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-product")) {
+                const productId = e.target.dataset.id;
+
+                // Xóa dòng sản phẩm khỏi giao diện
+                document.getElementById(`product-${productId}`).remove();
+
+                // Xóa sản phẩm khỏi chuỗi dữ liệu
+                const regex = new RegExp(`${productId}-\\d+ `);
+                discountData = discountData.replace(regex, "");
+                updateDiscountDataInput();
+            }
+        });
+
+        // Cập nhật dữ liệu vào trường ẩn
+        function updateDiscountDataInput() {
+            discountDataInput.value = discountData.trim();
+            console.log(discountDataInput.value); // Debug chuỗi dữ liệu
+        }
+    });
+</script>

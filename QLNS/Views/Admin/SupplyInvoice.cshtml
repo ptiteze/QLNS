@@ -76,7 +76,7 @@
                                             <form asp-action="EditSupplyList" asp-controller="Admin" method="post" style="display: inline;">
                                                     <input type="hidden" name="id" value="@Model.Products.Where(p=>p.Id==item.ProductId).First().Id" />
                                                 <input class="" type="number" placeholder="số lượng" name="quantity" value="@item.Quantity" min="1" />
-                                                <input class="" type="number" placeholder="giá" name="price" value="@item.ImportPrice" min="100"></input>
+                                                    <input type="number" placeholder="giá" name="price" value="@item.ImportPrice" min="100"></input>
                                                 <button type="submit" class="btn btn-success">Sửa Lại</button>
                                             </form>
                                             </td>
@@ -110,4 +110,5 @@
 
 
     document.getElementById('the-date').value = today;
+
 </script>

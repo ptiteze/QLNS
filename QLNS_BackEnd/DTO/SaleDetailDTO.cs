@@ -1,0 +1,11 @@
+﻿namespace QLNS_BackEnd.DTO
+{
+    public class SaleDetailDTO
+    {
+        public int SaleId { get; set; }
+
+        public int ProductId { get; set; }
+
+        public int Discount { get; set; }
+    }
+}

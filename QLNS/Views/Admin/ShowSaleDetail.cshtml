@@ -1,0 +1,55 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "SaleDetail View";
+}
+@model QLNS.ViewModels.Admin.ShowSaleDetailViewModel
+@section AdminHeader {
+    @Html.Partial("AdminHeader")
+}
+@section AdminFooter {
+    @Html.Partial("AdminFooter")
+}
+<div class="content-wrapper">
+    <div class="container-fluid">
+
+        <div class="row mt-3">
+            <div class="col-lg-12">
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Chi tiết đợt giảm giá</h5>
+                        <h5 class="card-title">Nhân viên: @Model.nameEmployee - Mô tả: @Model.sale.Des</h5>
+                        <h5 class="card-title"> Từ Ngày: @Model.sale.StartDate -- Đến ngày: @Model.sale.EndDate </h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Mô tả</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Giảm giá</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach(var item in Model.saleDetails)
+                                    {
+                                        <tr>
+                                            <td><img style="    width: 110px;height: 67px; object-fit: cover;border: 1px solid #fff;" src="~/images/products/img-test/@Model.products.Where(p=>p.Id==item.ProductId).First().ImageLink" alt="@item.ProductId"></td>
+                                            <td><a class="aa-cart-title" href="/Product/ProductDetail?id=@item.ProductId">@Model.products.Where(p => p.Id == item.ProductId).First().Name</a></td>
+                                            <td>@item.Discount %</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overlay toggle-menu"></div>
+    </div>
+</div>
