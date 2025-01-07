@@ -38,7 +38,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline. "YI2KDK17D4QFMRH7JQO4K3CAIMXCOB3Z"
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
